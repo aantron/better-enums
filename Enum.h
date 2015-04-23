@@ -74,12 +74,15 @@
         EnumType(_Value value) : _value(value) { }                             \
         template <typename IntegralType>                                       \
         explicit EnumType(IntegralType value,                                  \
-                          typename enable_if<is_integral<IntegralType>::value> \
-                              ::type *dummy = nullptr) : _value(value) { }     \
+                          typename                                             \
+                              std::enable_if<                                  \
+                                  std::is_integral<IntegralType>::value>       \
+                                      ::type *dummy = nullptr) : _value(value) \
+            { }                                                                \
                                                                                \
         template <typename IntegralType>                                       \
         EnumType& operator =(IntegralType value)                               \
-          { *this = EnumType(value); return *this; }                           \
+            { *this = EnumType(value); return *this; }                         \
                                                                                \
         operator _Value () const { return (_Value)_value; }                    \
         Underlying toUnderlying() const { return (Underlying)_value; }         \

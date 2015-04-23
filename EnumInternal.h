@@ -44,6 +44,8 @@
 
 #include <cstddef>          // For size_t.
 #include <cstring>          // For string and memory routines.
+#include <type_traits>
+
 #include "EnumPreprocessorMap.h"
 
 
@@ -1106,6 +1108,7 @@ class _Internal : public _GeneratedArrays<EnumType> {
         // failure.
         if (result == _processedNames[_badIndex]) {
             // TODO Throw an exception here.
+            return result;
         }
         else
             return result;
@@ -1127,8 +1130,10 @@ class _Internal : public _GeneratedArrays<EnumType> {
     {
         EnumType    result = find(name);
 
-        if (result == (_Value)_values[_badIndex])
+        if (result == (_Value)_values[_badIndex]) {
             // TODO Throw an exception here.
+            return result;
+        }
         else
             return result;
     }
@@ -1151,6 +1156,7 @@ class _Internal : public _GeneratedArrays<EnumType> {
 
         if (result == (_Value)_values[_badIndex]) {
             // TODO Throw an exception here.
+            return result;
         }
         else
             return result;
@@ -1165,10 +1171,10 @@ class _Internal : public _GeneratedArrays<EnumType> {
     template <typename IntegralType>
     static bool valid(IntegralType value)
     {
-        static_assert(is_integral<IntegralType>::value,
+        static_assert(std::is_integral<IntegralType>::value,
                       "argument to EnumType::valid must have integral type");
-        static_assert(is_signed<IntegralType>::value ==
-                      is_signed<Underlying>::value,
+        static_assert(std::is_signed<IntegralType>::value ==
+                      std::is_signed<Underlying>::value,
                       "argument to EnumType::valid must be signed if and only "
                       "if underlying type of EnumType is signed");
 
