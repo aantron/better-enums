@@ -268,9 +268,9 @@ class _eat_assign {
 
   public:
     explicit constexpr _eat_assign(UnderlyingType value) : _value(value) { }
-    constexpr UnderlyingType operator =(UnderlyingType dummy)
+    constexpr UnderlyingType operator =(UnderlyingType dummy) const
         { return _value; }
-    constexpr operator UnderlyingType () { return _value; }
+    constexpr operator UnderlyingType () const { return _value; }
 };
 
 /// Prepends its second argument with the cast `(_eat_assign<UnderlyingType>)`
@@ -431,25 +431,25 @@ class _Indices {
     /// has been found. Returns a new `_Indices` object reflecting this change.
     /// @param index Index at which `_bad` was found in the names array.
     /// @return The new `_Indices` object.
-    constexpr const _Indices foundBad(size_t index)
+    constexpr const _Indices foundBad(size_t index) const
         { return _Indices(index, def, min, max,
                           numberBad + 1, numberDef, numberMin, numberMax); }
 
     /// Called by `_find` when `_def` is found.
     /// @see `foundBad`
-    constexpr const _Indices foundDef(size_t index)
+    constexpr const _Indices foundDef(size_t index) const
         { return _Indices(bad, index, min, max,
                           numberBad, numberDef + 1, numberMin, numberMax); }
 
     /// Called by `_find` when `_min` is found.
     /// @see `foundBad`
-    constexpr const _Indices foundMin(size_t index)
+    constexpr const _Indices foundMin(size_t index) const
         { return _Indices(bad, def, index, max,
                           numberBad, numberDef, numberMin + 1, numberMax); }
 
     /// Called by `_find` when `_max` is found.
     /// @see `foundBad`
-    constexpr const _Indices foundMax(size_t index)
+    constexpr const _Indices foundMax(size_t index) const
         { return _Indices(bad, def, min, index,
                           numberBad, numberDef, numberMin, numberMax + 1); }
 };
