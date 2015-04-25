@@ -30,8 +30,6 @@
       public:                                                                  \
         using Enum = _Value;                                                   \
                                                                                \
-        static constexpr _Value     bad = (_Value)_values[_badIndex];          \
-        static constexpr _Value     def = (_Value)_values[_defIndex];          \
         static constexpr _Value     min = (_Value)_values[_minIndex];          \
         static constexpr _Value     max = (_Value)_values[_maxIndex];          \
                                                                                \
@@ -39,28 +37,17 @@
                                                                                \
         static constexpr size_t size() { return _size; }                       \
                                                                                \
-        static constexpr _Value     MaxValid = max;                            \
-        static constexpr _Value     MinValid = min;                            \
-                                                                               \
         static ValueIterable values() { return _Super::values(); }             \
-        static ValueIterable allValues() { return _Super::allValues(); }       \
         static NameIterable names() { return _Super::names(); }                \
-        static NameIterable allNames() { return _Super::allNames(); }          \
                                                                                \
         const char* desc() const { return desc(*this); }                       \
-        const char* descE() const { return descE(*this); }                     \
                                                                                \
         static const char* desc(EnumType value) { return _Super::desc(value); }\
-        static const char* descE(EnumType value)                               \
-            { return _Super::descE(value); }                                   \
                                                                                \
         static EnumType find(const char *name) { return _Super::find(name); }  \
-        static EnumType findE(const char *name) { return _Super::findE(name); }\
                                                                                \
         static EnumType caseFind(const char *name)                             \
             { return _Super::caseFind(name); }                                 \
-        static EnumType caseFindE(const char *name)                            \
-            { return _Super::caseFindE(name); }                                \
                                                                                \
         bool valid() const { return valid(this->toUnderlying()); };            \
                                                                                \
@@ -70,7 +57,6 @@
         static bool caseValid(const char *name)                                \
             { return _Super::caseValid(name); }                                \
                                                                                \
-        EnumType() : _value(def) { }                                           \
         EnumType(_Value value) : _value(value) { }                             \
         template <typename IntegralType>                                       \
         explicit EnumType(IntegralType value,                                  \

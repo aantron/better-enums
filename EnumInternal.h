@@ -373,335 +373,6 @@ constexpr bool _namesMatch(const char *stringizedName,
 
 
 
-/// Represents invalid indices into the enum names and values arrays.
-#define _ENUM_NOT_FOUND     ((size_t)-1)
-
-
-
-/// Functions and types used to search for the indices of special names (such as
-/// `_bad`.) The main purpose of this namespace is to shorten the identifiers
-/// used in the implementation of the search function.
-namespace _special_names {
-
-/// Name of the special constant for declaring the invalid value.
-#define _ENUM_BAD           "_bad"
-/// Name of the special constant for declaring the default value.
-#define _ENUM_DEF           "_def"
-/// Name of the special constant for declaring the minimum value.
-#define _ENUM_MIN           "_min"
-/// Name of the special constant for declaring the maximum value.
-#define _ENUM_MAX           "_max"
-
-#define _ENUM_SPECIAL_COUNT 4
-
-/// Data returned by the `_enum::_special_names::_find` function. `_find`
-/// returns the index into the names array at which each one of `_bad`, `_def`,
-/// `_min`, and `_max` was found, or `_ENUM_NOT_FOUND` for each special name
-/// that wasn't found. It also returns the number of times each special name was
-/// found. During one run of `_find` on a correct enum declaration, an
-/// `_Indices` object is created at most five times. The last `_Indices` object
-/// is returned to the caller by copy.
-class _Indices {
-  public:
-    /// Last found indices for each of the special constants.
-    size_t      bad, def, min, max;
-
-    /// Number of times each special constant was seen.
-    int         numberBad, numberDef, numberMin, numberMax;
-
-    /// Creates the initial `_Indices` object, when no special names have been
-    /// found.
-    constexpr _Indices() :
-        bad(_ENUM_NOT_FOUND), def(_ENUM_NOT_FOUND),
-        min(_ENUM_NOT_FOUND), max(_ENUM_NOT_FOUND),
-        numberBad(0), numberDef(0), numberMin(0), numberMax(0) { }
-
-  private:
-    /// Constructor used internally by the `foundXYZ` methods, each called when
-    /// one of the special names is encountered. Sets the fields of the
-    /// `_Indices` object.
-    constexpr _Indices(size_t _bad, size_t _def, size_t _min, size_t _max,
-                       int _numberBad, int _numberDef,
-                       int _numberMin, int _numberMax) :
-        bad(_bad), def(_def), min(_min), max(_max),
-        numberBad(_numberBad), numberDef(_numberDef),
-        numberMin(_numberMin), numberMax(_numberMax) { }
-
-  public:
-    /// Called by `_find` when `_bad` is found. Sets the index of the last match
-    /// for `_bad` to the given index, and increments the number of times `_bad`
-    /// has been found. Returns a new `_Indices` object reflecting this change.
-    /// @param index Index at which `_bad` was found in the names array.
-    /// @return The new `_Indices` object.
-    constexpr const _Indices foundBad(size_t index) const
-        { return _Indices(index, def, min, max,
-                          numberBad + 1, numberDef, numberMin, numberMax); }
-
-    /// Called by `_find` when `_def` is found.
-    /// @see `foundBad`
-    constexpr const _Indices foundDef(size_t index) const
-        { return _Indices(bad, index, min, max,
-                          numberBad, numberDef + 1, numberMin, numberMax); }
-
-    /// Called by `_find` when `_min` is found.
-    /// @see `foundBad`
-    constexpr const _Indices foundMin(size_t index) const
-        { return _Indices(bad, def, index, max,
-                          numberBad, numberDef, numberMin + 1, numberMax); }
-
-    /// Called by `_find` when `_max` is found.
-    /// @see `foundBad`
-    constexpr const _Indices foundMax(size_t index) const
-        { return _Indices(bad, def, min, index,
-                          numberBad, numberDef, numberMin, numberMax + 1); }
-};
-
-/// Compile-time function that returns the indices of constants named `_bad`,
-/// `_def`, `_min`, and `_max`, if they are present, and the number of times
-/// each index was found. The search is done back-to-front, so that future
-/// versions of this function can take advantage of the likelihood that all the
-/// special names are found at the end of the enum declaration, and terminate
-/// early.
-///
-/// Call as `_find(names, array_size - 1)`.
-///
-/// @param names Enum constant names array.
-/// @param index Current index into the names array.
-/// @param indices Current search results.
-/// @return An `_Indices` object representing the search results.
-constexpr _Indices _find(const char * const *names, size_t index,
-                         const _Indices &indices = _Indices())
-{
-    return
-        // If the index has been advanced (backward) to past the beginning of
-        // the array, return the current search results by copy.
-        index == (size_t)-1                  ? indices       :
-        // The index is valid. As an optimization, check if the current name
-        // begins with an underscore. If not, immediately go on to the next
-        // index (in a backwards direction).
-        names[index][0] != '_'               ?
-            _find(names, index - 1, indices)                 :
-        // The index is valid and the name begins with an underscore. Compare
-        // the entire name with each of the potential special names. If there is
-        // a match, continue at next index with an updated _Indices object.
-        // Otherwise, try the next special name.
-        _namesMatch(names[index], _ENUM_BAD) ?
-            _find(names, index - 1, indices.foundBad(index)) :
-        _namesMatch(names[index], _ENUM_DEF) ?
-            _find(names, index - 1, indices.foundDef(index)) :
-        _namesMatch(names[index], _ENUM_MIN) ?
-            _find(names, index - 1, indices.foundMin(index)) :
-        _namesMatch(names[index], _ENUM_MAX) ?
-            _find(names, index - 1, indices.foundMax(index)) :
-        // If the name did not match any of the special names, continue at the
-        // next index into the names array (in a backwards direction) with the
-        // current indices object unchanged.
-        _find(names, index - 1, indices);
-}
-
-}
-
-
-
-/// Compile-time function that determines whether a given index is one of the
-/// indices in `specialIndices`. After the enum generator finds the special
-/// names using `_enum::_special_names::_find`, it puts the four indices into an
-/// array of length 4. Indices for special names that weren't found are set to
-/// `_ENUM_NOT_FOUND`. Other functions, that run later, need to know whether
-/// they are dealing with one of these special indices or not. This function
-/// exists for that purpose.
-///
-/// Call as `_isSpecial(specialIndices, specialIndexCount, someIndex)`.
-///
-/// @param specialIndices Array of special indices.
-/// @param specialIndexCount Number of special indices.
-/// @param candidate A candidate index.
-/// @param index Current index into `specialIndices`.
-constexpr bool _isSpecial(const size_t *specialIndices,
-                          size_t specialIndexCount, size_t candidate,
-                          size_t index = 0)
-{
-    return
-        // If the index into specialIndices is equal to the number of such
-        // special indices, then the candidate index was not found, so return
-        // false.
-        index == specialIndexCount         ? false :
-        // index is less than the count of special indices. If the candidate is
-        // equal to the current special index, return true.
-        candidate == specialIndices[index] ? true  :
-        // Otherwise, continue to the next special index.
-        _isSpecial(specialIndices, specialIndexCount, candidate, index + 1);
-}
-
-/// Compile-time function that determines whether the value at one index is also
-/// present at another index in the enum values array by searching forward.
-/// Special constants such as `_bad` must be set to the value of another,
-/// non-special constant that is also declared in the enum type. This function
-/// and `_resolveReverse` check for this requirement by finding another index
-/// with the same value as the given index. `_resolveForward` is used for values
-/// that are likely to be found near the beginning of the enum declaration:
-/// `_min` and `_def`.
-///
-/// Call as `_resolveForward(values, count, special, specialCount, value)`.
-///
-/// @tparam UnderlyingType Type of elements in the values array.
-/// @param values Enum values array.
-/// @param valueCount Number of elements in `values`.
-/// @param specialIndices Special indices array. See `_isSpecial`. This array is
-///     used to reject values that are found at special indices - the value
-///     being resolved must be found at a non-special index.
-/// @param specialIndexCount Number of elements in `specialIndices`.
-/// @param specialValue Value to be resolved.
-/// @param index Current index into the `values` array.
-/// @return The non-special index at which `specialValue` is found, or
-///     `_ENUM_NOT_FOUND` if it is not found at all.
-template <typename UnderlyingType>
-constexpr size_t _resolveForward(const UnderlyingType *values,
-                                 size_t valueCount,
-                                 const size_t *specialIndices,
-                                 size_t specialIndexCount,
-                                 UnderlyingType specialValue, size_t index = 0)
-{
-    return
-        // If iteration has reached the end of the values array, then the value
-        // has not been found.
-        index == valueCount             ? _ENUM_NOT_FOUND :
-        // index still points into the array. If the value at the index is equal
-        // to the special value, and this is not a special index, then return
-        // the index.
-        values[index] == specialValue &&
-            !_isSpecial(specialIndices, specialIndexCount, index)
-                                        ? index           :
-        // Otherwise, continue at the next index into the values array.
-        _resolveForward(values, valueCount, specialIndices, specialIndexCount,
-                        specialValue, index + 1);
-}
-
-/// Compile-time function that resolves special values in a backwards direction.
-///
-/// Call as `_resolveReverse(values, count, special, specialCount, value,
-///                          count - 1)`.
-///
-/// @see `_resolveForward`
-template <typename UnderlyingType>
-constexpr size_t _resolveReverse(const UnderlyingType *values,
-                                 const size_t *specialIndices,
-                                 size_t specialIndexCount,
-                                 UnderlyingType specialValue, size_t index)
-{
-    return
-        // The index is assumed to be valid upon entry into this function.
-        // Immediately perform the same check as in _resolveForward.
-        values[index] == specialValue &&
-            !_isSpecial(specialIndices, specialIndexCount, index)
-                                       ? index           :
-        // If the value was not found at the current index, then, if the current
-        // index is zero, the value is not present in values.
-        index == 0                     ? _ENUM_NOT_FOUND :
-        // Otherwise, continue at the next (in a backwards direction) index into
-        // the values array.
-        _resolveReverse(values, specialIndices, specialIndexCount,
-                        specialValue, index - 1);
-}
-
-
-
-/// Compile-time function that returns the highest index lower than the initial
-/// value of `index` that is not a special index. Used to find the bad value if
-/// it is not explicitly given by supplying the `_bad` constant.
-///
-/// Call as `_highestRegular(special, specialCount, valueCount - 1)`.
-///
-/// @param specialIndices Array of special indices (indices of `_bad`, etc.)
-/// @param specialIndexCount Number of elements in `specialIndices`.
-/// @param index Current candidate index. This starts at the number of enum
-///     constants, minus one, and decreases until an index that is not in
-///     `specialIndices` is found.
-constexpr size_t _highestRegular(const size_t *specialIndices,
-                                 size_t specialIndexCount, size_t index)
-{
-    return
-        // The current index is assumed to be valid. If it's not a special
-        // index, return it.
-        !_isSpecial(specialIndices,
-                    specialIndexCount, index) ? index           :
-        // If it's a special index and is zero, there are no lower non-special
-        // indices - return _ENUM_NOT_FOUND.
-        index == 0                            ? _ENUM_NOT_FOUND :
-        // Otherwise, continue the search at the next-lowest index. This cannot
-        // happen more than four times because there are at most four special
-        // indices.
-        _highestRegular(specialIndices, specialIndexCount, index - 1);
-}
-
-
-
-/// Compile-time function that finds the lowest index that is not a special
-/// index, and is not the index of the bad value. The bad value is the one that
-/// is either set by `_bad`, or, if `_bad` is not given, it is the last regular
-/// (non-special) value declared in the enum type.
-///
-/// Call as `_lowestValid(values, count, special, specialCount, badValue)`.
-///
-/// @tparam UnderlyingType Type of elements in the values array.
-/// @param values Values array.
-/// @param valueCount Number of elements in the values array.
-/// @param specialIndices Special index array.
-/// @param specialIndexCount Number of elements in `specialIndices`.
-/// @param badValue The bad value.
-/// @param index Current index into `values`.
-template <typename UnderlyingType>
-constexpr size_t _lowestValid(const UnderlyingType *values, size_t valueCount,
-                              const size_t *specialIndices,
-                              size_t specialIndexCount, UnderlyingType badValue,
-                              size_t index = 0)
-{
-    return
-        // If the values array has been exhausted without finding a valid index,
-        // return _ENUM_NOT_FOUND.
-        index == valueCount           ? _ENUM_NOT_FOUND :
-        // The values array has not been exhausted. If the current index is not
-        // special, and the value at the index is not the bad value, return the
-        // index.
-        !_isSpecial(specialIndices, specialIndexCount, index) &&
-            values[index] != badValue ? index           :
-        // Otherwise, continue at the next index in the values array.
-        _lowestValid(values, valueCount, specialIndices, specialIndexCount,
-                     badValue, index + 1);
-}
-
-
-
-/// Compile-time function that finds the highest index that is not a special
-/// index, and is not the index of the bad value.
-///
-/// Call as `_highestValid(values, special, specialCount, badValue,
-///                        valueCount - 1)`.
-///
-/// @see `_lowestValid`
-template <typename UnderlyingType>
-constexpr size_t _highestValid(const UnderlyingType *values,
-                               const size_t *specialIndices,
-                               size_t specialIndexCount,
-                               UnderlyingType badValue, size_t index)
-{
-    return
-        // The index is assumed to be in range upon entry into this function. If
-        // it's not a special index, nor is the value at the index equal to the
-        // bad value, return the index.
-        !_isSpecial(specialIndices, specialIndexCount, index) &&
-            values[index] != badValue ? index           :
-        // Otherwise, if the index has reached zero, a valid index will not be
-        // found.
-        index == 0                    ? _ENUM_NOT_FOUND :
-        // The index is not valid and greater than zero - continue at the next
-        // (decreasing) index into the values array.
-        _highestValid(values, specialIndices, specialIndexCount, badValue,
-                      index - 1);
-}
-
-
-
 /// Functions and types used to compute range properties such as the minimum and
 /// maximum declared enum values, and the total number of valid enum values.
 namespace _range {
@@ -740,22 +411,12 @@ class _MinMax {
 /// @param bestMax Index of the highest valid value found so far.
 template <typename UnderlyingType>
 constexpr _MinMax _minMax(const UnderlyingType *values, size_t valueCount,
-                          const size_t *specialIndices,
-                          size_t specialIndexCount, UnderlyingType badValue,
                           size_t index, size_t bestMin, size_t bestMax)
 {
     return
         // If the current index is at the end of the array, return the pair of
         // the best found minimum and maximum.
         index == valueCount               ? _MinMax(bestMin, bestMax) :
-        // If the current is index is special (is _bad, _def, _min, or _max), or
-        // if the value at the current index is equal to the bad value, then
-        // skip the current index - go on to the next one without updating the
-        // min or max.
-        _isSpecial(specialIndices, specialIndexCount, index) ||
-                values[index] == badValue ?
-            _minMax(values, valueCount, specialIndices, specialIndexCount,
-                    badValue, index + 1, bestMin, bestMax)            :
         // If the current value is higher than the best max so far, continue at
         // the next index with the best max index updated to the current index.
         // Note that it is not necessary to also check if the current value is
@@ -763,17 +424,16 @@ constexpr _MinMax _minMax(const UnderlyingType *values, size_t valueCount,
         // the min can never go above the max after that. This is an
         // optimization that saves a nontrivial amount of time.
         values[index] > values[bestMax]   ?
-            _minMax(values, valueCount, specialIndices, specialIndexCount,
-                    badValue, index + 1, bestMin, index)              :
+            _minMax(values, valueCount, index + 1, bestMin, index)    :
         // Otherwise, if the current value is not higher than the min, continue
         // at the next index. If the current value is less than the best min so
         // far, then do update the best min for the recursive call.
-        _minMax(values, valueCount, specialIndices, specialIndexCount,
-                badValue, index + 1,
+        _minMax(values, valueCount, index + 1,
                 values[index] < values[bestMin] ? index : bestMin,
                 bestMax);
 }
 
+// TODO This can probably now be replaced with a sizeof on the array.
 /// Compile-time function that finds the "size" of the enum names and values
 /// arrays. The size is the number of constants that would be returned when
 /// iterating over the enum. Constants are returned when they are not special
@@ -795,27 +455,15 @@ constexpr _MinMax _minMax(const UnderlyingType *values, size_t valueCount,
 /// @param accumulator Number of valid constants found so far.
 template <typename UnderlyingType>
 constexpr size_t _size(const UnderlyingType *values, size_t valueCount,
-                       const size_t *specialIndices, size_t specialIndexCount,
-                       UnderlyingType badValue, UnderlyingType min,
-                       UnderlyingType max, size_t index = 0,
-                       size_t accumulator = 0)
+                       size_t index = 0, size_t accumulator = 0)
 {
     return
         // If the index has reached the end of values, return the number of
         // valid constants found.
         index == valueCount         ? accumulator             :
-        // If the current index is special, or the value is bad, or the value is
-        // below the min or above the max, continue scanning at the next index
-        // without changing the accumulator.
-        _isSpecial(specialIndices, specialIndexCount, index) ||
-                values[index] == badValue || values[index] < min ||
-                values[index] > max ?
-            _size(values, valueCount, specialIndices, specialIndexCount,
-                  badValue, min, max, index + 1, accumulator) :
         // If the current index is none of the above, continue at the next index
         // and increment the accumulator to account for the current value.
-        _size(values, valueCount, specialIndices, specialIndexCount,
-              badValue, min, max, index + 1, accumulator + 1);
+        _size(values, valueCount, index + 1, accumulator + 1);
 }
 
 } // namespace _range
@@ -832,23 +480,7 @@ constexpr size_t _size(const UnderlyingType *values, size_t valueCount,
 // TODO static asserts about the underlying type being an integral type. Allow
 // only the types supported by C++11 enum class.
 
-#define _ENUM_CONSTANT_RESOLVES_FORWARD(EnumType, ConstantIndex, ConstantName) \
-    static_assert(ConstantIndex == _ENUM_NOT_FOUND ||                          \
-                  _enum::_resolveForward(_values, _rawSize, _specialIndices,   \
-                                         _ENUM_SPECIAL_COUNT,                  \
-                                         _values[ConstantIndex])               \
-                      != _ENUM_NOT_FOUND,                                      \
-                  "special constant " ConstantName " must be equal to another "\
-                  "constant");
 
-#define _ENUM_CONSTANT_RESOLVES_REVERSE(EnumType, ConstantIndex, ConstantName) \
-    static_assert(ConstantIndex == _ENUM_NOT_FOUND ||                          \
-                  _enum::_resolveReverse(_values, _specialIndices,             \
-                                         _ENUM_SPECIAL_COUNT,                  \
-                                         _values[ConstantIndex], _rawSize - 1) \
-                      != _ENUM_NOT_FOUND,                                      \
-                  "special constant " ConstantName " must be equal to another "\
-                  "constant");
 
 namespace _enum {
 
@@ -952,100 +584,17 @@ class _Internal : public _GeneratedArrays<EnumType> {
   protected:
     static_assert(_rawSize > 0, "no constants defined in enum type");
 
-    static constexpr _enum::_special_names::_Indices
-                                        _indices =
-        _enum::_special_names::_find(_names, _rawSize - 1);
-
-    static constexpr size_t             _specialIndices[] =
-        { _indices.bad, _indices.def, _indices.min, _indices.max };
-
-    _ENUM_CONSTANT_RESOLVES_REVERSE(EnumType, _indices.bad, _ENUM_BAD);
-    _ENUM_CONSTANT_RESOLVES_FORWARD(EnumType, _indices.def, _ENUM_DEF);
-    _ENUM_CONSTANT_RESOLVES_FORWARD(EnumType, _indices.min, _ENUM_MIN);
-    _ENUM_CONSTANT_RESOLVES_REVERSE(EnumType, _indices.max, _ENUM_MAX);
-
-    static constexpr size_t             _badIndex =
-        _indices.bad == _ENUM_NOT_FOUND          ?
-            _enum::_highestRegular(_specialIndices, _ENUM_SPECIAL_COUNT,
-                                   _rawSize - 1) :
-            _indices.bad;
-
-    static_assert(_badIndex != _ENUM_NOT_FOUND,
-                  "_bad not defined and no regular constants in enum type");
-
-    static constexpr size_t             _lowestValidIndex =
-        _enum::_lowestValid(_values, _rawSize, _specialIndices,
-                            _ENUM_SPECIAL_COUNT, _values[_badIndex]);
-
-    static constexpr size_t             _highestValidIndex =
-        _enum::_highestValid(_values, _specialIndices, _ENUM_SPECIAL_COUNT,
-                             _values[_badIndex], _rawSize - 1);
-
-    static_assert(_lowestValidIndex != _ENUM_NOT_FOUND,
-                  "no valid (non-bad) constants in enum type");
-    static_assert(_highestValidIndex != _ENUM_NOT_FOUND,
-                  "no valid (non-bad) constants in enum type");
-
-    static constexpr size_t             _defIndex =
-        _indices.def == _ENUM_NOT_FOUND ? _lowestValidIndex : _indices.def;
-
     static constexpr _enum::_range::_MinMax
                                         _minMax =
-        _enum::_range::_minMax(_values, _rawSize, _specialIndices,
-                               _ENUM_SPECIAL_COUNT, _values[_badIndex],
-                               _lowestValidIndex + 1, _lowestValidIndex,
-                               _lowestValidIndex);
+        _enum::_range::_minMax(_values, _rawSize, 1, 0, 0);
 
-    static constexpr size_t             _minIndex =
-        _indices.min == _ENUM_NOT_FOUND ? _minMax.min : _indices.min;
-
-    static constexpr size_t             _maxIndex =
-        _indices.max == _ENUM_NOT_FOUND ? _minMax.max : _indices.max;
+    static constexpr size_t             _minIndex = _minMax.min;
+    static constexpr size_t             _maxIndex = _minMax.max;
 
     static_assert(_values[_minIndex] <= _values[_maxIndex],
                   "minimum constant has value greater than maximum constant");
 
-    static constexpr size_t             _size =
-        _enum::_range::_size(_values, _rawSize, _specialIndices,
-                             _ENUM_SPECIAL_COUNT, _values[_badIndex],
-                             _values[_minIndex], _values[_maxIndex]);
-
-    static constexpr size_t             _specialBadIndex = _indices.bad;
-    static constexpr size_t             _specialDefIndex = _indices.def;
-    static constexpr size_t             _specialMinIndex = _indices.min;
-    static constexpr size_t             _specialMaxIndex = _indices.max;
-
-    static constexpr bool _isSpecialIndex(size_t index)
-    {
-        return
-            index == _specialBadIndex            ? true :
-            index == _specialDefIndex            ? true :
-            index == _specialMinIndex            ? true :
-            index == _specialMaxIndex            ? true :
-            false;
-    }
-
-// Clang complains about the comparison with "min" when the underlying type is
-// unsigned and "min" is 0. Disable that warning. GCC doesn't even have this
-// warning under this name (and does not complain).
-#ifdef __clang__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wtautological-compare"
-#endif // #ifdef __clang__
-
-    static constexpr bool _isIterableIndex(size_t index)
-    {
-        return
-            _isSpecialIndex(index)               ? false :
-            _values[index] == _values[_badIndex] ? false :
-            _values[index] < _values[_minIndex]  ? false :
-            _values[index] > _values[_maxIndex]  ? false :
-            true;
-    }
-
-#ifdef __clang__
-#pragma GCC diagnostic pop
-#endif // #ifdef __clang__
+    static constexpr size_t             _size = _rawSize;
 
     static const char * const           *_processedNames;
 
@@ -1096,22 +645,7 @@ class _Internal : public _GeneratedArrays<EnumType> {
                 return _processedNames[index];
         }
 
-        return _processedNames[_badIndex];
-    }
-
-    static const char* descE(EnumType value)
-    {
-        const char  *result = desc(value);
-
-        // Note that this is a pointer comparison. Takes deliberate advantage of
-        // the fact that exactly this pointer is returned by desc() in case of
-        // failure.
-        if (result == _processedNames[_badIndex]) {
-            // TODO Throw an exception here.
-            return result;
-        }
-        else
-            return result;
+        throw std::domain_error("Enum::desc: invalid enum value");
     }
 
     static EnumType find(const char *name)
@@ -1123,19 +657,7 @@ class _Internal : public _GeneratedArrays<EnumType> {
                 return (EnumType)_values[index];
         }
 
-        return (EnumType)_values[_badIndex];
-    }
-
-    static EnumType findE(const char *name)
-    {
-        EnumType    result = find(name);
-
-        if (result == (_Value)_values[_badIndex]) {
-            // TODO Throw an exception here.
-            return result;
-        }
-        else
-            return result;
+        throw std::exception();
     }
 
     static EnumType caseFind(const char *name)
@@ -1147,19 +669,7 @@ class _Internal : public _GeneratedArrays<EnumType> {
                 return (EnumType)_values[index];
         }
 
-        return (EnumType)_values[_badIndex];
-    }
-
-    static EnumType caseFindE(const char *name)
-    {
-        EnumType    result = caseFind(name);
-
-        if (result == (_Value)_values[_badIndex]) {
-            // TODO Throw an exception here.
-            return result;
-        }
-        else
-            return result;
+        throw std::exception();
     }
 
 // See comment by _isIterableIndex.
@@ -1168,6 +678,7 @@ class _Internal : public _GeneratedArrays<EnumType> {
 #pragma GCC diagnostic ignored "-Wtautological-compare"
 #endif // #ifdef __clang__
 
+    // TODO Do a real check here - look it up in the array.
     template <typename IntegralType>
     static bool valid(IntegralType value)
     {
@@ -1178,9 +689,7 @@ class _Internal : public _GeneratedArrays<EnumType> {
                       "argument to EnumType::valid must be signed if and only "
                       "if underlying type of EnumType is signed");
 
-        return value >= _values[_minIndex] &&
-               value <= _values[_maxIndex] &&
-               value != _values[_badIndex];
+        return true;
     }
 
 #ifdef __clang__
@@ -1189,16 +698,24 @@ class _Internal : public _GeneratedArrays<EnumType> {
 
     static bool valid(const char *name)
     {
-        EnumType    value = find(name);
-
-        return valid(value.toUnderlying());
+        try {
+            find(name);
+            return true;
+        }
+        catch (const std::exception &e) {
+            return false;
+        }
     }
 
     static bool caseValid(const char *name)
     {
-        EnumType    value = caseFind(name);
-
-        return valid(value.toUnderlying());
+        try {
+            caseFind(name);
+            return true;
+        }
+        catch (const std::exception &e) {
+            return false;
+        }
     }
 
   public:
