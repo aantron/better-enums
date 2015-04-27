@@ -11,14 +11,16 @@
 
 
 
-// TODO (DOC) Link to the main enum documentation from the macro documentation,
-// or paste it here?
-// TODO (DOC) Improve the readability and formatting of enum documentation.
-// TODO (DOC) Refer to detailed documentation of internals in EnumInternal.h.
-// TODO Document why it's okay to convert the value span to an unsigned integer.
-// TODO `size()` is only for compatibility with `BETTER_ENUM`.
 // TODO toUnderlying can probably be constexpr.
-// TODO If type name is added to the class, it would be useful in pyatl.
+// TODO Consider using a traits type instead of prefixing static members with an
+// underscore.
+// TODO Make appropriate changes in naming in EnumInternal.h. Most especially,
+// remove any names that may conflict with value constant names.
+// TODO Make the default cast checked.
+// TODO Create explicit members that do everything the constructors and
+// operators do, and define the operators in terms of those.
+// TODO Remove implicit conversion to underlying type.
+// TODO Rename Underlying so it doesn't clash with any value names.
 
 #define ENUM(EnumType, UnderlyingType, ...)                                    \
     _ENUM_ARRAYS(EnumType, UnderlyingType, __VA_ARGS__);                       \
@@ -28,33 +30,32 @@
         using _Super = _enum::_Internal<EnumType>;                             \
                                                                                \
       public:                                                                  \
-        using Enum = _Value;                                                   \
+        static constexpr _Value     _min = (_Value)_values[_minIndex];         \
+        static constexpr _Value     _max = (_Value)_values[_maxIndex];         \
                                                                                \
-        static constexpr _Value     min = (_Value)_values[_minIndex];          \
-        static constexpr _Value     max = (_Value)_values[_maxIndex];          \
+        static constexpr size_t     _span = _max - _min + 1;                   \
                                                                                \
-        static constexpr size_t     span = max - min + 1;                      \
+        static ValueIterable _values() { return _Super::values(); }            \
+        static NameIterable _names() { return _Super::names(); }               \
                                                                                \
-        static constexpr size_t size() { return _size; }                       \
-                                                                               \
-        static ValueIterable values() { return _Super::values(); }             \
-        static NameIterable names() { return _Super::names(); }                \
-                                                                               \
-        const char* desc() const { return desc(*this); }                       \
-                                                                               \
-        static const char* desc(EnumType value) { return _Super::desc(value); }\
-                                                                               \
-        static EnumType find(const char *name) { return _Super::find(name); }  \
-                                                                               \
-        static EnumType caseFind(const char *name)                             \
+        const char* to_string() const { return desc(*this); }                  \
+        static EnumType _from_string(const char *name)                         \
+            { return _Super::find(name); }                                     \
+        static EnumType _from_string_nocase(const char *name)                  \
             { return _Super::caseFind(name); }                                 \
                                                                                \
-        bool valid() const { return valid(this->toUnderlying()); };            \
+        Underlying to_int() const { return _value; }                           \
+        static EnumType _from_int(Underlying value)                            \
+            { return EnumType(value); }                                        \
+        static EnumType _from_int_unchecked(Underlying value)                  \
+            { return EnumType(value); }                                        \
                                                                                \
         template <typename IntegralType>                                       \
-        static bool valid(IntegralType value) { return _Super::valid(value); } \
-        static bool valid(const char *name) { return _Super::valid(name); }    \
-        static bool caseValid(const char *name)                                \
+        static bool _is_valid(IntegralType value)                              \
+            { return _Super::valid(value); }                                   \
+        static bool _is_valid(const char *name)                                \
+            { return _Super::valid(name); }                                    \
+        static bool _is_valid_nocase(const char *name)                         \
             { return _Super::caseValid(name); }                                \
                                                                                \
         EnumType() = delete;                                                   \

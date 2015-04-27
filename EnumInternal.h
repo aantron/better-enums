@@ -568,6 +568,7 @@ template <typename EnumType> class _GeneratedArrays;
     }
 
 // TODO Compute first index for iteration while computing range properties.
+// TODO Eliminate distinction between size and rawSize.
 
 template <typename EnumType>
 class _Internal : public _GeneratedArrays<EnumType> {
@@ -590,9 +591,6 @@ class _Internal : public _GeneratedArrays<EnumType> {
 
     static constexpr size_t             _minIndex = _minMax.min;
     static constexpr size_t             _maxIndex = _minMax.max;
-
-    static_assert(_values[_minIndex] <= _values[_maxIndex],
-                  "minimum constant has value greater than maximum constant");
 
     static constexpr size_t             _size = _rawSize;
 
