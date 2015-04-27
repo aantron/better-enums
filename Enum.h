@@ -57,6 +57,7 @@
         static bool caseValid(const char *name)                                \
             { return _Super::caseValid(name); }                                \
                                                                                \
+        EnumType() = delete;                                                   \
         EnumType(_Value value) : _value(value) { }                             \
         template <typename IntegralType>                                       \
         explicit EnumType(IntegralType value,                                  \
