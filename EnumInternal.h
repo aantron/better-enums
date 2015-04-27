@@ -44,6 +44,7 @@
 
 #include <cstddef>          // For size_t.
 #include <cstring>          // For string and memory routines.
+#include <stdexcept>
 #include <type_traits>
 
 #include "EnumPreprocessorMap.h"
