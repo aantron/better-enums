@@ -125,22 +125,8 @@ class _Iterable {
         /// @return A reference to itself.
         iterator& operator ++()
         {
-            if (_allValues) {
-                if (_index < EnumType::_rawSize) {
-                    do {
-                        ++_index;
-                    } while(_index < EnumType::_rawSize &&
-                            EnumType::_isSpecialIndex(_index));
-                }
-            }
-            else {
-                if (_index <= EnumType::_highestValidIndex) {
-                    do {
-                        ++_index;
-                    } while(_index <= EnumType::_highestValidIndex &&
-                            !EnumType::_isIterableIndex(_index));
-                }
-            }
+            if (_index < EnumType::_rawSize)
+                ++_index;
 
             return *this;
         }
@@ -167,19 +153,13 @@ class _Iterable {
         /// Constructs an iterator over the given array, with the given starting
         /// index. This method is used only be the enclosing `_Iterable` class.
         /// @param arrayPointer Array that will be iterated over.
-        /// @param allValues If `true`, the iterator "stops" at all values,
-        ///     whether they are valid or not. Otherwise, the iterator stops
-        ///     only at valid values (or their names).
         /// @param index Initial index into the array. This must be the index of
         ///     a valid value.
-        iterator(ArrayType arrayPointer, bool allValues, size_t index) :
-            _arrayPointer(arrayPointer), _allValues(allValues),
-            _index(index) { }
+        iterator(ArrayType arrayPointer, size_t index) :
+            _arrayPointer(arrayPointer), _index(index) { }
 
         /// Reference to the array being iterated.
         ArrayType       _arrayPointer;
-        /// Whether to return only valid values or all values.
-        bool            _allValues;
         /// Current index into the array. This is always either the index of a
         /// valid value or else it is equal to the size of the array.
         size_t          _index;
@@ -191,39 +171,13 @@ class _Iterable {
     /// Returns an iterator to the beginning of the name or value array.
     iterator begin() const
     {
-        if (_allValues) {
-            size_t      firstIndex = 0;
-
-            while (firstIndex < EnumType::_rawSize &&
-                   EnumType::_isSpecialIndex(firstIndex)) {
-
-                ++firstIndex;
-            }
-
-            return iterator(_arrayPointer, true, firstIndex);
-        }
-        else {
-            size_t      firstIndex = EnumType::_lowestValidIndex;
-
-            while ((firstIndex <= EnumType::_highestValidIndex) &&
-                   !EnumType::_isIterableIndex(firstIndex)) {
-
-                ++firstIndex;
-            }
-
-            return iterator(_arrayPointer, false, firstIndex);
-        }
+        return iterator(_arrayPointer, 0);
     }
 
     /// Returns an iterator to the end of the name or value array.
     iterator end() const
     {
-        if (_allValues)
-            return iterator(_arrayPointer, true, EnumType::_rawSize);
-        else {
-            return iterator(_arrayPointer, false,
-                            EnumType::_highestValidIndex + 1);
-        }
+        return iterator(_arrayPointer, EnumType::_rawSize);
     }
 
     /// Returns the number of valid elements (names or values) in the iterable -
@@ -233,13 +187,10 @@ class _Iterable {
 
   private:
     /// Creates an `_Iterable` object over an array.
-    _Iterable(ArrayType arrayPointer, bool allValues) :
-        _arrayPointer(arrayPointer), _allValues(allValues) { }
+    _Iterable(ArrayType arrayPointer) : _arrayPointer(arrayPointer) { }
 
     /// The array over which iteration will be performed.
     ArrayType           _arrayPointer;
-    /// Whether to return only valid values or all values.
-    bool                _allValues;
 
     /// Permit the enum class itself to create `_Iterable` objects.
     friend class _Internal<EnumType>;
@@ -613,26 +564,14 @@ class _Internal : public _GeneratedArrays<EnumType> {
 
     static ValueIterable values()
     {
-        return ValueIterable(_values, false);
-    }
-
-    static ValueIterable allValues()
-    {
-        return ValueIterable(_values, true);
+        return ValueIterable(_values);
     }
 
     static NameIterable names()
     {
         _processNames();
 
-        return NameIterable(_processedNames, false);
-    }
-
-    static NameIterable allNames()
-    {
-        _processNames();
-
-        return NameIterable(_processedNames, true);
+        return NameIterable(_processedNames);
     }
 
     static const char* desc(EnumType value)
