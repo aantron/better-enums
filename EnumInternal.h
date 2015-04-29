@@ -225,7 +225,8 @@ class _eat_assign {
 
   public:
     explicit constexpr _eat_assign(UnderlyingType value) : _value(value) { }
-    constexpr UnderlyingType operator =(UnderlyingType dummy) const
+    template <typename Any>
+    constexpr UnderlyingType operator =(Any dummy) const
         { return _value; }
     constexpr operator UnderlyingType () const { return _value; }
 };
@@ -471,8 +472,8 @@ template <typename EnumType> class _GeneratedArrays;
         enum _Enumerated : _Integral { __VA_ARGS__ };                          \
                                                                                \
       protected:                                                               \
-        static constexpr _Integral          _value_array[] =                   \
-            { _ENUM_EAT_ASSIGN(_Integral, __VA_ARGS__) };                      \
+        static constexpr _Enumerated        _value_array[] =                   \
+            { _ENUM_EAT_ASSIGN(_Enumerated, __VA_ARGS__) };                    \
                                                                                \
         static constexpr const char         *_name_array[] =                   \
             { _ENUM_STRINGIZE(__VA_ARGS__) };                                  \
@@ -481,7 +482,7 @@ template <typename EnumType> class _GeneratedArrays;
             _ENUM_PP_COUNT(__VA_ARGS__);                                       \
     };                                                                         \
                                                                                \
-    constexpr _GeneratedArrays<EnumType>::_Integral _ENUM_WEAK                 \
+    constexpr _GeneratedArrays<EnumType>::_Enumerated _ENUM_WEAK               \
         _GeneratedArrays<EnumType>::_value_array[];                            \
                                                                                \
     constexpr const char * _ENUM_WEAK                                          \
@@ -493,8 +494,6 @@ template <typename EnumType> class _GeneratedArrays;
                                                                                \
     }
 
-// TODO Make sure _size is public.
-
 template <typename EnumType>
 class _Implementation : public _GeneratedArrays<EnumType> {
   protected:
@@ -503,13 +502,11 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     using _arrays::_name_array;
 
   public:
-    using _arrays::_size;
-
-    static_assert(_size > 0, "no constants defined in enum type");
-
-  public:
     using typename _arrays::_Enumerated;
     using typename _arrays::_Integral;
+
+    using _arrays::_size;
+    static_assert(_size > 0, "no constants defined in enum type");
 
     static const EnumType   _first;
 
@@ -521,9 +518,10 @@ class _Implementation : public _GeneratedArrays<EnumType> {
         return _value;
     }
 
+    // TODO This should be a checked cast.
     constexpr static EnumType _from_int(_Integral value)
     {
-        return (EnumType)value;
+        return (_Enumerated)value;
     }
 
     // TODO Use iterables.
@@ -546,7 +544,7 @@ class _Implementation : public _GeneratedArrays<EnumType> {
 
         for (size_t index = 0; index < _size; ++index) {
             if (strcmp(_processedNames[index], name) == 0)
-                return (EnumType)_value_array[index];
+                return _value_array[index];
         }
 
         throw std::exception();
@@ -559,19 +557,16 @@ class _Implementation : public _GeneratedArrays<EnumType> {
 
         for (size_t index = 0; index < _size; ++index) {
             if (strcasecmp(_processedNames[index], name) == 0)
-                return (EnumType)_value_array[index];
+                return _value_array[index];
         }
 
         throw std::exception();
     }
 
-    // TODO Eliminate cast inside this function.
-    operator _Enumerated() { return (_Enumerated)_value; }
+    operator _Enumerated() { return _value; }
 
   protected:
-    _Integral                           _value;
-
-    explicit constexpr _Implementation(_Integral value) : _value(value) { }
+    _Enumerated                         _value;
 
     static const char * const           *_processedNames;
 
@@ -582,7 +577,7 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     }
 
     using _ValueIterable =
-        _Iterable<const EnumType, EnumType, const _Integral * const>;
+        _Iterable<const EnumType, EnumType, const _Enumerated * const>;
     using _NameIterable =
         _Iterable<const char*, EnumType, const char * const*>;
 
