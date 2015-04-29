@@ -39,6 +39,7 @@
 ///     are very likely to collide.
 
 // TODO Make it possible for enums to be map keys.
+// TODO Rename internal functions to match public interface conventions.
 
 
 
@@ -295,6 +296,11 @@ constexpr bool _endsName(char c, size_t index = 0)
         _endsName(c, index + 1);
 }
 
+constexpr char _toLowercaseAscii(char c)
+{
+    return c >= 0x41 && c <= 0x5A ? c + 0x20 : c;
+}
+
 /// Compile-time function that matches a stringized name (with potential
 /// trailing spaces and equals signs) against a reference name (a regular
 /// null-terminated string).
@@ -326,6 +332,20 @@ constexpr bool _namesMatch(const char *stringizedName,
         // the names.
         _namesMatch(stringizedName, referenceName, index + 1);
 }
+
+constexpr bool _namesMatchNocase(const char *stringizedName,
+                                 const char *referenceName,
+                                 size_t index = 0)
+{
+    return
+        _endsName(stringizedName[index]) ? referenceName[index] == '\0' :
+        referenceName[index] == '\0' ? false :
+        _toLowercaseAscii(stringizedName[index]) !=
+            _toLowercaseAscii(referenceName[index]) ? false :
+        _namesMatchNocase(stringizedName, referenceName, index + 1);
+}
+
+#define _ENUM_NOT_FOUND     ((size_t)-1)
 
 
 
@@ -456,7 +476,7 @@ static inline const char * const* _processNames(const char * const *rawNames,
 
 template <typename EnumType> class _GeneratedArrays;
 
-// TODO Try to convert values array to _Enumerated[] instead of _Integral[].
+// TODO Move definitions to last macro.
 
 #define _ENUM_ARRAYS(EnumType, UnderlyingType, ...)                            \
     class EnumType;                                                            \
@@ -518,13 +538,16 @@ class _Implementation : public _GeneratedArrays<EnumType> {
         return _value;
     }
 
-    // TODO This should be a checked cast.
     constexpr static EnumType _from_int(_Integral value)
+    {
+        return _value_array[_from_int_loop(value, true)];
+    }
+
+    constexpr static EnumType _from_int_unchecked(_Integral value)
     {
         return (_Enumerated)value;
     }
 
-    // TODO Use iterables.
     const char* to_string() const
     {
         _processNames();
@@ -537,30 +560,29 @@ class _Implementation : public _GeneratedArrays<EnumType> {
         throw std::domain_error("Enum::_to_string: invalid enum value");
     }
 
-    // TODO Make constexpr.
-    static EnumType _from_string(const char *name)
+    constexpr static EnumType _from_string(const char *name)
     {
-        _processNames();
-
-        for (size_t index = 0; index < _size; ++index) {
-            if (strcmp(_processedNames[index], name) == 0)
-                return _value_array[index];
-        }
-
-        throw std::exception();
+        return _value_array[_from_string_loop(name, true)];
     }
 
-    // TODO Make constexpr.
-    static EnumType _from_string_nocase(const char *name)
+    constexpr static EnumType _from_string_nocase(const char *name)
     {
-        _processNames();
+        return _value_array[_from_string_nocase_loop(name, true)];
+    }
 
-        for (size_t index = 0; index < _size; ++index) {
-            if (strcasecmp(_processedNames[index], name) == 0)
-                return _value_array[index];
-        }
+    constexpr static bool _is_valid(_Integral value)
+    {
+        return _from_int_loop(value, false) != _ENUM_NOT_FOUND;
+    }
 
-        throw std::exception();
+    constexpr static bool _is_valid(const char *name)
+    {
+        return _from_string_loop(name, false) != _ENUM_NOT_FOUND;
+    }
+
+    constexpr static bool _is_valid_nocase(const char *name)
+    {
+        return _from_string_nocase_loop(name, false) != _ENUM_NOT_FOUND;
     }
 
     operator _Enumerated() { return _value; }
@@ -595,50 +617,46 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     }
 
   protected:
-// See comment by _isIterableIndex.
-#ifdef __clang__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wtautological-compare"
-#endif // #ifdef __clang__
-
-    // TODO Do a real check here - look it up in the array.
-    template <typename IntegralType>
-    static bool _is_valid(IntegralType value)
+    constexpr static size_t _from_int_loop(_Integral value,
+                                           bool throw_exception,
+                                           size_t index = 0)
     {
-        static_assert(std::is_integral<IntegralType>::value,
-                      "argument to EnumType::valid must have integral type");
-        static_assert(std::is_signed<IntegralType>::value ==
-                      std::is_signed<_Integral>::value,
-                      "argument to EnumType::valid must be signed if and only "
-                      "if underlying type of EnumType is signed");
-
-        return true;
+        return
+            index == _size ?
+                (throw_exception ?
+                    throw std::runtime_error(
+                        "Enum::from_int: invalid integer value") :
+                    _ENUM_NOT_FOUND) :
+            _value_array[index] == value ? index :
+            _from_int_loop(value, throw_exception, index + 1);
     }
 
-#ifdef __clang__
-#pragma GCC diagnostic pop
-#endif // #ifdef __clang__
-
-    static bool _is_valid(const char *name)
+    constexpr static size_t _from_string_loop(const char *name,
+                                              bool throw_exception,
+                                              size_t index = 0)
     {
-        try {
-            _from_string(name);
-            return true;
-        }
-        catch (const std::exception &e) {
-            return false;
-        }
+        return
+            index == _size ?
+                (throw_exception ?
+                    throw std::runtime_error(
+                        "Enum::_from_string: invalid string argument") :
+                    _ENUM_NOT_FOUND) :
+            _namesMatch(_name_array[index], name) ? index :
+            _from_string_loop(name, throw_exception, index + 1);
     }
 
-    static bool _is_valid_nocase(const char *name)
+    constexpr static size_t _from_string_nocase_loop(const char *name,
+                                                     bool throw_exception,
+                                                     size_t index = 0)
     {
-        try {
-            _from_string_nocase(name);
-            return true;
-        }
-        catch (const std::exception &e) {
-            return false;
-        }
+        return
+            index == _size ?
+                (throw_exception ?
+                    throw std::runtime_error(
+                        "Enum::_from_string_nocase: invalid string argument") :
+                    _ENUM_NOT_FOUND) :
+                _namesMatchNocase(_name_array[index], name) ? index :
+                _from_string_nocase_loop(name, throw_exception, index + 1);
     }
 
     // TODO Remove static casts wherever reasonable.
@@ -703,8 +721,8 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     namespace _enum {                                                          \
                                                                                \
     template <>                                                                \
-    constexpr EnumType _Implementation<EnumType>::_first =                \
-        EnumType::_from_int(EnumType::_value_array[0]);  \
+    constexpr EnumType _Implementation<EnumType>::_first =                     \
+        EnumType::_from_int(EnumType::_value_array[0]);                        \
                                                                                \
     }
 
