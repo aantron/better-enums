@@ -38,6 +38,8 @@
 ///     instantiated once for every different underlying type. Underlying types
 ///     are very likely to collide.
 
+// TODO Make it possible for enums to be map keys.
+
 
 
 #pragma once
@@ -65,8 +67,11 @@ namespace _enum {
 
 
 // Forward declaration of _Internal, for use in a friend declation in _Iterable.
-template <typename EnumType> class _Internal;
+template <typename EnumType> class _Implementation;
 
+// TODO Simplify - names iteration will need a custom iterator if processing
+// strings lazily, while values can be done by simply iterating over the values
+// array directly.
 /// Template for iterable objects over enum names and values.
 ///
 /// The iterables are intended for use with C++11 `for-each` syntax. They are
@@ -97,8 +102,6 @@ template <typename EnumType> class _Internal;
 ///     expeted.
 ///
 /// @todo Consider making `_Iterable` `constexpr`.
-/// @todo An iterator over valid values and an iterator over all values should
-///     really be different types.
 ///
 /// @internal
 ///
@@ -125,7 +128,7 @@ class _Iterable {
         /// @return A reference to itself.
         iterator& operator ++()
         {
-            if (_index < EnumType::_rawSize)
+            if (_index < EnumType::_size)
                 ++_index;
 
             return *this;
@@ -177,7 +180,7 @@ class _Iterable {
     /// Returns an iterator to the end of the name or value array.
     iterator end() const
     {
-        return iterator(_arrayPointer, EnumType::_rawSize);
+        return iterator(_arrayPointer, EnumType::_size);
     }
 
     /// Returns the number of valid elements (names or values) in the iterable -
@@ -193,7 +196,7 @@ class _Iterable {
     ArrayType           _arrayPointer;
 
     /// Permit the enum class itself to create `_Iterable` objects.
-    friend class _Internal<EnumType>;
+    friend class _Implementation<EnumType>;
 };
 
 
@@ -329,60 +332,28 @@ constexpr bool _namesMatch(const char *stringizedName,
 /// maximum declared enum values, and the total number of valid enum values.
 namespace _range {
 
-/// Type of object returned by `_minMax`. Pair of the minimum and maximum value
-/// found.
-class _MinMax {
-  public:
-    size_t      min, max;
-
-    constexpr _MinMax(size_t _min, size_t _max) :
-        min(_min), max(_max) { }
-};
-
-/// Compile-time function that finds the default minimum and maximum values of
-/// an enum. Note that if the minimum and/or maximum value is overridden using
-/// `_min` and `_max`, the corresponding result of this function will be
-/// ignored.
-///
-/// This function should be called with `bestMin` and `bestMax` set to the first
-/// valid (non-special, non-bad) index in the enumeration. One such index is
-/// guaranteed to exist by code that runs prior to where this function is
-/// called.
-///
-/// @tparam UnderlyingType The enum underlying type. Comparisons are done at
-///     this type. Note that the signedness of this type affects the
-///     comparisons.
-/// @param values Enum values array.
-/// @param valueCount Number of values.
-/// @param specialIndices Special index array.
-/// @param specialIndexCount Number of special indices.
-/// @param badValue The bad value.
-/// @param index Current index in the iteration. This should initially be set to
-///     the index after the first valid index (add one to it).
-/// @param bestMin Index of the lowest valid value found so far.
-/// @param bestMax Index of the highest valid value found so far.
 template <typename UnderlyingType>
-constexpr _MinMax _minMax(const UnderlyingType *values, size_t valueCount,
-                          size_t index, size_t bestMin, size_t bestMax)
+constexpr UnderlyingType _findMin(const UnderlyingType *values,
+                                  size_t valueCount, size_t index,
+                                  UnderlyingType best)
 {
     return
-        // If the current index is at the end of the array, return the pair of
-        // the best found minimum and maximum.
-        index == valueCount               ? _MinMax(bestMin, bestMax) :
-        // If the current value is higher than the best max so far, continue at
-        // the next index with the best max index updated to the current index.
-        // Note that it is not necessary to also check if the current value is
-        // less than the best min - the min and max start at the same value, and
-        // the min can never go above the max after that. This is an
-        // optimization that saves a nontrivial amount of time.
-        values[index] > values[bestMax]   ?
-            _minMax(values, valueCount, index + 1, bestMin, index)    :
-        // Otherwise, if the current value is not higher than the min, continue
-        // at the next index. If the current value is less than the best min so
-        // far, then do update the best min for the recursive call.
-        _minMax(values, valueCount, index + 1,
-                values[index] < values[bestMin] ? index : bestMin,
-                bestMax);
+        index == valueCount ? best :
+        values[index] < values[valueCount] ?
+            _findMin(values, valueCount, index + 1, values[index]) :
+            _findMin(values, valueCount, index + 1, best);
+}
+
+template <typename UnderlyingType>
+constexpr UnderlyingType _findMax(const UnderlyingType *values,
+                                  size_t valueCount, size_t index,
+                                  UnderlyingType best)
+{
+    return
+        index == valueCount ? best :
+        values[index] > values[valueCount] ?
+            _findMax(values, valueCount, index + 1, values[index]) :
+            _findMax(values, valueCount, index + 1, best);
 }
 
 // TODO This can probably now be replaced with a sizeof on the array.
@@ -438,8 +409,8 @@ namespace _enum {
 
 // TODO Consider reserving memory statically. This will probably entail a great
 // compile-time slowdown, however.
-static const char * const* _processNames(const char * const *rawNames,
-                                         size_t count)
+static inline const char * const* _processNames(const char * const *rawNames,
+                                                size_t count)
 {
     // Allocate the replacement names array.
     const char      **processedNames = new const char*[count];
@@ -484,6 +455,8 @@ static const char * const* _processNames(const char * const *rawNames,
 
 template <typename EnumType> class _GeneratedArrays;
 
+// TODO Try to convert values array to _Enumerated[] instead of _Integral[].
+
 #define _ENUM_ARRAYS(EnumType, UnderlyingType, ...)                            \
     class EnumType;                                                            \
                                                                                \
@@ -491,125 +464,142 @@ template <typename EnumType> class _GeneratedArrays;
                                                                                \
     template <>                                                                \
     class _GeneratedArrays<EnumType> {                                         \
-      public:                                                                  \
-        enum _Value { __VA_ARGS__ };                                           \
+      protected:                                                               \
+        using _Integral = UnderlyingType;                                      \
                                                                                \
-        using Underlying = UnderlyingType;                                     \
+      public:                                                                  \
+        enum _Enumerated : _Integral { __VA_ARGS__ };                          \
                                                                                \
       protected:                                                               \
-        static constexpr Underlying         _values[] =                        \
-            { _ENUM_EAT_ASSIGN(UnderlyingType, __VA_ARGS__) };                 \
+        static constexpr _Integral          _value_array[] =                   \
+            { _ENUM_EAT_ASSIGN(_Integral, __VA_ARGS__) };                      \
                                                                                \
-        static constexpr const char         *_names[] =                        \
+        static constexpr const char         *_name_array[] =                   \
             { _ENUM_STRINGIZE(__VA_ARGS__) };                                  \
                                                                                \
-        static constexpr size_t             _rawSize =                         \
+        static constexpr size_t             _size =                            \
             _ENUM_PP_COUNT(__VA_ARGS__);                                       \
     };                                                                         \
                                                                                \
-    constexpr _GeneratedArrays<EnumType>::Underlying _ENUM_WEAK                \
-                                    _GeneratedArrays<EnumType>::_values[];     \
+    constexpr _GeneratedArrays<EnumType>::_Integral _ENUM_WEAK                 \
+        _GeneratedArrays<EnumType>::_value_array[];                            \
                                                                                \
-    constexpr const char * _ENUM_WEAK   _GeneratedArrays<EnumType>::_names[];  \
-                                                                               \
+    constexpr const char * _ENUM_WEAK                                          \
+        _GeneratedArrays<EnumType>::_name_array[];                             \
                                                                                \
     template <>                                                                \
-    const char * const * _ENUM_WEAK     _Internal<EnumType>::_processedNames = \
-                                            nullptr;                           \
+    const char * const * _ENUM_WEAK                                            \
+        _Implementation<EnumType>::_processedNames = nullptr;                  \
                                                                                \
     }
 
-// TODO Compute first index for iteration while computing range properties.
-// TODO Eliminate distinction between size and rawSize.
+// TODO Make sure _size is public.
 
 template <typename EnumType>
-class _Internal : public _GeneratedArrays<EnumType> {
+class _Implementation : public _GeneratedArrays<EnumType> {
   protected:
     using _arrays = _GeneratedArrays<EnumType>;
-    using _arrays::_values;
-    using _arrays::_names;
-    using _arrays::_rawSize;
+    using _arrays::_value_array;
+    using _arrays::_name_array;
 
   public:
-    using typename _arrays::_Value;
-    using typename _arrays::Underlying;
+    using _arrays::_size;
+
+    static_assert(_size > 0, "no constants defined in enum type");
+
+  public:
+    using typename _arrays::_Enumerated;
+    using typename _arrays::_Integral;
+
+    static const EnumType   _first;
+
+    _Implementation() = delete;
+    constexpr _Implementation(_Enumerated constant) : _value(constant) { }
+
+    constexpr _Integral to_int() const
+    {
+        return _value;
+    }
+
+    constexpr static EnumType _from_int(_Integral value)
+    {
+        return (EnumType)value;
+    }
+
+    // TODO Use iterables.
+    const char* to_string() const
+    {
+        _processNames();
+
+        for (size_t index = 0; index < _size; ++index) {
+            if (_value_array[index] == _value)
+                return _processedNames[index];
+        }
+
+        throw std::domain_error("Enum::_to_string: invalid enum value");
+    }
+
+    // TODO Make constexpr.
+    static EnumType _from_string(const char *name)
+    {
+        _processNames();
+
+        for (size_t index = 0; index < _size; ++index) {
+            if (strcmp(_processedNames[index], name) == 0)
+                return (EnumType)_value_array[index];
+        }
+
+        throw std::exception();
+    }
+
+    // TODO Make constexpr.
+    static EnumType _from_string_nocase(const char *name)
+    {
+        _processNames();
+
+        for (size_t index = 0; index < _size; ++index) {
+            if (strcasecmp(_processedNames[index], name) == 0)
+                return (EnumType)_value_array[index];
+        }
+
+        throw std::exception();
+    }
+
+    // TODO Eliminate cast inside this function.
+    operator _Enumerated() { return (_Enumerated)_value; }
 
   protected:
-    static_assert(_rawSize > 0, "no constants defined in enum type");
+    _Integral                           _value;
 
-    static constexpr _enum::_range::_MinMax
-                                        _minMax =
-        _enum::_range::_minMax(_values, _rawSize, 1, 0, 0);
-
-    static constexpr size_t             _minIndex = _minMax.min;
-    static constexpr size_t             _maxIndex = _minMax.max;
-
-    static constexpr size_t             _size = _rawSize;
+    explicit constexpr _Implementation(_Integral value) : _value(value) { }
 
     static const char * const           *_processedNames;
 
     static void _processNames()
     {
         if (_processedNames == nullptr)
-            _processedNames = _enum::_processNames(_names, _rawSize);
+            _processedNames = _enum::_processNames(_name_array, _size);
     }
 
-    using ValueIterable =
-        _Iterable<const EnumType, EnumType, const Underlying * const>;
-    using NameIterable =
+    using _ValueIterable =
+        _Iterable<const EnumType, EnumType, const _Integral * const>;
+    using _NameIterable =
         _Iterable<const char*, EnumType, const char * const*>;
 
-    friend ValueIterable;
-    friend NameIterable;
-
-    static ValueIterable values()
+  public:
+    static _ValueIterable _values()
     {
-        return ValueIterable(_values);
+        return _ValueIterable(_value_array);
     }
 
-    static NameIterable names()
+    static _NameIterable _names()
     {
         _processNames();
 
-        return NameIterable(_processedNames);
+        return _NameIterable(_processedNames);
     }
 
-    static const char* desc(EnumType value)
-    {
-        _processNames();
-
-        for (size_t index = 0; index < _rawSize; ++index) {
-            if (_values[index] == value)
-                return _processedNames[index];
-        }
-
-        throw std::domain_error("Enum::desc: invalid enum value");
-    }
-
-    static EnumType find(const char *name)
-    {
-        _processNames();
-
-        for (size_t index = 0; index < _rawSize; ++index) {
-            if (strcmp(_processedNames[index], name) == 0)
-                return (EnumType)_values[index];
-        }
-
-        throw std::exception();
-    }
-
-    static EnumType caseFind(const char *name)
-    {
-        _processNames();
-
-        for (size_t index = 0; index < _rawSize; ++index) {
-            if (strcasecmp(_processedNames[index], name) == 0)
-                return (EnumType)_values[index];
-        }
-
-        throw std::exception();
-    }
-
+  protected:
 // See comment by _isIterableIndex.
 #ifdef __clang__
 #pragma GCC diagnostic push
@@ -618,12 +608,12 @@ class _Internal : public _GeneratedArrays<EnumType> {
 
     // TODO Do a real check here - look it up in the array.
     template <typename IntegralType>
-    static bool valid(IntegralType value)
+    static bool _is_valid(IntegralType value)
     {
         static_assert(std::is_integral<IntegralType>::value,
                       "argument to EnumType::valid must have integral type");
         static_assert(std::is_signed<IntegralType>::value ==
-                      std::is_signed<Underlying>::value,
+                      std::is_signed<_Integral>::value,
                       "argument to EnumType::valid must be signed if and only "
                       "if underlying type of EnumType is signed");
 
@@ -634,10 +624,10 @@ class _Internal : public _GeneratedArrays<EnumType> {
 #pragma GCC diagnostic pop
 #endif // #ifdef __clang__
 
-    static bool valid(const char *name)
+    static bool _is_valid(const char *name)
     {
         try {
-            find(name);
+            _from_string(name);
             return true;
         }
         catch (const std::exception &e) {
@@ -645,10 +635,10 @@ class _Internal : public _GeneratedArrays<EnumType> {
         }
     }
 
-    static bool caseValid(const char *name)
+    static bool _is_valid_nocase(const char *name)
     {
         try {
-            caseFind(name);
+            _from_string_nocase(name);
             return true;
         }
         catch (const std::exception &e) {
@@ -656,40 +646,41 @@ class _Internal : public _GeneratedArrays<EnumType> {
         }
     }
 
+    // TODO Remove static casts wherever reasonable.
   public:
     bool operator ==(const EnumType &other) const
         { return static_cast<const EnumType&>(*this)._value == other._value; }
-    bool operator ==(const _Value value) const
+    bool operator ==(const _Enumerated value) const
         { return static_cast<const EnumType&>(*this)._value == value; }
     template <typename T> bool operator ==(T other) const = delete;
 
     bool operator !=(const EnumType &other) const
         { return !(*this == other); }
-    bool operator !=(const _Value value) const
+    bool operator !=(const _Enumerated value) const
         { return !(*this == value); }
     template <typename T> bool operator !=(T other) const = delete;
 
     bool operator <(const EnumType &other) const
         { return static_cast<const EnumType&>(*this)._value < other._value; }
-    bool operator <(const _Value value) const
+    bool operator <(const _Enumerated value) const
         { return static_cast<const EnumType&>(*this)._value < value; }
     template <typename T> bool operator <(T other) const = delete;
 
     bool operator <=(const EnumType &other) const
         { return static_cast<const EnumType&>(*this)._value <= other._value; }
-    bool operator <=(const _Value value) const
+    bool operator <=(const _Enumerated value) const
         { return static_cast<const EnumType&>(*this)._value <= value; }
     template <typename T> bool operator <=(T other) const = delete;
 
     bool operator >(const EnumType &other) const
         { return static_cast<const EnumType&>(*this)._value > other._value; }
-    bool operator >(const _Value value) const
+    bool operator >(const _Enumerated value) const
         { return static_cast<const EnumType&>(*this)._value > value; }
     template <typename T> bool operator >(T other) const = delete;
 
     bool operator >=(const EnumType &other) const
         { return static_cast<const EnumType&>(*this)._value >= other._value; }
-    bool operator >=(const _Value value) const
+    bool operator >=(const _Enumerated value) const
         { return static_cast<const EnumType&>(*this)._value >= value; }
     template <typename T> bool operator >=(T other) const = delete;
 
@@ -712,5 +703,14 @@ class _Internal : public _GeneratedArrays<EnumType> {
     template <typename T> int operator &&(T other) const = delete;
     template <typename T> int operator ||(T other) const = delete;
 };
+
+#define _ENUM_STATIC_DEFINITIONS(EnumType)                                     \
+    namespace _enum {                                                          \
+                                                                               \
+    template <>                                                                \
+    constexpr EnumType _Implementation<EnumType>::_first =                \
+        EnumType::_from_int(EnumType::_value_array[0]);  \
+                                                                               \
+    }
 
 }
