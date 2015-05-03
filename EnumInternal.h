@@ -70,9 +70,7 @@ namespace _enum {
 // Forward declaration of _Internal, for use in a friend declation in _Iterable.
 template <typename EnumType> class _Implementation;
 
-// TODO Simplify - names iteration will need a custom iterator if processing
-// strings lazily, while values can be done by simply iterating over the values
-// array directly.
+// TODO Make these standard-compliant.
 /// Template for iterable objects over enum names and values.
 ///
 /// The iterables are intended for use with C++11 `for-each` syntax. They are
@@ -114,90 +112,100 @@ template <typename EnumType> class _Implementation;
 /// considered valid if they are not equal to the bad value, are not below the
 /// minimum value, and are not above the maximum value. Names are valid if they
 /// are the name of a valid value.
-template <typename Element, typename EnumType, typename ArrayType>
-class _Iterable {
+
+template <typename EnumType, typename Iterator>
+class _Iterable;
+
+template <typename EnumType>
+class _ValueIterator {
   public:
-    /// Iterators for iterating over enum names or values.
-    class iterator {
-      public:
-        /// Returns the current name or value.
-        Element operator *() const { return (Element)_arrayPointer[_index]; }
-
-        /// Advances the iterator to the next valid name or value. If there is
-        /// no such value, the iterator becomes equal to the result of
-        /// `_Iterable::end()`.
-        /// @return A reference to itself.
-        iterator& operator ++()
-        {
-            if (_index < EnumType::_size)
-                ++_index;
-
-            return *this;
-        }
-
-        /// Compares two iterators for equality.
-        /// @param other Another iterator over the same array.
-        bool operator ==(const iterator &other) const
-        {
-            return (other._arrayPointer == _arrayPointer) &&
-                   (other._index == _index);
-        }
-
-        /// Compares two iterators for equality - negated comparison.
-        /// @param other Another iterator over the same array.
-        bool operator !=(const iterator &other) const
-            { return !(*this == other); }
-
-      public:
-        /// An iterator can be declared without initialization - in this case,
-        /// its state is undefined.
-        iterator() = default;
-
-      private:
-        /// Constructs an iterator over the given array, with the given starting
-        /// index. This method is used only be the enclosing `_Iterable` class.
-        /// @param arrayPointer Array that will be iterated over.
-        /// @param index Initial index into the array. This must be the index of
-        ///     a valid value.
-        iterator(ArrayType arrayPointer, size_t index) :
-            _arrayPointer(arrayPointer), _index(index) { }
-
-        /// Reference to the array being iterated.
-        ArrayType       _arrayPointer;
-        /// Current index into the array. This is always either the index of a
-        /// valid value or else it is equal to the size of the array.
-        size_t          _index;
-
-        /// Permit `_Iterable` to create iterators.
-        friend class _Iterable;
-    };
-
-    /// Returns an iterator to the beginning of the name or value array.
-    iterator begin() const
+    constexpr EnumType operator *() const
     {
-        return iterator(_arrayPointer, 0);
+        return EnumType::_value_array[_index];
     }
 
-    /// Returns an iterator to the end of the name or value array.
-    iterator end() const
+    // TODO Can this be constexpr if the iterator is allowed to be immutable?
+    _ValueIterator& operator ++()
     {
-        return iterator(_arrayPointer, EnumType::_size);
+        if (_index < EnumType::_size)
+            ++_index;
+
+        return *this;
     }
 
-    /// Returns the number of valid elements (names or values) in the iterable -
-    /// the number of times an iterator starting at `begin()` can be
-    /// dereferenced and then advanced before reaching `end()`.
-    size_t size() const { return EnumType::size(); }
+    constexpr bool operator ==(const _ValueIterator &other) const
+    {
+        return other._index == _index;
+    }
+
+    constexpr bool operator !=(const _ValueIterator &other) const
+    {
+        return !(*this == other);
+    }
 
   private:
-    /// Creates an `_Iterable` object over an array.
-    _Iterable(ArrayType arrayPointer) : _arrayPointer(arrayPointer) { }
+    constexpr _ValueIterator(size_t index) : _index(index) { }
 
-    /// The array over which iteration will be performed.
-    ArrayType           _arrayPointer;
+    size_t  _index;
 
-    /// Permit the enum class itself to create `_Iterable` objects.
-    friend class _Implementation<EnumType>;
+    friend _Iterable<EnumType, _ValueIterator<EnumType>>;
+};
+
+template <typename EnumType>
+class _NameIterator {
+  public:
+    const char* operator *() const
+    {
+        return EnumType::_getProcessedName(_index);
+    }
+
+    _NameIterator& operator ++()
+    {
+        if (_index < EnumType::_size)
+            ++_index;
+
+        return *this;
+    }
+
+    constexpr bool operator ==(const _NameIterator &other) const
+    {
+        return other._index == _index;
+    }
+
+    constexpr bool operator !=(const _NameIterator &other) const
+    {
+        return !(*this == other);
+    }
+
+  private:
+    constexpr _NameIterator(size_t index) : _index(index) { }
+
+    size_t  _index;
+
+    friend _Iterable<EnumType, _NameIterator<EnumType>>;
+};
+
+template <typename EnumType, typename Iterator>
+class _Iterable {
+  public:
+    using iterator = Iterator;
+
+    constexpr iterator begin() const
+    {
+        return iterator(0);
+    }
+
+    constexpr iterator end() const
+    {
+        return iterator(EnumType::_size);
+    }
+
+    constexpr size_t size() const { return EnumType::size(); }
+
+  private:
+    constexpr _Iterable() { };
+
+    friend _Implementation<EnumType>;
 };
 
 
@@ -414,15 +422,8 @@ constexpr size_t _size(const UnderlyingType *values, size_t valueCount,
 
 } // namespace _enum
 
-// TODO Document reliance on the order of strings and constants being the same.
-// TODO Document naming convention: raw, blank, processed.
 // TODO Note that the static_assert for _rawSize > 0 never really gets a chance
 // to fail in practice, because the preprocessor macros break before that.
-// TODO Argue why there is always a first regular and a last regular.
-// TODO Document clang WAR for min and max.
-// TODO Default should be the first index that is not the invalid index.
-// TODO static asserts about the underlying type being an integral type. Allow
-// only the types supported by C++11 enum class.
 
 
 
@@ -598,23 +599,21 @@ class _Implementation : public _GeneratedArrays<EnumType> {
             _processedNames = _enum::_processNames(_name_array, _size);
     }
 
-    using _ValueIterable =
-        _Iterable<const EnumType, EnumType, const _Enumerated * const>;
-    using _NameIterable =
-        _Iterable<const char*, EnumType, const char * const*>;
-
-  public:
-    static _ValueIterable _values()
-    {
-        return _ValueIterable(_value_array);
-    }
-
-    static _NameIterable _names()
+    static const char* _getProcessedName(size_t index)
     {
         _processNames();
-
-        return _NameIterable(_processedNames);
+        return _processedNames[index];
     }
+
+    using _ValueIterable = _Iterable<EnumType, _ValueIterator<EnumType>>;
+    using _NameIterable  = _Iterable<EnumType, _NameIterator<EnumType>>;
+
+    friend _ValueIterator<EnumType>;
+    friend _NameIterator<EnumType>;
+
+  public:
+    static const _ValueIterable     _values;
+    static const _NameIterable      _names;
 
   protected:
     constexpr static size_t _from_int_loop(_Integral value,
@@ -717,8 +716,15 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     template <typename T> int operator ||(T other) const = delete;
 };
 
+// TODO Investigate what happens when this is mixed with multiple compilation.
 #define _ENUM_STATIC_DEFINITIONS(EnumType)                                     \
     namespace _enum {                                                          \
+                                                                               \
+    template <>                                                                \
+    constexpr EnumType::_ValueIterable _Implementation<EnumType>::_values{};   \
+                                                                               \
+    template <>                                                                \
+    constexpr EnumType::_NameIterable _Implementation<EnumType>::_names{};     \
                                                                                \
     template <>                                                                \
     constexpr EnumType _Implementation<EnumType>::_first =                     \
