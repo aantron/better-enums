@@ -68,7 +68,7 @@ namespace _enum {
 
 
 // Forward declaration of _Internal, for use in a friend declation in _Iterable.
-template <typename EnumType> class _Implementation;
+template <typename EnumType> class _Enum;
 
 // TODO Make these standard-compliant.
 /// Template for iterable objects over enum names and values.
@@ -205,7 +205,7 @@ class _Iterable {
   private:
     constexpr _Iterable() { };
 
-    friend _Implementation<EnumType>;
+    friend EnumType;
 };
 
 
@@ -488,17 +488,21 @@ static inline const char * const* _processNames(const char * const *rawNames,
     return processedNames;
 }
 
-template <typename EnumType> class _GeneratedArrays;
+#define _ENUM_TAG(EnumType)     _tag_ ## EnumType
+#define _ENUM_TAG_DECLARATION(EnumType)                                        \
+    namespace _enum {                                                          \
+        struct _ENUM_TAG(EnumType);                                            \
+    }
+
+template <typename Tag> class _GeneratedArrays;
 
 // TODO Move definitions to last macro.
 
-#define _ENUM_ARRAYS(EnumType, UnderlyingType, ...)                            \
-    class EnumType;                                                            \
-                                                                               \
+#define _ENUM_ARRAYS(EnumType, UnderlyingType, Tag, ...)                       \
     namespace _enum {                                                          \
                                                                                \
     template <>                                                                \
-    class _GeneratedArrays<EnumType> {                                         \
+    class _GeneratedArrays<Tag> {                                              \
       protected:                                                               \
         using _Integral = UnderlyingType;                                      \
                                                                                \
@@ -518,22 +522,22 @@ template <typename EnumType> class _GeneratedArrays;
             _ENUM_PP_COUNT(__VA_ARGS__);                                       \
     };                                                                         \
                                                                                \
-    constexpr _GeneratedArrays<EnumType>::_Enumerated _ENUM_WEAK               \
-        _GeneratedArrays<EnumType>::_value_array[];                            \
+    constexpr _GeneratedArrays<Tag>::_Enumerated _ENUM_WEAK                    \
+        _GeneratedArrays<Tag>::_value_array[];                                 \
                                                                                \
     constexpr const char * _ENUM_WEAK                                          \
-        _GeneratedArrays<EnumType>::_name_array[];                             \
+        _GeneratedArrays<Tag>::_name_array[];                                  \
                                                                                \
     template <>                                                                \
     const char * const * _ENUM_WEAK                                            \
-        _Implementation<EnumType>::_processedNames = nullptr;                  \
+        _Enum<Tag>::_processedNames = nullptr;                                 \
                                                                                \
     }
 
-template <typename EnumType>
-class _Implementation : public _GeneratedArrays<EnumType> {
+template <typename Tag>
+class _Enum : public _GeneratedArrays<Tag> {
   protected:
-    using _arrays = _GeneratedArrays<EnumType>;
+    using _arrays = _GeneratedArrays<Tag>;
     using _arrays::_value_array;
     using _arrays::_name_array;
 
@@ -544,27 +548,27 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     using _arrays::_size;
     static_assert(_size > 0, "no constants defined in enum type");
 
-    static const EnumType   _first;
-    static const EnumType   _last;
-    static const EnumType   _min;
-    static const EnumType   _max;
+    static const _Enum      _first;
+    static const _Enum      _last;
+    static const _Enum      _min;
+    static const _Enum      _max;
 
     static const size_t     _span;
 
-    _Implementation() = delete;
-    constexpr _Implementation(_Enumerated constant) : _value(constant) { }
+    _Enum() = delete;
+    constexpr _Enum(_Enumerated constant) : _value(constant) { }
 
     constexpr _Integral to_int() const
     {
         return _value;
     }
 
-    constexpr static EnumType _from_int(_Integral value)
+    constexpr static _Enum _from_int(_Integral value)
     {
         return _value_array[_from_int_loop(value, true)];
     }
 
-    constexpr static EnumType _from_int_unchecked(_Integral value)
+    constexpr static _Enum _from_int_unchecked(_Integral value)
     {
         return (_Enumerated)value;
     }
@@ -581,12 +585,12 @@ class _Implementation : public _GeneratedArrays<EnumType> {
         throw std::domain_error("Enum::_to_string: invalid enum value");
     }
 
-    constexpr static EnumType _from_string(const char *name)
+    constexpr static _Enum _from_string(const char *name)
     {
         return _value_array[_from_string_loop(name, true)];
     }
 
-    constexpr static EnumType _from_string_nocase(const char *name)
+    constexpr static _Enum _from_string_nocase(const char *name)
     {
         return _value_array[_from_string_nocase_loop(name, true)];
     }
@@ -625,11 +629,11 @@ class _Implementation : public _GeneratedArrays<EnumType> {
         return _processedNames[index];
     }
 
-    using _ValueIterable = _Iterable<EnumType, _ValueIterator<EnumType>>;
-    using _NameIterable  = _Iterable<EnumType, _NameIterator<EnumType>>;
+    using _ValueIterable = _Iterable<_Enum, _ValueIterator<_Enum>>;
+    using _NameIterable  = _Iterable<_Enum, _NameIterator<_Enum>>;
 
-    friend _ValueIterator<EnumType>;
-    friend _NameIterator<EnumType>;
+    friend _ValueIterator<_Enum>;
+    friend _NameIterator<_Enum>;
 
   public:
     static const _ValueIterable     _values;
@@ -678,43 +682,43 @@ class _Implementation : public _GeneratedArrays<EnumType> {
                 _from_string_nocase_loop(name, throw_exception, index + 1);
     }
 
-    // TODO Remove static casts wherever reasonable.
     // TODO Make many of these constexpr.
+    // TODO Review which operators should be present.
   public:
-    bool operator ==(const EnumType &other) const
-        { return static_cast<const EnumType&>(*this)._value == other._value; }
+    bool operator ==(const _Enum &other) const
+        { return _value == other._value; }
     bool operator ==(const _Enumerated value) const
-        { return static_cast<const EnumType&>(*this)._value == value; }
+        { return _value == value; }
     template <typename T> bool operator ==(T other) const = delete;
 
-    bool operator !=(const EnumType &other) const
+    bool operator !=(const _Enum &other) const
         { return !(*this == other); }
     bool operator !=(const _Enumerated value) const
         { return !(*this == value); }
     template <typename T> bool operator !=(T other) const = delete;
 
-    bool operator <(const EnumType &other) const
-        { return static_cast<const EnumType&>(*this)._value < other._value; }
+    bool operator <(const _Enum &other) const
+        { return _value < other._value; }
     bool operator <(const _Enumerated value) const
-        { return static_cast<const EnumType&>(*this)._value < value; }
+        { return _value < value; }
     template <typename T> bool operator <(T other) const = delete;
 
-    bool operator <=(const EnumType &other) const
-        { return static_cast<const EnumType&>(*this)._value <= other._value; }
+    bool operator <=(const _Enum &other) const
+        { return _value <= other._value; }
     bool operator <=(const _Enumerated value) const
-        { return static_cast<const EnumType&>(*this)._value <= value; }
+        { return _value <= value; }
     template <typename T> bool operator <=(T other) const = delete;
 
-    bool operator >(const EnumType &other) const
-        { return static_cast<const EnumType&>(*this)._value > other._value; }
+    bool operator >(const _Enum &other) const
+        { return _value > other._value; }
     bool operator >(const _Enumerated value) const
-        { return static_cast<const EnumType&>(*this)._value > value; }
+        { return _value > value; }
     template <typename T> bool operator >(T other) const = delete;
 
-    bool operator >=(const EnumType &other) const
-        { return static_cast<const EnumType&>(*this)._value >= other._value; }
+    bool operator >=(const _Enum &other) const
+        { return _value >= other._value; }
     bool operator >=(const _Enumerated value) const
-        { return static_cast<const EnumType&>(*this)._value >= value; }
+        { return _value >= value; }
     template <typename T> bool operator >=(T other) const = delete;
 
     int operator -() const = delete;
@@ -742,29 +746,29 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     namespace _enum {                                                          \
                                                                                \
     template <>                                                                \
-    constexpr EnumType::_ValueIterable _Implementation<EnumType>::_values{};   \
+    constexpr EnumType::_ValueIterable EnumType::_values{};                    \
                                                                                \
     template <>                                                                \
-    constexpr EnumType::_NameIterable _Implementation<EnumType>::_names{};     \
+    constexpr EnumType::_NameIterable EnumType::_names{};                      \
                                                                                \
     template <>                                                                \
-    constexpr EnumType _Implementation<EnumType>::_first =                     \
+    constexpr EnumType EnumType::_first =                                      \
         EnumType::_from_int(EnumType::_value_array[0]);                        \
                                                                                \
     template <>                                                                \
-    constexpr EnumType _Implementation<EnumType>::_last =                      \
+    constexpr EnumType EnumType::_last =                                       \
         EnumType::_from_int(EnumType::_value_array[EnumType::_size - 1]);      \
                                                                                \
     template <>                                                                \
-    constexpr EnumType _Implementation<EnumType>::_min =                       \
+    constexpr EnumType EnumType::_min =                                        \
         _range::_findMin(EnumType::_value_array, EnumType::_size);             \
                                                                                \
     template <>                                                                \
-    constexpr EnumType _Implementation<EnumType>::_max =                       \
+    constexpr EnumType EnumType::_max =                                        \
         _range::_findMax(EnumType::_value_array, EnumType::_size);             \
                                                                                \
     template <>                                                                \
-    constexpr size_t _Implementation<EnumType>::_span =                        \
+    constexpr size_t EnumType::_span =                                         \
         _max.to_int() - _min.to_int() + 1;                                     \
                                                                                \
     }

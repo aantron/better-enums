@@ -22,13 +22,7 @@
 // TODO Try to make names and values into values instead of functions.
 
 #define ENUM(EnumType, UnderlyingType, ...)                                    \
-    _ENUM_ARRAYS(EnumType, UnderlyingType, __VA_ARGS__);                       \
-                                                                               \
-    class EnumType : public _enum::_Implementation<EnumType> {                 \
-        using _Super = _enum::_Implementation<EnumType>;                       \
-        using _Super::_Super;                                                  \
-        friend _Super;                                                         \
-        friend _Super::_ValueIterable;                                         \
-    };                                                                         \
-                                                                               \
+    _ENUM_TAG_DECLARATION(EnumType);                                           \
+    _ENUM_ARRAYS(EnumType, UnderlyingType, _ENUM_TAG(EnumType), __VA_ARGS__);  \
+    using EnumType = _enum::_Enum<_enum::_ENUM_TAG(EnumType)>;                 \
     _ENUM_STATIC_DEFINITIONS(EnumType);
