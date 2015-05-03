@@ -37,7 +37,7 @@
 #include <stdexcept>
 #include <type_traits>
 
-#include "EnumPreprocessorMap.h"
+#include "enum_preprocessor_map.h"
 
 
 
@@ -717,3 +717,9 @@ class _Enum : public _GeneratedArrays<Tag> {
     }
 
 }
+
+#define ENUM(EnumType, UnderlyingType, ...)                                    \
+    _ENUM_TAG_DECLARATION(EnumType);                                           \
+    _ENUM_ARRAYS(EnumType, UnderlyingType, _ENUM_TAG(EnumType), __VA_ARGS__);  \
+    using EnumType = _enum::_Enum<_enum::_ENUM_TAG(EnumType)>;                 \
+    _ENUM_STATIC_DEFINITIONS(EnumType, _ENUM_TAG(EnumType));
