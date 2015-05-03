@@ -12,25 +12,12 @@
 /// named `EnumValue` stand for the internal C++ enum types. Roughly,
 /// `EnumValue == EnumType::_Value`.
 ///
-/// @todo Consider simplifying compile-time function signatures by combining
-///     arguments that don't change into a single `constexpr` object.
-/// @todo There is a way to perform all computation on the names and values
-///     arrays in a single pass, by requiring that all the special constants
-///     (such as `_bad`) appear at the end, and working back to front. It's not
-///     clear what kind of performance improvement this will give, as the
-///     current passes are already pretty fast, and the compile time is
-///     dominated by parsing and type checking of other code.
-/// @todo It's possible that reducing the number of redundant array accesses
-///     will improve compile time, but a stand-alone test suggests that the cost
-///     of these accesses is very small.
 /// @todo Generating the values array using the `_eat_assign` template is
 ///     expensive, and the cost seems to be due to the instantiation of
 ///     compile-time objects, not due to templates. Trying statement expressions
 ///     (a GNU extension) didn't work, because statement expressions aren't
 ///     allowed "at file scope" (in this case, within a class type declared at
 ///     file scope).
-/// @todo `_enum::_special_names::_find` can terminate early after finding all
-///     four special names' indices.
 /// @todo Compile time is currently dominated by the cost of static
 ///     instantiation. Try to reduce this cost by statically instantiating data
 ///     structures for each type, then dynamically passing them to a small
@@ -100,8 +87,6 @@ template <typename EnumType> class _Enum;
 ///     over `names()`, `ArrayType` is simply `const char * const`, as would be
 ///     expeted.
 ///
-/// @todo Consider making `_Iterable` `constexpr`.
-///
 /// @internal
 ///
 /// An `_Iterable` stores a reference to the array (of either names or values)
@@ -124,7 +109,6 @@ class _ValueIterator {
         return EnumType::_value_array[_index];
     }
 
-    // TODO Can this be constexpr if the iterator is allowed to be immutable?
     _ValueIterator& operator ++()
     {
         if (_index < EnumType::_size)
@@ -398,39 +382,6 @@ constexpr UnderlyingType _findMax(const UnderlyingType *values, size_t count)
     return _findMaxLoop(values, count, 1, values[0]);
 }
 
-// TODO This can probably now be replaced with a sizeof on the array.
-/// Compile-time function that finds the "size" of the enum names and values
-/// arrays. The size is the number of constants that would be returned when
-/// iterating over the enum. Constants are returned when they are not special
-/// (`_bad`, `_def`, `_min`, or `_max`), not bad (not equal to `_bad` if `_bad`
-/// is defined, or not the last non-special constant otherwise), not less than
-/// the minimum constant, and not less than the maximum constant.
-///
-/// Call as `_size(values, count, special, specialCount, bad, min, max)`.
-///
-/// @tparam Underlying enum type.
-/// @param values Enum values.
-/// @param valueCount Size of the `values` array.
-/// @param specialIndices Indices of the special constants.
-/// @param specialIndexCount Number of special indices.
-/// @param badValue The bad value.
-/// @param min Minimum value.
-/// @param max Maximum value.
-/// @param index Current index in the scan over `values`.
-/// @param accumulator Number of valid constants found so far.
-template <typename UnderlyingType>
-constexpr size_t _size(const UnderlyingType *values, size_t valueCount,
-                       size_t index = 0, size_t accumulator = 0)
-{
-    return
-        // If the index has reached the end of values, return the number of
-        // valid constants found.
-        index == valueCount         ? accumulator             :
-        // If the current index is none of the above, continue at the next index
-        // and increment the accumulator to account for the current value.
-        _size(values, valueCount, index + 1, accumulator + 1);
-}
-
 } // namespace _range
 
 } // namespace _enum
@@ -496,8 +447,6 @@ static inline const char * const* _processNames(const char * const *rawNames,
 
 template <typename Tag> class _GeneratedArrays;
 
-// TODO Move definitions to last macro.
-
 #define _ENUM_ARRAYS(EnumType, UnderlyingType, Tag, ...)                       \
     namespace _enum {                                                          \
                                                                                \
@@ -521,16 +470,6 @@ template <typename Tag> class _GeneratedArrays;
         static constexpr size_t             _size =                            \
             _ENUM_PP_COUNT(__VA_ARGS__);                                       \
     };                                                                         \
-                                                                               \
-    constexpr _GeneratedArrays<Tag>::_Enumerated _ENUM_WEAK                    \
-        _GeneratedArrays<Tag>::_value_array[];                                 \
-                                                                               \
-    constexpr const char * _ENUM_WEAK                                          \
-        _GeneratedArrays<Tag>::_name_array[];                                  \
-                                                                               \
-    template <>                                                                \
-    const char * const * _ENUM_WEAK                                            \
-        _Enum<Tag>::_processedNames = nullptr;                                 \
                                                                                \
     }
 
@@ -740,7 +679,7 @@ class _Enum : public _GeneratedArrays<Tag> {
 };
 
 // TODO Investigate what happens when this is mixed with multiple compilation.
-#define _ENUM_STATIC_DEFINITIONS(EnumType)                                     \
+#define _ENUM_STATIC_DEFINITIONS(EnumType, Tag)                                \
     namespace _enum {                                                          \
                                                                                \
     template <>                                                                \
@@ -766,9 +705,15 @@ class _Enum : public _GeneratedArrays<Tag> {
         _range::_findMax(EnumType::_value_array, EnumType::_size);             \
                                                                                \
     template <>                                                                \
-    constexpr size_t EnumType::_span =                                         \
-        _max.to_int() - _min.to_int() + 1;                                     \
+    constexpr size_t EnumType::_span = _max.to_int() - _min.to_int() + 1;      \
                                                                                \
+    constexpr _GeneratedArrays<Tag>::_Enumerated _ENUM_WEAK                    \
+        _GeneratedArrays<Tag>::_value_array[];                                 \
+                                                                               \
+    constexpr const char * _ENUM_WEAK _GeneratedArrays<Tag>::_name_array[];    \
+                                                                               \
+    template <>                                                                \
+    const char * const * _ENUM_WEAK EnumType::_processedNames = nullptr;       \
     }
 
 }
