@@ -503,6 +503,8 @@ template <typename EnumType> class _GeneratedArrays;
         using _Integral = UnderlyingType;                                      \
                                                                                \
       public:                                                                  \
+        constexpr static const char* _name = #EnumType;                        \
+                                                                               \
         enum _Enumerated : _Integral { __VA_ARGS__ };                          \
                                                                                \
       protected:                                                               \
