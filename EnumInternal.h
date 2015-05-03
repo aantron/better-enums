@@ -362,27 +362,40 @@ constexpr bool _namesMatchNocase(const char *stringizedName,
 namespace _range {
 
 template <typename UnderlyingType>
-constexpr UnderlyingType _findMin(const UnderlyingType *values,
-                                  size_t valueCount, size_t index,
-                                  UnderlyingType best)
+constexpr UnderlyingType _findMinLoop(const UnderlyingType *values,
+                                      size_t valueCount, size_t index,
+                                      UnderlyingType best)
 {
     return
         index == valueCount ? best :
-        values[index] < values[valueCount] ?
-            _findMin(values, valueCount, index + 1, values[index]) :
-            _findMin(values, valueCount, index + 1, best);
+        values[index] < best ?
+            _findMinLoop(values, valueCount, index + 1, values[index]) :
+            _findMinLoop(values, valueCount, index + 1, best);
 }
 
 template <typename UnderlyingType>
-constexpr UnderlyingType _findMax(const UnderlyingType *values,
-                                  size_t valueCount, size_t index,
-                                  UnderlyingType best)
+constexpr UnderlyingType _findMin(const UnderlyingType *values,
+                                  size_t valueCount)
+{
+    return _findMinLoop(values, valueCount, 1, values[0]);
+}
+
+template <typename UnderlyingType>
+constexpr UnderlyingType _findMaxLoop(const UnderlyingType *values,
+                                      size_t valueCount, size_t index,
+                                      UnderlyingType best)
 {
     return
         index == valueCount ? best :
-        values[index] > values[valueCount] ?
-            _findMax(values, valueCount, index + 1, values[index]) :
-            _findMax(values, valueCount, index + 1, best);
+        values[index] > best ?
+            _findMaxLoop(values, valueCount, index + 1, values[index]) :
+            _findMaxLoop(values, valueCount, index + 1, best);
+}
+
+template <typename UnderlyingType>
+constexpr UnderlyingType _findMax(const UnderlyingType *values, size_t count)
+{
+    return _findMaxLoop(values, count, 1, values[0]);
 }
 
 // TODO This can probably now be replaced with a sizeof on the array.
@@ -530,6 +543,11 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     static_assert(_size > 0, "no constants defined in enum type");
 
     static const EnumType   _first;
+    static const EnumType   _last;
+    static const EnumType   _min;
+    static const EnumType   _max;
+
+    static const size_t     _span;
 
     _Implementation() = delete;
     constexpr _Implementation(_Enumerated constant) : _value(constant) { }
@@ -586,7 +604,7 @@ class _Implementation : public _GeneratedArrays<EnumType> {
         return _from_string_nocase_loop(name, false) != _ENUM_NOT_FOUND;
     }
 
-    operator _Enumerated() { return _value; }
+    constexpr operator _Enumerated() const { return _value; }
 
   protected:
     _Enumerated                         _value;
@@ -659,6 +677,7 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     }
 
     // TODO Remove static casts wherever reasonable.
+    // TODO Make many of these constexpr.
   public:
     bool operator ==(const EnumType &other) const
         { return static_cast<const EnumType&>(*this)._value == other._value; }
@@ -729,6 +748,22 @@ class _Implementation : public _GeneratedArrays<EnumType> {
     template <>                                                                \
     constexpr EnumType _Implementation<EnumType>::_first =                     \
         EnumType::_from_int(EnumType::_value_array[0]);                        \
+                                                                               \
+    template <>                                                                \
+    constexpr EnumType _Implementation<EnumType>::_last =                      \
+        EnumType::_from_int(EnumType::_value_array[EnumType::_size - 1]);      \
+                                                                               \
+    template <>                                                                \
+    constexpr EnumType _Implementation<EnumType>::_min =                       \
+        _range::_findMin(EnumType::_value_array, EnumType::_size);             \
+                                                                               \
+    template <>                                                                \
+    constexpr EnumType _Implementation<EnumType>::_max =                       \
+        _range::_findMax(EnumType::_value_array, EnumType::_size);             \
+                                                                               \
+    template <>                                                                \
+    constexpr size_t _Implementation<EnumType>::_span =                        \
+        _max.to_int() - _min.to_int() + 1;                                     \
                                                                                \
     }
 
