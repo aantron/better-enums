@@ -54,9 +54,6 @@ namespace _enum {
 
 
 
-// Forward declaration of _Internal, for use in a friend declation in _Iterable.
-template <typename EnumType> class _Enum;
-
 // TODO Make these standard-compliant.
 /// Template for iterable objects over enum names and values.
 ///
@@ -101,70 +98,50 @@ template <typename EnumType> class _Enum;
 template <typename EnumType, typename Iterator>
 class _Iterable;
 
-template <typename EnumType>
-class _ValueIterator {
+template <typename EnumType, typename Derived>
+class _BaseIterator {
   public:
-    constexpr EnumType operator *() const
-    {
-        return EnumType::_value_array[_index];
-    }
+    Derived& operator ++()
+        { ++_index; return static_cast<Derived&>(*this); }
+    constexpr bool operator ==(const Derived &other) const
+        { return other._index == _index; }
+    constexpr bool operator !=(const Derived &other) const
+        { return other._index != _index; }
 
-    _ValueIterator& operator ++()
-    {
-        if (_index < EnumType::_size)
-            ++_index;
-
-        return *this;
-    }
-
-    constexpr bool operator ==(const _ValueIterator &other) const
-    {
-        return other._index == _index;
-    }
-
-    constexpr bool operator !=(const _ValueIterator &other) const
-    {
-        return !(*this == other);
-    }
-
-  private:
-    constexpr _ValueIterator(size_t index) : _index(index) { }
+  protected:
+    constexpr _BaseIterator(size_t index) : _index(index) { }
 
     size_t  _index;
+};
+
+template <typename EnumType>
+class _ValueIterator :
+    public _BaseIterator<EnumType, _ValueIterator<EnumType>> {
+
+    using _Super = _BaseIterator<EnumType, _ValueIterator<EnumType>>;
+
+  public:
+    constexpr EnumType operator *() const
+        { return EnumType::_value_array[_Super::_index]; }
+
+  private:
+    using _Super::_Super;
 
     friend _Iterable<EnumType, _ValueIterator<EnumType>>;
 };
 
 template <typename EnumType>
-class _NameIterator {
+class _NameIterator :
+    public _BaseIterator<EnumType, _NameIterator<EnumType>> {
+
+    using _Super = _BaseIterator<EnumType, _NameIterator<EnumType>>;
+
   public:
     const char* operator *() const
-    {
-        return EnumType::_getProcessedName(_index);
-    }
-
-    _NameIterator& operator ++()
-    {
-        if (_index < EnumType::_size)
-            ++_index;
-
-        return *this;
-    }
-
-    constexpr bool operator ==(const _NameIterator &other) const
-    {
-        return other._index == _index;
-    }
-
-    constexpr bool operator !=(const _NameIterator &other) const
-    {
-        return !(*this == other);
-    }
+        { return EnumType::_getProcessedName(_Super::_index); }
 
   private:
-    constexpr _NameIterator(size_t index) : _index(index) { }
-
-    size_t  _index;
+    using _Super::_Super;
 
     friend _Iterable<EnumType, _NameIterator<EnumType>>;
 };
@@ -174,16 +151,8 @@ class _Iterable {
   public:
     using iterator = Iterator;
 
-    constexpr iterator begin() const
-    {
-        return iterator(0);
-    }
-
-    constexpr iterator end() const
-    {
-        return iterator(EnumType::_size);
-    }
-
+    constexpr iterator begin() const { return iterator(0); }
+    constexpr iterator end() const { return iterator(EnumType::_size); }
     constexpr size_t size() const { return EnumType::size(); }
 
   private:
