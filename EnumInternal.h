@@ -682,42 +682,40 @@ class _Enum : public _GeneratedArrays<Tag> {
                 _from_string_nocase_loop(name, throw_exception, index + 1);
     }
 
-    // TODO Make many of these constexpr.
-    // TODO Review which operators should be present.
   public:
-    bool operator ==(const _Enum &other) const
+    constexpr bool operator ==(const _Enum &other) const
         { return _value == other._value; }
-    bool operator ==(const _Enumerated value) const
+    constexpr bool operator ==(const _Enumerated value) const
         { return _value == value; }
     template <typename T> bool operator ==(T other) const = delete;
 
-    bool operator !=(const _Enum &other) const
+    constexpr bool operator !=(const _Enum &other) const
         { return !(*this == other); }
-    bool operator !=(const _Enumerated value) const
+    constexpr bool operator !=(const _Enumerated value) const
         { return !(*this == value); }
     template <typename T> bool operator !=(T other) const = delete;
 
-    bool operator <(const _Enum &other) const
+    constexpr bool operator <(const _Enum &other) const
         { return _value < other._value; }
-    bool operator <(const _Enumerated value) const
+    constexpr bool operator <(const _Enumerated value) const
         { return _value < value; }
     template <typename T> bool operator <(T other) const = delete;
 
-    bool operator <=(const _Enum &other) const
+    constexpr bool operator <=(const _Enum &other) const
         { return _value <= other._value; }
-    bool operator <=(const _Enumerated value) const
+    constexpr bool operator <=(const _Enumerated value) const
         { return _value <= value; }
     template <typename T> bool operator <=(T other) const = delete;
 
-    bool operator >(const _Enum &other) const
+    constexpr bool operator >(const _Enum &other) const
         { return _value > other._value; }
-    bool operator >(const _Enumerated value) const
+    constexpr bool operator >(const _Enumerated value) const
         { return _value > value; }
     template <typename T> bool operator >(T other) const = delete;
 
-    bool operator >=(const _Enum &other) const
+    constexpr bool operator >=(const _Enum &other) const
         { return _value >= other._value; }
-    bool operator >=(const _Enumerated value) const
+    constexpr bool operator >=(const _Enumerated value) const
         { return _value >= value; }
     template <typename T> bool operator >=(T other) const = delete;
 
