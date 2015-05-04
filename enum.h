@@ -430,14 +430,11 @@ template <typename Tag> class _GeneratedArrays;
         enum _Enumerated : _Integral { __VA_ARGS__ };                          \
                                                                                \
       protected:                                                               \
-        static constexpr _Enumerated        _value_array[] =                   \
+        constexpr static _Enumerated        _value_array[] =                   \
             { _ENUM_EAT_ASSIGN(_Enumerated, __VA_ARGS__) };                    \
                                                                                \
-        static constexpr const char         *_name_array[] =                   \
+        constexpr static const char         *_name_array[] =                   \
             { _ENUM_STRINGIZE(__VA_ARGS__) };                                  \
-                                                                               \
-        static constexpr size_t             _size =                            \
-            _ENUM_PP_COUNT(__VA_ARGS__);                                       \
     };                                                                         \
                                                                                \
     }
@@ -453,15 +450,18 @@ class _Enum : public _GeneratedArrays<Tag> {
     using typename _arrays::_Enumerated;
     using typename _arrays::_Integral;
 
-    using _arrays::_size;
+    constexpr static const size_t       _size =
+        sizeof(_value_array) / sizeof(_Enumerated);
     static_assert(_size > 0, "no constants defined in enum type");
 
-    static const _Enum      _first;
-    static const _Enum      _last;
-    static const _Enum      _min;
-    static const _Enum      _max;
+    constexpr static const _Enumerated  _first = _value_array[0];
+    constexpr static const _Enumerated  _last = _value_array[_size - 1];
+    constexpr static const _Enumerated  _min =
+        _range::_findMin(_value_array, _size);
+    constexpr static const _Enumerated  _max =
+        _range::_findMax(_value_array, _size);
 
-    static const size_t     _span;
+    constexpr static const size_t       _span = _max - _min + 1;
 
     _Enum() = delete;
     constexpr _Enum(_Enumerated constant) : _value(constant) { }
@@ -471,12 +471,12 @@ class _Enum : public _GeneratedArrays<Tag> {
         return _value;
     }
 
-    constexpr static _Enum _from_int(_Integral value)
+    constexpr static const _Enum _from_int(_Integral value)
     {
         return _value_array[_from_int_loop(value, true)];
     }
 
-    constexpr static _Enum _from_int_unchecked(_Integral value)
+    constexpr static const _Enum _from_int_unchecked(_Integral value)
     {
         return (_Enumerated)value;
     }
@@ -493,12 +493,12 @@ class _Enum : public _GeneratedArrays<Tag> {
         throw std::domain_error("Enum::_to_string: invalid enum value");
     }
 
-    constexpr static _Enum _from_string(const char *name)
+    constexpr static const _Enum _from_string(const char *name)
     {
         return _value_array[_from_string_loop(name, true)];
     }
 
-    constexpr static _Enum _from_string_nocase(const char *name)
+    constexpr static const _Enum _from_string_nocase(const char *name)
     {
         return _value_array[_from_string_nocase_loop(name, true)];
     }
@@ -647,34 +647,17 @@ class _Enum : public _GeneratedArrays<Tag> {
     template <typename T> int operator ||(T other) const = delete;
 };
 
-// TODO Investigate what happens when this is mixed with multiple compilation.
-#define _ENUM_STATIC_DEFINITIONS(EnumType, Tag)                                \
+#define _ENUM_GLOBALS(EnumType, Tag)                                           \
     namespace _enum {                                                          \
                                                                                \
-    template <>                                                                \
-    constexpr EnumType::_ValueIterable EnumType::_values{};                    \
+    constexpr const EnumType operator +(EnumType::_Enumerated enumerated)      \
+        { return (EnumType)enumerated; }                                       \
                                                                                \
     template <>                                                                \
-    constexpr EnumType::_NameIterable EnumType::_names{};                      \
+    constexpr EnumType::_ValueIterable _ENUM_WEAK EnumType::_values{};         \
                                                                                \
     template <>                                                                \
-    constexpr EnumType EnumType::_first =                                      \
-        EnumType::_from_int(EnumType::_value_array[0]);                        \
-                                                                               \
-    template <>                                                                \
-    constexpr EnumType EnumType::_last =                                       \
-        EnumType::_from_int(EnumType::_value_array[EnumType::_size - 1]);      \
-                                                                               \
-    template <>                                                                \
-    constexpr EnumType EnumType::_min =                                        \
-        _range::_findMin(EnumType::_value_array, EnumType::_size);             \
-                                                                               \
-    template <>                                                                \
-    constexpr EnumType EnumType::_max =                                        \
-        _range::_findMax(EnumType::_value_array, EnumType::_size);             \
-                                                                               \
-    template <>                                                                \
-    constexpr size_t EnumType::_span = _max.to_int() - _min.to_int() + 1;      \
+    constexpr EnumType::_NameIterable _ENUM_WEAK EnumType::_names{};           \
                                                                                \
     constexpr _GeneratedArrays<Tag>::_Enumerated _ENUM_WEAK                    \
         _GeneratedArrays<Tag>::_value_array[];                                 \
@@ -683,6 +666,7 @@ class _Enum : public _GeneratedArrays<Tag> {
                                                                                \
     template <>                                                                \
     const char * const * _ENUM_WEAK EnumType::_processedNames = nullptr;       \
+                                                                               \
     }
 
 }
@@ -691,4 +675,4 @@ class _Enum : public _GeneratedArrays<Tag> {
     _ENUM_TAG_DECLARATION(EnumType);                                           \
     _ENUM_ARRAYS(EnumType, UnderlyingType, _ENUM_TAG(EnumType), __VA_ARGS__);  \
     using EnumType = _enum::_Enum<_enum::_ENUM_TAG(EnumType)>;                 \
-    _ENUM_STATIC_DEFINITIONS(EnumType, _ENUM_TAG(EnumType));
+    _ENUM_GLOBALS(EnumType, _ENUM_TAG(EnumType));
