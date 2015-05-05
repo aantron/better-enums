@@ -94,7 +94,7 @@ namespace _enum {
 template <typename EnumType, typename Iterator>
 class _Iterable;
 
-template <typename EnumType, typename Derived>
+template <typename Derived>
 class _BaseIterator {
   public:
     Derived& operator ++()
@@ -112,12 +112,12 @@ class _BaseIterator {
 
 template <typename EnumType>
 class _ValueIterator :
-    public _BaseIterator<EnumType, _ValueIterator<EnumType>> {
+    public _BaseIterator<_ValueIterator<EnumType>> {
 
-    using _Super = _BaseIterator<EnumType, _ValueIterator<EnumType>>;
+    using _Super = _BaseIterator<_ValueIterator<EnumType>>;
 
   public:
-    constexpr EnumType operator *() const
+    constexpr typename EnumType::Enumerated operator *() const
         { return EnumType::_value_array[_Super::_index]; }
 
   private:
@@ -128,9 +128,9 @@ class _ValueIterator :
 
 template <typename EnumType>
 class _NameIterator :
-    public _BaseIterator<EnumType, _NameIterator<EnumType>> {
+    public _BaseIterator<_NameIterator<EnumType>> {
 
-    using _Super = _BaseIterator<EnumType, _NameIterator<EnumType>>;
+    using _Super = _BaseIterator<_NameIterator<EnumType>>;
 
   public:
     const char* operator *() const
@@ -148,8 +148,8 @@ class _Iterable {
     using iterator = Iterator;
 
     constexpr iterator begin() const { return iterator(0); }
-    constexpr iterator end() const { return iterator(EnumType::_size); }
-    constexpr size_t size() const { return EnumType::size(); }
+    constexpr iterator end() const { return iterator(EnumType::size); }
+    constexpr size_t size() const { return EnumType::size; }
 
   private:
     constexpr _Iterable() { };
@@ -192,7 +192,7 @@ class _eat_assign {
 /// Prepends its second argument with the cast `(_eat_assign<UnderlyingType>)`
 /// in order to make it usable in initializer lists. See `_eat_assign`.
 #define _ENUM_EAT_ASSIGN_SINGLE(UnderlyingType, expression)                    \
-    ((_enum::_eat_assign<UnderlyingType>)expression)
+    ((_enum::_eat_assign<UnderlyingType>)UnderlyingType::expression)
 
 /// Prepends each of its arguments with the casts
 /// `(_eat_assign<UnderlyingType>)`, creating the elements of an initializer
@@ -387,30 +387,27 @@ static inline const char * const* _processNames(const char * const *rawNames,
     return processedNames;
 }
 
-#define _ENUM_TAG(EnumType)     _tag_ ## EnumType
-#define _ENUM_TAG_DECLARATION(EnumType)                                        \
-    namespace _enum {                                                          \
-        struct _ENUM_TAG(EnumType);                                            \
-    }
+template <typename EnumType> class _GeneratedArrays;
 
-template <typename Tag> class _GeneratedArrays;
+} // namespace _enum
 
-#define _ENUM_ARRAYS(EnumType, Integral, Tag, ...)                             \
+#define _ENUM_ARRAYS(EnumType, IntegralType, ...)                              \
+    enum class EnumType : IntegralType { __VA_ARGS__ };                        \
+                                                                               \
     namespace _enum {                                                          \
                                                                                \
     template <>                                                                \
-    class _GeneratedArrays<Tag> {                                              \
+    class _GeneratedArrays<EnumType> {                                         \
       protected:                                                               \
-        using _Integral = Integral;                                            \
+        using Integral = IntegralType;                                         \
+        using Enumerated = EnumType;                                           \
                                                                                \
       public:                                                                  \
-        constexpr static const char* _name = #EnumType;                        \
-                                                                               \
-        enum _Enumerated : _Integral { __VA_ARGS__ };                          \
+        constexpr static const char* name = #EnumType;                         \
                                                                                \
       protected:                                                               \
-        constexpr static _Enumerated        _value_array[] =                   \
-            { _ENUM_EAT_ASSIGN(_Enumerated, __VA_ARGS__) };                    \
+        constexpr static Enumerated        _value_array[] =                    \
+            { _ENUM_EAT_ASSIGN(Enumerated, __VA_ARGS__) };                     \
                                                                                \
         constexpr static const char         *_name_array[] =                   \
             { _ENUM_STRINGIZE(__VA_ARGS__) };                                  \
@@ -420,94 +417,92 @@ template <typename Tag> class _GeneratedArrays;
 
 #define _ENUM_NOT_FOUND     ((size_t)-1)
 
-template <typename Tag>
-class _Enum : public _GeneratedArrays<Tag> {
+namespace enum_ {
+
+template <typename EnumType>
+class traits : public _enum::_GeneratedArrays<EnumType> {
   protected:
-    using _arrays = _GeneratedArrays<Tag>;
+    using _arrays = _enum::_GeneratedArrays<EnumType>;
     using _arrays::_value_array;
     using _arrays::_name_array;
 
   public:
-    using typename _arrays::_Enumerated;
-    using typename _arrays::_Integral;
+    using typename _arrays::Enumerated;
+    using typename _arrays::Integral;
 
-    constexpr static const size_t       _size =
-        sizeof(_value_array) / sizeof(_Enumerated);
-    static_assert(_size > 0, "no constants defined in enum type");
+    constexpr static const size_t       size =
+        sizeof(_value_array) / sizeof(Enumerated);
+    static_assert(size > 0, "no constants defined in enum type");
 
-    constexpr static const _Enumerated  _first = _value_array[0];
-    constexpr static const _Enumerated  _last = _value_array[_size - 1];
-    constexpr static const _Enumerated  _min = _findMin(_value_array, _size);
-    constexpr static const _Enumerated  _max = _findMax(_value_array, _size);
+    constexpr static const Enumerated   first = _value_array[0];
+    constexpr static const Enumerated   last = _value_array[size - 1];
+    constexpr static const Enumerated   min =
+        _enum::_findMin(_value_array, size);
+    constexpr static const Enumerated   max =
+        _enum::_findMax(_value_array, size);
 
-    constexpr static const size_t       _span = _max - _min + 1;
+    constexpr static const size_t       span =
+        (Integral)max - (Integral)min + 1;
 
-    _Enum() = delete;
-    constexpr _Enum(_Enumerated constant) : _value(constant) { }
-
-    constexpr _Integral to_integral() const
+    constexpr static Integral to_integral(Enumerated value)
     {
-        return _value;
+        return (Integral)value;
     }
 
-    constexpr static const _Enum _from_integral(_Integral value)
+    constexpr static const Enumerated from_integral(Integral value)
     {
         return _value_array[_from_int_loop(value, true)];
     }
 
-    constexpr static const _Enum _from_integral_unchecked(_Integral value)
+    constexpr static const Enumerated from_integral_unchecked(Integral value)
     {
-        return (_Enumerated)value;
+        return (Enumerated)value;
     }
 
-    const char* to_string() const
+    static const char* to_string(Enumerated value)
     {
         _processNames();
 
-        for (size_t index = 0; index < _size; ++index) {
-            if (_value_array[index] == _value)
+        for (size_t index = 0; index < size; ++index) {
+            if (_value_array[index] == value)
                 return _processedNames[index];
         }
 
         throw std::domain_error("Enum::_to_string: invalid enum value");
     }
 
-    constexpr static const _Enum _from_string(const char *name)
+    constexpr static const Enumerated from_string(const char *name)
     {
         return _value_array[_from_string_loop(name, true)];
     }
 
-    constexpr static const _Enum _from_string_nocase(const char *name)
+    constexpr static const Enumerated from_string_nocase(const char *name)
     {
         return _value_array[_from_string_nocase_loop(name, true)];
     }
 
-    constexpr static bool _is_valid(_Integral value)
+    constexpr static bool is_valid(Integral value)
     {
         return _from_int_loop(value, false) != _ENUM_NOT_FOUND;
     }
 
-    constexpr static bool _is_valid(const char *name)
+    constexpr static bool is_valid(const char *name)
     {
         return _from_string_loop(name, false) != _ENUM_NOT_FOUND;
     }
 
-    constexpr static bool _is_valid_nocase(const char *name)
+    constexpr static bool is_valid_nocase(const char *name)
     {
         return _from_string_nocase_loop(name, false) != _ENUM_NOT_FOUND;
     }
 
-    constexpr operator _Enumerated() const { return _value; }
-
   protected:
-    _Enumerated                         _value;
-
     static const char * const           *_processedNames;
 
     static void _processNames()
     {
         if (_processedNames == nullptr)
-            _processedNames = _enum::_processNames(_name_array, _size);
+            _processedNames = _enum::_processNames(_name_array, size);
     }
 
     static const char* _getProcessedName(size_t index)
@@ -516,28 +511,30 @@ class _Enum : public _GeneratedArrays<Tag> {
         return _processedNames[index];
     }
 
-    using _ValueIterable = _Iterable<_Enum, _ValueIterator<_Enum>>;
-    using _NameIterable  = _Iterable<_Enum, _NameIterator<_Enum>>;
+    using _ValueIterable =
+        _enum::_Iterable<traits, _enum::_ValueIterator<traits>>;
+    using _NameIterable =
+        _enum::_Iterable<traits, _enum::_NameIterator<traits>>;
 
-    friend _ValueIterator<_Enum>;
-    friend _NameIterator<_Enum>;
+    friend _enum::_ValueIterator<traits>;
+    friend _enum::_NameIterator<traits>;
 
   public:
-    static const _ValueIterable     _values;
-    static const _NameIterable      _names;
+    static const _ValueIterable     values;
+    static const _NameIterable      names;
 
   protected:
-    constexpr static size_t _from_int_loop(_Integral value,
+    constexpr static size_t _from_int_loop(Integral value,
                                            bool throw_exception,
                                            size_t index = 0)
     {
         return
-            index == _size ?
+            index == size ?
                 (throw_exception ?
                     throw std::runtime_error(
-                        "Enum::_from_integral: invalid integer value") :
+                        "enum_::traits::from_integral: invalid integer value") :
                     _ENUM_NOT_FOUND) :
-            _value_array[index] == value ? index :
+            (Integral)_value_array[index] == value ? index :
             _from_int_loop(value, throw_exception, index + 1);
     }
 
@@ -546,12 +543,12 @@ class _Enum : public _GeneratedArrays<Tag> {
                                               size_t index = 0)
     {
         return
-            index == _size ?
+            index == size ?
                 (throw_exception ?
                     throw std::runtime_error(
-                        "Enum::_from_string: invalid string argument") :
+                        "enum_::traits::from_string: invalid string argument") :
                     _ENUM_NOT_FOUND) :
-            _namesMatch(_name_array[index], name) ? index :
+            _enum::_namesMatch(_name_array[index], name) ? index :
             _from_string_loop(name, throw_exception, index + 1);
     }
 
@@ -560,98 +557,78 @@ class _Enum : public _GeneratedArrays<Tag> {
                                                      size_t index = 0)
     {
         return
-            index == _size ?
+            index == size ?
                 (throw_exception ?
                     throw std::runtime_error(
-                        "Enum::_from_string_nocase: invalid string argument") :
+                        "enum::traits::_from_string_nocase: "
+                        "invalid string argument") :
                     _ENUM_NOT_FOUND) :
-                _namesMatchNocase(_name_array[index], name) ? index :
+                _enum::_namesMatchNocase(_name_array[index], name) ? index :
                 _from_string_nocase_loop(name, throw_exception, index + 1);
     }
-
-  public:
-    constexpr bool operator ==(const _Enum &other) const
-        { return _value == other._value; }
-    constexpr bool operator ==(const _Enumerated value) const
-        { return _value == value; }
-    template <typename T> bool operator ==(T other) const = delete;
-
-    constexpr bool operator !=(const _Enum &other) const
-        { return !(*this == other); }
-    constexpr bool operator !=(const _Enumerated value) const
-        { return !(*this == value); }
-    template <typename T> bool operator !=(T other) const = delete;
-
-    constexpr bool operator <(const _Enum &other) const
-        { return _value < other._value; }
-    constexpr bool operator <(const _Enumerated value) const
-        { return _value < value; }
-    template <typename T> bool operator <(T other) const = delete;
-
-    constexpr bool operator <=(const _Enum &other) const
-        { return _value <= other._value; }
-    constexpr bool operator <=(const _Enumerated value) const
-        { return _value <= value; }
-    template <typename T> bool operator <=(T other) const = delete;
-
-    constexpr bool operator >(const _Enum &other) const
-        { return _value > other._value; }
-    constexpr bool operator >(const _Enumerated value) const
-        { return _value > value; }
-    template <typename T> bool operator >(T other) const = delete;
-
-    constexpr bool operator >=(const _Enum &other) const
-        { return _value >= other._value; }
-    constexpr bool operator >=(const _Enumerated value) const
-        { return _value >= value; }
-    template <typename T> bool operator >=(T other) const = delete;
-
-    int operator -() const = delete;
-    template <typename T> int operator +(T other) const = delete;
-    template <typename T> int operator -(T other) const = delete;
-    template <typename T> int operator *(T other) const = delete;
-    template <typename T> int operator /(T other) const = delete;
-    template <typename T> int operator %(T other) const = delete;
-
-    template <typename T> int operator <<(T other) const = delete;
-    template <typename T> int operator >>(T other) const = delete;
-
-    int operator ~() const = delete;
-    template <typename T> int operator &(T other) const = delete;
-    template <typename T> int operator |(T other) const = delete;
-    template <typename T> int operator ^(T other) const = delete;
-
-    int operator !() const = delete;
-    template <typename T> int operator &&(T other) const = delete;
-    template <typename T> int operator ||(T other) const = delete;
 };
 
-#define _ENUM_GLOBALS(EnumType, Tag)                                           \
+template <typename Enum>
+constexpr typename traits<Enum>::Integral to_integral(Enum value)
+{
+    return traits<Enum>::to_integral(value);
+}
+
+template <typename Enum>
+constexpr Enum from_integral(typename traits<Enum>::Integral value)
+{
+    return traits<Enum>::from_integral(value);
+}
+
+template <typename Enum>
+constexpr Enum from_integral_unchecked(typename traits<Enum>::Integral value)
+{
+    return traits<Enum>::from_integral_unchecked(value);
+}
+
+template <typename Enum>
+const char* to_string(Enum value)
+{
+    return traits<Enum>::to_string(value);
+}
+
+template <typename Enum>
+constexpr Enum from_string(const char *name)
+{
+    return traits<Enum>::from_string(name);
+}
+
+template <typename Enum>
+constexpr Enum from_string_nocase(const char *name)
+{
+    return traits<Enum>::from_string_nocase(name);
+}
+
+} // namespace enum_
+
+#define _ENUM_GLOBALS(EnumType)                                                \
     namespace _enum {                                                          \
                                                                                \
-    constexpr const EnumType operator +(EnumType::_Enumerated enumerated)      \
-        { return (EnumType)enumerated; }                                       \
+    constexpr _GeneratedArrays<EnumType>::Enumerated _ENUM_WEAK                \
+        _GeneratedArrays<EnumType>::_value_array[];                            \
+                                                                               \
+    constexpr const char * _ENUM_WEAK                                          \
+        _GeneratedArrays<EnumType>::_name_array[];                             \
+                                                                               \
+    }                                                                          \
                                                                                \
     template <>                                                                \
-    constexpr EnumType::_ValueIterable _ENUM_WEAK EnumType::_values{};         \
+    constexpr enum_::traits<EnumType>::_ValueIterable _ENUM_WEAK               \
+        enum_::traits<EnumType>::values{};                                     \
                                                                                \
     template <>                                                                \
-    constexpr EnumType::_NameIterable _ENUM_WEAK EnumType::_names{};           \
-                                                                               \
-    constexpr _GeneratedArrays<Tag>::_Enumerated _ENUM_WEAK                    \
-        _GeneratedArrays<Tag>::_value_array[];                                 \
-                                                                               \
-    constexpr const char * _ENUM_WEAK _GeneratedArrays<Tag>::_name_array[];    \
+    constexpr enum_::traits<EnumType>::_NameIterable _ENUM_WEAK                \
+        enum_::traits<EnumType>::names{};                                      \
                                                                                \
     template <>                                                                \
-    const char * const * _ENUM_WEAK EnumType::_processedNames = nullptr;       \
-                                                                               \
-    }
-
-} // namespace _enum
+    const char * const * _ENUM_WEAK enum_::traits<EnumType>::_processedNames = \
+        nullptr;
 
 #define ENUM(EnumType, Integral, ...)                                          \
-    _ENUM_TAG_DECLARATION(EnumType);                                           \
-    _ENUM_ARRAYS(EnumType, Integral, _ENUM_TAG(EnumType), __VA_ARGS__);        \
-    using EnumType = _enum::_Enum<_enum::_ENUM_TAG(EnumType)>;                 \
-    _ENUM_GLOBALS(EnumType, _ENUM_TAG(EnumType));
+    _ENUM_ARRAYS(EnumType, Integral, __VA_ARGS__);                             \
+    _ENUM_GLOBALS(EnumType);

@@ -3,15 +3,16 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, uint8_t, Red, Green = 2, Blue, Alias = Red);
+ENUM(Channel, uint8_t, Red, Green = 2, Blue, Alias = Channel::Red);
 
 void print_channel(Channel channel)
 {
     std::cout
         << "channel \'"
-        << channel.to_string()
+        << enum_::to_string(channel)
         << "\' has value "
-        << (int)channel.to_integral() << std::endl;
+        << enum_::to_integral(channel)
+        << std::endl;
 }
 
 int main()
@@ -28,32 +29,32 @@ int main()
     // Conversions from strings and the integral type. Function names are
     // prefixed with _ to avoid conflicts with constant names. _from_integral is
     // a checked cast.
-    channel = Channel::_from_integral(0);
+    channel = enum_::from_integral<Channel>(0);
     print_channel(channel);
 
-    channel = Channel::_from_string("Blue");
+    channel = enum_::from_string<Channel>("Blue");
     print_channel(channel);
 
-    channel = Channel::_from_string_nocase("bluE");
+    channel = enum_::from_string_nocase<Channel>("bluE");
     print_channel(channel);
 
 
 
     // Bad conversions.
     try {
-        channel = Channel::_from_integral(15);
+        channel = enum_::from_integral<Channel>(15);
         throw std::logic_error("expected an exception");
     }
     catch (const std::runtime_error &e) { }
 
     try {
-        channel = Channel::_from_string("Purple");
+        channel = enum_::from_string<Channel>("Purple");
         throw std::logic_error("expected an exception");
     }
     catch (const std::runtime_error &e) { }
 
     try {
-        channel = Channel::_from_string_nocase("bluee");
+        channel = enum_::from_string_nocase<Channel>("bluee");
         throw std::logic_error("expected an exception");
     }
     catch (const std::runtime_error &e) { }
@@ -61,29 +62,23 @@ int main()
 
 
     // Unsafe unchecked cast.
-    channel = Channel::_from_integral_unchecked(2);
+    channel = enum_::from_integral_unchecked<Channel>(2);
 
 
 
     // Direct conversion of a constant unfortunately requires an explicit
     // promotion.
-    std::cout << (+Channel::Green).to_string() << std::endl;
+    std::cout << enum_::to_string(Channel::Green) << std::endl;
 
 
 
     // The type name is available as a string.
-    std::cout << Channel::_name << std::endl;
+    std::cout << enum_::traits<Channel>::name << std::endl;
 
 
 
     return 0;
 }
 
-static_assert(sizeof(Channel) == sizeof(uint8_t),
-              "enum has the same size as its underlying integral type");
-
-static_assert(alignof(Channel) == alignof(uint8_t),
-              "enum has the same alignment as its underlying integral type");
-
-static_assert(std::is_same<Channel::_Integral, uint8_t>(),
+static_assert(std::is_same<enum_::traits<Channel>::Integral, uint8_t>(),
               "the underlying integral type is accessible as a member");

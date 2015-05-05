@@ -10,37 +10,40 @@ ENUM(Channel, int, Red, Green, Blue);
 // Initialization.
 constexpr Channel   channel_1 = Channel::Green;
 
-constexpr Channel   channel_4 = Channel::_from_integral(2);
+constexpr Channel   channel_4 = enum_::from_integral<Channel>(2);
 
-constexpr Channel   channel_2 = Channel::_from_string("Blue");
-constexpr Channel   channel_3 = Channel::_from_string_nocase("gReEn");
+constexpr Channel   channel_2 = enum_::from_string<Channel>("Blue");
+constexpr Channel   channel_3 = enum_::from_string_nocase<Channel>("gReEn");
 
 // Conversion to integer (but not to string).
-constexpr int       channel_1_representation = channel_1.to_integral();
+constexpr int       channel_1_representation = enum_::to_integral(channel_1);
 
 // Validity checks (including against strings).
-constexpr bool      should_be_valid_1 = Channel::_is_valid(2);
-constexpr bool      should_be_invalid_1 = Channel::_is_valid(42);
+constexpr bool      should_be_valid_1 = enum_::traits<Channel>::is_valid(2);
+constexpr bool      should_be_invalid_1 = enum_::traits<Channel>::is_valid(42);
 
-constexpr bool      should_be_valid_2 = Channel::_is_valid("Red");
-constexpr bool      should_be_invalid_2 = Channel::_is_valid("red");
+constexpr bool      should_be_valid_2 = enum_::traits<Channel>::is_valid("Red");
+constexpr bool      should_be_invalid_2 =
+    enum_::traits<Channel>::is_valid("red");
 
-constexpr bool      should_be_valid_3 = Channel::_is_valid_nocase("red");
-constexpr bool      should_be_invalid_3 = Channel::_is_valid_nocase("reed");
+constexpr bool      should_be_valid_3 =
+    enum_::traits<Channel>::is_valid_nocase("red");
+constexpr bool      should_be_invalid_3 =
+    enum_::traits<Channel>::is_valid_nocase("reed");
 
 // _names and _values collections and iterator creation.
-constexpr Channel   channel_5 = *Channel::_values.begin();
-constexpr auto      name_iterator = Channel::_names.begin();
+constexpr Channel   channel_5 = *enum_::traits<Channel>::values.begin();
+constexpr auto      name_iterator = enum_::traits<Channel>::names.begin();
 
 // Range properties.
-constexpr Channel   channel_6 = Channel::_max;
-constexpr size_t    span = Channel::_span;
+constexpr Channel   channel_6 = enum_::traits<Channel>::max;
+constexpr size_t    span = enum_::traits<Channel>::span;
 
 // Type name.
-constexpr auto      name = Channel::_name;
+constexpr auto      name = enum_::traits<Channel>::name;
 
 // Explicit promotion.
-constexpr int       converted = (+Channel::Green).to_integral();
+constexpr int       converted = enum_::to_integral(Channel::Green);
 
 
 
@@ -51,7 +54,7 @@ void print_channel(int number, Channel channel)
         << "channel_"
         << number
         << " is "
-        << channel.to_string()
+        << enum_::to_string(channel)
         << std::endl;
 }
 

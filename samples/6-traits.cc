@@ -7,7 +7,7 @@
 template <typename Enum>
 constexpr const Enum default_()
 {
-    return Enum::_first;
+    return enum_::traits<Enum>::first;
 }
 
 // Make it possible to override the convention for specific enums.
@@ -35,10 +35,10 @@ int main()
     // default value is still declared in one place, not all over the program
     // code.
     Depth   depth = default_<Depth>();
-    std::cout << depth.to_string() << std::endl;
+    std::cout << enum_::to_string(depth) << std::endl;
 
-    std::cout << default_<Channel>().to_string() << std::endl;
-    std::cout << default_<Depth>().to_string()   << std::endl;
+    std::cout << enum_::to_string(default_<Channel>()) << std::endl;
+    std::cout << enum_::to_string(default_<Depth>())   << std::endl;
 
     return 0;
 }

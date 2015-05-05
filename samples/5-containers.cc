@@ -19,7 +19,7 @@ int main()
     vector.push_back(Channel::Red);
 
     for (Channel channel : vector)
-        std::cout << channel.to_string() << " ";
+        std::cout << enum_::to_string(channel) << " ";
     std::cout << std::endl;
 
 
@@ -30,8 +30,8 @@ int main()
     std::map<const char*, Channel>  map = {{"first", Channel::Blue}};
     map.insert({"second", Channel::Green});
 
-    for (Channel channel : Channel::_values)
-        map.insert({channel.to_string(), channel});
+    for (Channel channel : enum_::traits<Channel>::values)
+        map.insert({enum_::to_string(channel), channel});
 
     bool    first = true;
     for (auto item : map) {
@@ -43,7 +43,7 @@ int main()
         std::cout
             << item.first
             << " -> "
-            << item.second.to_string();
+            << enum_::to_string(item.second);
     }
     std::cout << std::endl;
 
