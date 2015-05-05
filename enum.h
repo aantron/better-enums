@@ -306,13 +306,7 @@ constexpr bool _namesMatchNocase(const char *stringizedName,
         _namesMatchNocase(stringizedName, referenceName, index + 1);
 }
 
-#define _ENUM_NOT_FOUND     ((size_t)-1)
 
-
-
-/// Functions and types used to compute range properties such as the minimum and
-/// maximum declared enum values, and the total number of valid enum values.
-namespace _range {
 
 template <typename UnderlyingType>
 constexpr UnderlyingType _findMinLoop(const UnderlyingType *values,
@@ -351,16 +345,7 @@ constexpr UnderlyingType _findMax(const UnderlyingType *values, size_t count)
     return _findMaxLoop(values, count, 1, values[0]);
 }
 
-} // namespace _range
 
-} // namespace _enum
-
-// TODO Note that the static_assert for _rawSize > 0 never really gets a chance
-// to fail in practice, because the preprocessor macros break before that.
-
-
-
-namespace _enum {
 
 // TODO Consider reserving memory statically. This will probably entail a great
 // compile-time slowdown, however.
@@ -439,6 +424,8 @@ template <typename Tag> class _GeneratedArrays;
                                                                                \
     }
 
+#define _ENUM_NOT_FOUND     ((size_t)-1)
+
 template <typename Tag>
 class _Enum : public _GeneratedArrays<Tag> {
   protected:
@@ -456,10 +443,8 @@ class _Enum : public _GeneratedArrays<Tag> {
 
     constexpr static const _Enumerated  _first = _value_array[0];
     constexpr static const _Enumerated  _last = _value_array[_size - 1];
-    constexpr static const _Enumerated  _min =
-        _range::_findMin(_value_array, _size);
-    constexpr static const _Enumerated  _max =
-        _range::_findMax(_value_array, _size);
+    constexpr static const _Enumerated  _min = _findMin(_value_array, _size);
+    constexpr static const _Enumerated  _max = _findMax(_value_array, _size);
 
     constexpr static const size_t       _span = _max - _min + 1;
 
@@ -669,7 +654,7 @@ class _Enum : public _GeneratedArrays<Tag> {
                                                                                \
     }
 
-}
+} // namespace _enum
 
 #define ENUM(EnumType, UnderlyingType, ...)                                    \
     _ENUM_TAG_DECLARATION(EnumType);                                           \

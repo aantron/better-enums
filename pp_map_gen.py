@@ -88,10 +88,15 @@ if __name__ == '__main__':
     if len(sys.argv) != 3:
         print >> sys.stderr, 'Usage: ' + sys.argv[0] + ' FILE COUNT'
         print >> sys.stderr, ''
-        print >> sys.stderr, 'Prints macro header file to standard output.'
-        print >> sys.stderr, 'The FILE parameter is used in the comment.'
-        sys.exit(2)
+        print >> sys.stderr, 'Prints map macro definition to FILE.'
+        sys.exit(1)
 
-    generate(sys.stdout, sys.argv[1], int(sys.argv[2]),
-             os.path.basename(sys.argv[0]))
+    output_file = open(sys.argv[1], "w")
+
+    try:
+        generate(output_file, sys.argv[1], int(sys.argv[2]),
+                 os.path.basename(sys.argv[0]))
+    finally:
+        output_file.close()
+
     sys.exit(0)
