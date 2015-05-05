@@ -25,9 +25,6 @@
 ///     instantiated once for every different underlying type. Underlying types
 ///     are very likely to collide.
 
-// TODO Make it possible for enums to be map keys.
-// TODO Rename internal functions to match public interface conventions.
-
 
 
 #pragma once
@@ -54,7 +51,6 @@ namespace _enum {
 
 
 
-// TODO Make these standard-compliant.
 /// Template for iterable objects over enum names and values.
 ///
 /// The iterables are intended for use with C++11 `for-each` syntax. They are
@@ -347,8 +343,6 @@ constexpr UnderlyingType _findMax(const UnderlyingType *values, size_t count)
 
 
 
-// TODO Consider reserving memory statically. This will probably entail a great
-// compile-time slowdown, however.
 static inline const char * const* _processNames(const char * const *rawNames,
                                                 size_t count)
 {
@@ -401,13 +395,13 @@ static inline const char * const* _processNames(const char * const *rawNames,
 
 template <typename Tag> class _GeneratedArrays;
 
-#define _ENUM_ARRAYS(EnumType, UnderlyingType, Tag, ...)                       \
+#define _ENUM_ARRAYS(EnumType, Integral, Tag, ...)                             \
     namespace _enum {                                                          \
                                                                                \
     template <>                                                                \
     class _GeneratedArrays<Tag> {                                              \
       protected:                                                               \
-        using _Integral = UnderlyingType;                                      \
+        using _Integral = Integral;                                            \
                                                                                \
       public:                                                                  \
         constexpr static const char* _name = #EnumType;                        \
@@ -451,17 +445,17 @@ class _Enum : public _GeneratedArrays<Tag> {
     _Enum() = delete;
     constexpr _Enum(_Enumerated constant) : _value(constant) { }
 
-    constexpr _Integral to_int() const
+    constexpr _Integral to_integral() const
     {
         return _value;
     }
 
-    constexpr static const _Enum _from_int(_Integral value)
+    constexpr static const _Enum _from_integral(_Integral value)
     {
         return _value_array[_from_int_loop(value, true)];
     }
 
-    constexpr static const _Enum _from_int_unchecked(_Integral value)
+    constexpr static const _Enum _from_integral_unchecked(_Integral value)
     {
         return (_Enumerated)value;
     }
@@ -541,7 +535,7 @@ class _Enum : public _GeneratedArrays<Tag> {
             index == _size ?
                 (throw_exception ?
                     throw std::runtime_error(
-                        "Enum::from_int: invalid integer value") :
+                        "Enum::_from_integral: invalid integer value") :
                     _ENUM_NOT_FOUND) :
             _value_array[index] == value ? index :
             _from_int_loop(value, throw_exception, index + 1);
@@ -656,8 +650,8 @@ class _Enum : public _GeneratedArrays<Tag> {
 
 } // namespace _enum
 
-#define ENUM(EnumType, UnderlyingType, ...)                                    \
+#define ENUM(EnumType, Integral, ...)                                          \
     _ENUM_TAG_DECLARATION(EnumType);                                           \
-    _ENUM_ARRAYS(EnumType, UnderlyingType, _ENUM_TAG(EnumType), __VA_ARGS__);  \
+    _ENUM_ARRAYS(EnumType, Integral, _ENUM_TAG(EnumType), __VA_ARGS__);        \
     using EnumType = _enum::_Enum<_enum::_ENUM_TAG(EnumType)>;                 \
     _ENUM_GLOBALS(EnumType, _ENUM_TAG(EnumType));
