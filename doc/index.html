@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums" />
+
+<title>Better Enums - No-Generator C++ Enums with String Conversions</title>
+
+<meta name="description" content="Reference documentation and links to code and
+    tutorial for Better Enums, a no-generator compile-time C++11 enum library
+    with concise syntax and a high degree of type safety. Better Enums is
+    reflective: it provides string conversions, iteration over declared
+    constants, and range information. Most members are constexpr, so they can be
+    used in your own compile-time code. The library depends only on the standard
+    library and is header-only. It is almost entirely standard C++." />
+
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<style>
+
+body {
+    margin: 0;
+
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+
+    width: 100%;
+    padding: 0 3em;
+
+    background-color: black;
+    color: white;
+}
+
+h1, h2 {
+    letter-spacing: -1px;
+}
+
+h1 span {
+    font-size: 50%;
+    margin-left: 1em;
+    font-weight: normal;
+}
+
+h2 {
+    margin: 0;
+    font-size: 150%;;
+}
+
+a:not(#index):target + h2 {
+    background-color: yellow;
+}
+
+h2 ~ p, h2 ~ pre {
+    margin-left: 1em;
+}
+
+p {
+    margin: 0;
+}
+
+p.started {
+    margin-bottom: 4em;
+}
+
+p + p {
+    margin-top: 1em;
+}
+
+pre, tt, h3 {
+    background-color: #f4f4f4;
+    border-bottom: 1px solid #ccc;
+    font-family: "Lucida Console", monospace;
+    font-size: 90%;
+}
+
+pre {
+    padding: 1em 20px;
+    overflow: scroll;
+}
+
+tt {
+    margin: 0 1px;
+}
+
+h3 {
+    display: inline-block;
+    margin: 2em 0 1em 0;
+    padding: 4px 10px;
+    border: 0;
+    background-color: #e0e0e0;
+    white-space: nowrap;
+    overflow: scroll;
+    text-shadow: 0 1px white;
+}
+
+a:target + h3 {
+    background-color: yellow;
+}
+
+h2 + h3 {
+    margin-top: 1em;
+}
+
+h3 + br + h3 {
+    margin-top: 0;
+}
+
+h3 span {
+    opacity: 0.6;
+    font-weight: normal;
+}
+
+main {
+    margin: 5em 3em 5em 3em;
+}
+
+main > div {
+    -webkit-columns: 32.5em;
+    -moz-columns: 32.5em;
+    columns: 32.5em;
+
+    -webkit-column-gap: 6em;
+    -moz-column-gap: 6em;
+    column-gap: 6em;
+}
+
+@media (max-width: 1320px) {
+    main {
+        margin-left: 2em;
+        margin-right: 2em;
+    }
+
+    main > div {
+        -webkit-column-gap: 4em;
+        -moz-column-gap: 4em;
+        column-gap: 4em;
+    }
+
+    header {
+        padding-left: 2em;
+        padding-right: 2em;
+    }
+}
+
+@media (max-width: 650px) {
+    nav {
+        display: none;
+    }
+
+    main {
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+    }
+
+    header {
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+    }
+
+    pre {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    h2 ~ p, h2 ~ pre {
+        margin-left: 0;
+    }
+
+    h3 span {
+        display: none;
+    }
+}
+
+main > section:nth-child(2) > h2 {
+    -webkit-column-span: all;
+    -moz-column-span: all;
+    column-span: all;
+}
+
+main > div > section:not(:first-child):not(:nth-child(2)), ul {
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+main section {
+    padding-top: 5em;
+    max-width: 50em;
+}
+
+main > section:nth-child(2) {
+    -webkit-columns: 14em;
+}
+
+h4, ul {
+    margin: 0;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+h4 {
+    padding-top: 2em;
+    padding-bottom: 0.5em;
+}
+
+section > h2 > a:last-child {
+    float: right;
+    font-size: 60%;
+    position: relative;
+    top: 10px;
+    right: 20px;
+    font-weight: normal;
+    letter-spacing: 0;
+}
+
+a[id] {
+    display: block;
+    position: relative;
+    top: -7em;
+}
+
+a {
+    text-decoration: none;
+    color: blue;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+p a {
+    font-weight: bold;
+}
+
+tt a {
+    font-weight: inherit;
+}
+
+h2 > a:first-child {
+    color: inherit;
+}
+
+header a {
+    color: white;
+    margin-right: 3em;
+}
+
+h1 a:hover {
+    text-decoration: none;
+    text-shadow: 0 0 2px white;
+}
+
+nav {
+    float: right;
+    position: relative;
+    top: 2.3em;
+    right: 6em;
+}
+
+em {
+    padding: 0 2px;
+    font-style: normal;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+footer {
+    margin: 0.5em;
+    opacity: 0.6;
+    font-size: 70%;
+}
+
+span.cpp {
+    letter-spacing: -1px;
+    font-size: 90%;
+}
+
+span.eleven {
+    letter-spacing: -2px;
+    font-size: 85%;
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+  <nav>
+    <a href="https://github.com/aantron/better-enums">
+      GitHub
+    </a>
+    <a href="https://github.com/aantron/better-enums/tree/master/example">
+      Tutorial
+    </a>
+  </nav>
+
+  <h1>
+    <a href="https://github.com/aantron/better-enums">
+      Better Enums <span>0.8.0</span>
+    </a>
+  </h1>
+</header>
+
+<main>
+
+  <section>
+
+  <p class="started">
+    The best way to get started with Better Enums is to browse the commented
+    <a href="https://github.com/aantron/better-enums/tree/master/example">
+    examples</a>, which form a kind of tutorial. This page gives reference
+    documentation.
+  </p>
+
+  <p>The following declaration</p>
+
+  <pre>#include &lt;enum.h&gt;
+ENUM(Enum, underlying_type, A, B, C);</pre>
+
+  <p>
+    generates a new type <tt>Enum</tt>. It is notionally similar to the type
+    created by this declaration:
+  </p>
+
+  <pre>enum class Enum : underlying_type {A, B, C};</pre>
+
+  <p>
+    that is, it is an enumerated type with constants <tt>Enum::A</tt>,
+    <tt>Enum::B</tt>, and <tt>Enum::C</tt>, and is represented in memory by an
+    integer of type <tt>underlying_type</tt>. Just like with a built-in
+    <tt>enum class</tt>, it is possible to specify numeric values and aliases
+    for constants:
+  </p>
+
+  <pre>ENUM(Enum, underlying_type, A = 1, B, C, D = A);</pre>
+
+  <p>
+    Constant values are assigned by the compiler by exactly the same rules as
+    for a built-in enum, so in the above example, <tt>Enum::A == 1</tt>,
+    <tt>Enum::B == 2</tt>, <tt>Enum::C == 3</tt>, and <tt>Enum::D == 1</tt>.
+  </p>
+
+  </section>
+
+  <section>
+
+  <a id="index"></a>
+  <h2>Member index</h2>
+
+  <ul>
+    <h4><a href="#enumerated">Internal enumerated type</a></h4>
+    <li><a href="#typename-enumerated">typename _Enumerated</a></li>
+    <li><a href="#constructor">Enum(_Enumerated)</a></li>
+    <li><a href="#operator+">operator +(_Enumerated)</a></li>
+    <li><a href="#cast">operator _Enumerated()</a></li>
+  </ul>
+
+  <ul>
+    <h4><a href="#integral">Integral type</a></h4>
+    <li><a href="#typename-integral">typename _Integral</a></li>
+    <li><a href="#from_integral">_from_integral</a></li>
+    <li><a href="#from_integral_unchecked">_from_integral_unchecked</a></li>
+    <li><a href="#to_integral">to_integral</a></li>
+    <li><a href="#is_valid-integral">_is_valid</a></li>
+  </ul>
+
+  <ul>
+    <h4><a href="#string">String conversions</a></h4>
+    <li><a href="#from_string">_from_string</a></li>
+    <li><a href="#from_string_nocase">_from_string_nocase</a></li>
+    <li><a href="#to_string">to_string</a></li>
+    <li><a href="#name">_name</a></li>
+    <li><a href="#is_valid-string">_is_valid</a></li>
+    <li><a href="#is_valid_nocase">_is_valid_nocase</a></li>
+  </ul>
+
+  <ul>
+    <h4><a href="#iteration">Iteration</a></h4>
+    <li><a href="#values">_values</a></li>
+    <li><a href="#names">_names</a></li>
+  </ul>
+
+  <ul>
+    <h4><a href="#range">Range properties</a></h4>
+    <li><a href="#first">_first</a></li>
+    <li><a href="#last">_last</a></li>
+    <li><a href="#min">_min</a></li>
+    <li><a href="#max">_max</a></li>
+    <li><a href="#size">_size</a></li>
+    <li><a href="#span">_span</a></li>
+  </ul>
+
+  <ul>
+    <h4><a href="#comparison">Comparisons</a></h4>
+  </ul>
+
+  <ul>
+    <h4><a href="#safety">Additional type safety</a></h4>
+  </ul>
+
+  </section>
+
+
+
+  <div>
+
+  <section>
+
+  <a id="enumerated"></a>
+  <h2>
+    <a href="#enumerated">Internal enumerated type</a>
+    <a href="#index">index</a>
+  </h2>
+
+  <a id="typename-enumerated"></a>
+  <h3><span>typename</span> Enum::_Enumerated</h3>
+
+  <p>
+    The declared type <tt>Enum</tt> is built around an internal
+    <span class="cpp">C++</span> enumeration. Notionally,
+  </p>
+
+  <pre>ENUM(Enum, int, A, B, C);</pre>
+
+  <p>produces</p>
+
+  <pre>class Enum {
+    ...
+  public:
+    enum _Enumerated : int {A, B, C};
+    ...
+};</pre>
+
+  <p>
+    <tt>_Enumerated</tt> is simply the name of the internal enumeration. The
+    user should not use this type name directly, but it is referred to in the
+    rest of the documentation. The name is exposed because a literal
+    <tt>Enum::A</tt> is not a value of type <tt>Enum</tt>, but a value of type
+    <tt>Enum::_Enumerated</tt>, which is convertible to <tt>Enum</tt>, in most
+    cases implicitly.
+  </p>
+
+  <p>
+    Note that <tt>_Enumerated</tt> is not a
+    <span class="cpp">C++</span><span class="eleven">11</span>
+    <tt>enum class</tt>.
+  </p>
+
+  <a id="constructor"></a>
+  <h3>
+    <span>implicit constructor constexpr</span> Enum(_Enumerated)
+  </h3>
+
+  <p>
+    A converting constructor for promoting values of type <tt>_Enumerated</tt>
+    to values of type <tt>Enum</tt>. As mentioned above, this typically happens
+    automatically when you write a literal constant such as <tt>Enum::A</tt> in
+    a context where a value of type <tt>Enum</tt> is expected. For example:
+  </p>
+
+  <pre>void do_something(Enum value) { ... }
+
+do_something(Enum::A);  // converted silently</pre>
+
+  <a id="operator+"></a>
+  <h3>
+    <span>global unary constexpr</span> operator +(_Enumerated)
+  </h3>
+
+  <p>
+    For use when the compiler does not choose the implicit constructor above.
+    For example:
+  </p>
+
+  <pre>(Enum::A).to_string()</pre>
+
+  <p>
+    This expression does not compile because <tt>Enum::A</tt> is not an object,
+    and the compiler does not promote it. The promotion can be forced:
+  </p>
+
+  <pre>(+Enum::A).to_string()</pre>
+
+  <p>
+    This is easier to maintain than writing out a call to the converting
+    constructor:
+  </p>
+
+  <pre>((Enum)Enum::A).to_string()</pre>
+
+  <a id="cast"></a>
+  <h3>
+    <span>casting constexpr</span> operator _Enumerated() <span>const</span>
+  </h3>
+
+  <p>
+    Enables implicit conversion of <tt>Enum</tt> values down to
+    <tt>_Enumerated</tt>. The only purpose of this is to make <tt>Enum</tt>
+    values directly usable in <tt>switch</tt> statements for compiler-supported
+    case checking:
+  </p>
+
+  <pre>switch(enum_value) {
+    case Enum::A: ...; break;
+    case Enum::B: ...; break;
+    case Enum::C: ...; break;
+}</pre>
+
+  <p>
+    It is, unfortunately, a hole in the type safety of <tt>Enum</tt>, since it
+    allows implicit conversions to integral types (<tt>Enum</tt> to
+    <tt>_Enumerated</tt>, then <tt>_Enumerated</tt> to an integer). The user
+    should not rely on such conversions. They will probably be eliminated in the
+    future, perhaps by replacing this conversion with a conversion to an
+    <tt>enum class</tt>.
+  </p>
+
+  </section>
+
+
+
+  <section>
+
+  <a id="integral"></a>
+  <h2>
+    <a href="#integral">Underlying integral type</a>
+    <a href="#index">index</a>
+  </h2>
+
+  <a id="typename-integral"></a>
+  <h3><span>typename</span> Enum::_Integral</h3>
+
+  <p>
+    An alias for the underlying type that <tt>Enum</tt> was declared with. For
+    example, if the declaration is
+  </p>
+
+  <pre>ENUM(Enum, uint32_t, A, B, C);</pre>
+
+  <p>
+    Then <tt>Enum::_Integral</tt> is the same as <tt>uint32_t</tt>.
+  </p>
+
+  <a id="from_integral"></a>
+  <h3><span>static constexpr</span> Enum _from_integral(_Integral)</h3>
+
+  <p>
+    Checked cast from a numeric value to an enum value. The function checks that
+    there is an enum constant with the given value. If not, it <em>throws</em>
+    <tt>std::runtime_error</tt>. The check takes time <em>linear</em> in the
+    number of constants in <tt>Enum</tt>.
+  </p>
+
+  <a id="from_integral_unchecked"></a>
+  <h3>
+    <span>static constexpr</span> Enum _from_integral_unchecked(_Integral)
+  </h3>
+
+  <p>
+    Unchecked cast from a numeric value to an enum value. The function assumes
+    that there is an enum constant with the given value. The user has to ensure
+    that this assumption holds. If not, the behavior of subsequent operations
+    on the returned enum value is undefined.
+  </p>
+
+  <a id="to_integral"></a>
+  <h3>
+    <span>member constexpr</span>
+    _Integral enum_value.to_integral() <span>const</span>
+  </h3>
+
+  <p>
+    Returns the numeric representation of an enum value.
+  </p>
+
+  <a id="is_valid-integral"></a>
+  <h3><span>static constexpr</span> bool _is_valid(_Integral)</h3>
+
+  <p>
+    Checks that the given numeric value represents one of the constants in
+    <tt>Enum</tt>, as in <tt>_from_integral</tt>. Complexity is <em>linear</em>
+    in the number of constants.
+  </p>
+
+  <h3><span>invariant </span> sizeof(Enum) == sizeof(Enum::_Integral)</h3>
+
+  <h3><span>invariant </span> alignof(Enum) == alignof(Enum::_Integral)</h3>
+
+  </section>
+
+
+
+  <section>
+
+  <a id="string"></a>
+  <h2>
+    <a href="#string">String conversions</a>
+    <a href="#index">index</a>
+  </h2>
+
+  <a id="from_string"></a>
+  <h3><span>static constexpr</span> Enum _from_string(const char*)</h3>
+
+  <p>
+    Returns the enum constant given by the string. For example:
+  </p>
+
+  <pre>Enum::_from_string("A") == Enum::A</pre>
+
+  <p>
+    Complexity is <em>linear</em> in the number of constants multiplied by the
+    length of the longest constant name. If the string does not name a constant,
+    <em>throws</em> <tt>std::runtime_error</tt>.
+  </p>
+
+  <a id="from_string_nocase"></a>
+  <h3><span>static constexpr</span> Enum _from_string_nocase(const char*)</h3>
+
+  <p>
+    The same as above, but lookup is case-insensitive.
+  </p>
+
+  <a id="to_string"></a>
+  <h3>
+    <span>member</span> const char* enum_value.to_string()
+    <span>const</span>
+  </h3>
+
+  <p>
+    Returns the string representation of enum value on which the method is
+    called. If multiple constants have the same numeric value, the string
+    returned can be the representation any of the constants. Note that this
+    method is <em>not</em> <tt>constexpr</tt>. Complexity is <em>linear</em> in
+    the number of constants. If the string does not name a constant,
+    <em>throws</em> <tt>std::runtime_error</tt>.
+  </p>
+
+  <a id="name"></a>
+  <h3><span>static constexpr</span> const char *_name</h3>
+
+  <p>
+    The name of the type, i.e., for
+  </p>
+
+  <pre>ENUM(Enum, int, A, B, C);</pre>
+
+  <p>
+    <tt>Enum::_name == "Enum"</tt>
+  </p>
+
+  <a id="is_valid-string"></a>
+  <h3><span>static constexpr</span> bool _is_valid(const char*)</h3>
+
+  <p>
+    Checks that the given string is the name of one of the constants in
+    <tt>Enum</tt>, as in <tt>_from_string</tt>, with the same complexity.
+  </p>
+
+  <a id="is_valid_nocase"></a>
+  <h3><span>static constexpr</span> bool _is_valid_nocase(const char*)</h3>
+
+  <p>
+    The same as above, but corresponding to <tt>_from_string_nocase</tt>.
+  </p>
+
+  </section>
+
+
+
+  <section>
+
+  <a id="iteration"></a>
+  <h2>
+    <a href="#iteration">Iteration</a>
+    <a href="#index">index</a>
+  </h2>
+
+  <a id="values"></a>
+  <h3><span>static constexpr</span> _ValueIterable values</h3>
+
+  <p>
+    An iterable container with all the defined constant values, in declaration
+    order. Suitable for use with range-based <tt>for</tt> loops:
+  </p>
+
+  <pre>for (Enum value : Enum::_values) {
+    // Will iterate over Enum::A, Enum::B, Enum::C
+}</pre>
+
+  <h3><span>class</span> _ValueIterable::iterator</h3>
+
+  <p>
+    An iterator over defined constant values with a <tt>constexpr</tt>
+    dereference operator. Can be created explicitly by the <tt>constexpr</tt>
+    expressions
+  </p>
+
+  <pre>Enum::_values::begin()
+Enum::_values::end()</pre>
+
+  <a id="names"></a>
+  <h3><span>static constexpr</span> _NameIterable names</h3>
+
+  <p>
+    An iterable container with the names of the defined constant values, in
+    declaration order. Suitable for use with range-based <tt>for</tt> loops:
+  </p>
+
+  <pre>for (const char *name : Enum::_names) {
+    // Will iterate over "A", "B", "C"
+}</pre>
+
+  <h3><span>class</span> _NameIterable::iterator</h3>
+
+  <p>
+    An iterator over defined constant names with a dereference operator that is
+    <em>not</em> <tt>constexpr</tt>. Can be created explicitly by the
+    <tt>constexpr</tt> expressions
+  </p>
+
+  <pre>Enum::_names::begin()
+Enum::_names::end()</pre>
+
+  </section>
+
+
+
+  <section>
+
+  <a id="range"></a>
+  <h2>
+    <a href="#range">Range properties</a>
+    <a href="#index">index</a>
+  </h2>
+
+  <a id="first"></a>
+  <h3><span>static constexpr</span> _Enumerated _first</h3>
+
+  <p>
+    The first defined constant. For example, in
+  </p>
+
+  <pre>ENUM(Enum, int, A = 1, B = 5, C = 0);</pre>
+
+  <p><tt>Enum::_first == Enum::A</tt></p>
+
+  <a id="last"></a>
+  <h3><span>static constexpr</span> _Enumerated _last</h3>
+
+  <p>
+    The last defined constant, i.e. <tt>Enum::C</tt> in the above example.
+  </p>
+
+  <a id="min"></a>
+  <h3><span>static constexpr</span> _Enumerated _min</h3>
+
+  <p>
+    The defined constant with the smallest numeric value, i.e. <tt>Enum::C</tt>
+    in the above example.
+  </p>
+
+  <a id="max"></a>
+  <h3><span>static constexpr</span> _Enumerated _max</h3>
+
+  <p>
+    The defined constant with the greatest numeric value, i.e. <tt>Enum::B</tt>
+    in the above example.
+  </p>
+
+  <a id="size"></a>
+  <h3><span>static constexpr</span> size_t _size</h3>
+
+  <p>
+    The number of constants defined, i.e. 3 in the above example.
+  </p>
+
+  <a id="span"></a>
+  <h3><span>static constexpr</span> _Integral _span</h3>
+
+  <p>
+    The numeric span of the constants defined, i.e. <tt>_max - _min + 1</tt>,
+    which is 6 in the above example.
+  </p>
+
+  </section>
+
+
+
+  <section>
+
+  <a id="comparison"></a>
+  <h2>
+    <a href="#comparison">Comparisons</a>
+    <a href="#index">index</a>
+  </h2>
+
+  <h3>
+    <span>member constexpr</span> bool operator ==(const Enum&amp;)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator ==(_Enumerated)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator !=(const Enum&amp;)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator !=(_Enumerated)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator &lt;(const Enum&amp;)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator &lt;(_Enumerated)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator &lt;=(const Enum&amp;)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator &lt;=(_Enumerated)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator &gt;(const Enum&amp;)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator &gt;(_Enumerated)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator &gt;=(const Enum&amp;)
+    <span>const</span>
+  </h3>
+
+  <h3>
+    <span>member constexpr</span> bool operator &gt;=(_Enumerated)
+    <span>const</span>
+  </h3>
+
+  <p>
+    These define an ordering on values of types <tt>Enum</tt> and
+    <tt>Enum::_Enumerated</tt>. The ordering is according to the values'
+    numeric representations. That means that two values that have been aliased
+    will compare equal. Direct comparisons with all other types are forbidden;
+    this is enforced by deleted comparison operators for all other types.
+  </p>
+
+  </section>
+
+
+
+  <section>
+
+  <a id="safety"></a>
+  <h2>
+    <a href="#safety">Additional type safety</a>
+    <a href="#index">index</a>
+  </h2>
+
+  <h3><span>default constructor</span> Enum() = delete</h3>
+
+  <p>
+    The default constructor is deleted to encourage initialization with valid
+    values only and to avoid undefined states. See
+    <a href="https://github.com/aantron/better-enums/blob/master/example/6-traits.cc">
+    example/6-traits.cc</a> for an example of how to add an explicit notion of
+    default value.
+  </p>
+
+  <h3><span>invariant</span> no arithmetic</h3>
+
+  <p>Arithmetic operators are explicitly deleted.</p>
+
+  <h3><span>invariant</span> no implicit conversion from integers</h3>
+
+  </section>
+
+  </div>
+
+</main>
+
+<footer>
+  Copyright &copy; 2015.
+  Distributed under the BSD 2-clause license. See
+  <a href="https://github.com/aantron/better-enums/blob/master/LICENSE">
+  LICENSE</a>.
+</footer>
+
+<script>
+
+var property_headers = document.querySelectorAll("h3");
+for (var index = 0; index < property_headers.length; ++index) {
+    var br = document.createElement("br");
+
+    var header = property_headers[index];
+    var next = header.nextSibling;
+
+    console.log(header);
+    console.log(header.parentNode);
+
+    if (next === null)
+        header.parentNode.appendChild(br);
+    else
+        header.parentNode.insertBefore(br, next);
+}
+
+</script>
+
+</body>
+</html>
