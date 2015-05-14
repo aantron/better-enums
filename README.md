@@ -26,7 +26,7 @@ tutorial.
 
 Simply add `enum.h` and `enum_preprocessor_map.h` to your project. The current
 version can be found at
-[https://github.com/aantron/better-enums](https://github.com/aantron/better-enums).
+[https://github.com/aantron/better-enums/releases](https://github.com/aantron/better-enums/releases).
 
 `enum_preprocessor_map.h` can handle enums with up to 256 constants. If you have
 more, re-generate it by running something like:
@@ -67,6 +67,11 @@ The library compiles only with gcc and clang due to use of weak symbols and due
 to lagging C++11 support in msvc. It should ultimately be portable to msvc,
 since msvc has its own version of weak symbols. Everything else in the library
 is standard C++.
+
+## Contact
+
+Don't hesitate to contact me about features (or bugs!):
+<a href="mailto:antonbachin@yahoo.com">antonbachin@yahoo.com</a>
 
 ## Explanation
 
