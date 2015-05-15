@@ -1,24 +1,31 @@
 # Better Enums
 
-Generator-free reflective C++11 enum library with clean syntax. For example:
+Reflective compile-time C++11 enum library with clean syntax. For example:
 
     ENUM(Channel, int, Red = 1, Green, Blue);
 
 defines a type `Channel`. You can then do natural things like:
 
-    Channel channel = Channel::Green;
+```cpp
+Channel channel = Channel::Green;
 
-    channel.to_string();            // Results in the string "Green"
-    channel.to_integral();          // Results in the integer 2
+channel.to_string();            // Results in the string "Green"
+channel.to_integral();          // Results in the int 2
 
-    Channel::_from_string("Red");   // Results in Channel::Red
-    Channel::_from_int(3)           // Results in Channel::Blue
+Channel::_from_string("Red");   // Results in Channel::Red
+Channel::_from_integral(3);     // Results in Channel::Blue
 
-    for (Channel channel : Channel::_values) {
-        // Iterate over all channels
-    }
+constexpr auto channel = Channel::_from_integral(3);
+                                // Do it at compile time
+constexpr auto channel = Channel::_max;
+                                // Channel::Blue
 
-...and more. See the
+for (Channel channel : Channel::_values) {
+    // Iterate over all channels
+}
+```
+
+...and more. See the [project page](http://aantron.github.io/better-enums) and
 [examples](https://github.com/aantron/better-enums/tree/master/example) for a
 tutorial.
 

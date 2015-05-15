@@ -1,0 +1,159 @@
+body {
+    margin: 0;
+    color: #555;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 18px;
+}
+
+pre, code, samp {
+    font-family:
+        Consolas, "Liberation Mono", Menlo, "Courier New", Courier, monospace;
+    font-size: 16px;
+
+    color: white;
+    text-shadow: 0 -1px grey;
+}
+
+pre {
+    background-color: #8AAECB;
+    padding: 0.5em 20px;
+    border-radius: 5px;
+    overflow: scroll;
+}
+
+code, samp {
+    background-color: #93B2CB;
+    padding: 1px 3px;
+    border-radius: 3px;
+}
+
+nav > *, header > *, main > *, footer {
+    max-width: 760px;
+    padding-left: 230px;
+}
+
+@media(max-width: 1240px) {
+    nav > *, header > *, main > *, footer {
+        padding-left: 150px;
+    }
+}
+
+@media(max-width: 1060px) {
+    nav > *, header > *, main > *, footer {
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+}
+
+@media(max-width: 900px) {
+    nav > *, header > *, main > *, footer {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+}
+
+@media(max-width: 680px) {
+    nav > *, header > *, main > *, footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+nav {
+    padding: 0.75em 0;
+    background-color: #222;
+    border-bottom: 1px solid #68a;
+    color: white;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+nav a {
+    margin-left: 2em;
+}
+
+nav a.first {
+    margin-left: 0;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+header {
+    background-color: #4C6F8C;
+    background: linear-gradient(#4C6F8C, #769DBD);
+    color: white;
+    padding: 50px 0;
+    margin-bottom: 50px;
+}
+
+h1 {
+    margin: 0;
+    font-size: 60px;
+    font-weight: 500;
+}
+
+header > h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 300;
+    position: relative;
+    left: 3px;
+}
+
+header > h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 300;
+    position: relative;
+    left: 4px;
+    opacity: 0.5;
+}
+
+h2 {
+    font-weight: 500;
+    margin-top: 3em;
+}
+
+hr {
+    border: none;
+    height: 20px;
+}
+
+footer {
+    font-size: 16px;
+    margin-top: 150px;
+    margin-bottom: 20px;
+}
+
+a {
+    background-color: red;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a[href] {
+    background-color: #D07A6F;
+    color: white;
+    padding: 0 2px;
+    border-radius: 3px;
+}
+
+nav a[href] {
+    color: inherit;
+    background-color: transparent;
+}
+
+span.cpp, span.cc {
+    font-size: 90%;
+}
+
+span.eleven {
+    font-size: 85%;
+}
+
+span#note:target {
+    background-color: yellow;
+}
