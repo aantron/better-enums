@@ -2,4 +2,4 @@
 *.exe
 scratch/
 doc-publish/
-test/*.cc
+test/cxxtest/*.cc
