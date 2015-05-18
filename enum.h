@@ -9,7 +9,6 @@
 
 
 #include <cstddef>          // For size_t.
-#include <cstring>          // For string and memory routines.
 #include <stdexcept>
 #include <type_traits>
 
@@ -29,262 +28,262 @@
 
 #define _ENUM_A(macro, ...) macro(__VA_ARGS__)
 
-#define _ENUM_M1(m, d, x) _ENUM_A(m, d, x)
-#define _ENUM_M2(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M1(m, d, __VA_ARGS__)
-#define _ENUM_M3(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M2(m, d, __VA_ARGS__)
-#define _ENUM_M4(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M3(m, d, __VA_ARGS__)
-#define _ENUM_M5(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M4(m, d, __VA_ARGS__)
-#define _ENUM_M6(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M5(m, d, __VA_ARGS__)
-#define _ENUM_M7(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M6(m, d, __VA_ARGS__)
-#define _ENUM_M8(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M7(m, d, __VA_ARGS__)
-#define _ENUM_M9(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M8(m, d, __VA_ARGS__)
-#define _ENUM_M10(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M9(m, d, __VA_ARGS__)
-#define _ENUM_M11(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M10(m, d, __VA_ARGS__)
-#define _ENUM_M12(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M11(m, d, __VA_ARGS__)
-#define _ENUM_M13(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M12(m, d, __VA_ARGS__)
-#define _ENUM_M14(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M13(m, d, __VA_ARGS__)
-#define _ENUM_M15(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M14(m, d, __VA_ARGS__)
-#define _ENUM_M16(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M15(m, d, __VA_ARGS__)
-#define _ENUM_M17(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M16(m, d, __VA_ARGS__)
-#define _ENUM_M18(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M17(m, d, __VA_ARGS__)
-#define _ENUM_M19(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M18(m, d, __VA_ARGS__)
-#define _ENUM_M20(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M19(m, d, __VA_ARGS__)
-#define _ENUM_M21(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M20(m, d, __VA_ARGS__)
-#define _ENUM_M22(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M21(m, d, __VA_ARGS__)
-#define _ENUM_M23(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M22(m, d, __VA_ARGS__)
-#define _ENUM_M24(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M23(m, d, __VA_ARGS__)
-#define _ENUM_M25(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M24(m, d, __VA_ARGS__)
-#define _ENUM_M26(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M25(m, d, __VA_ARGS__)
-#define _ENUM_M27(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M26(m, d, __VA_ARGS__)
-#define _ENUM_M28(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M27(m, d, __VA_ARGS__)
-#define _ENUM_M29(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M28(m, d, __VA_ARGS__)
-#define _ENUM_M30(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M29(m, d, __VA_ARGS__)
-#define _ENUM_M31(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M30(m, d, __VA_ARGS__)
-#define _ENUM_M32(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M31(m, d, __VA_ARGS__)
-#define _ENUM_M33(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M32(m, d, __VA_ARGS__)
-#define _ENUM_M34(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M33(m, d, __VA_ARGS__)
-#define _ENUM_M35(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M34(m, d, __VA_ARGS__)
-#define _ENUM_M36(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M35(m, d, __VA_ARGS__)
-#define _ENUM_M37(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M36(m, d, __VA_ARGS__)
-#define _ENUM_M38(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M37(m, d, __VA_ARGS__)
-#define _ENUM_M39(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M38(m, d, __VA_ARGS__)
-#define _ENUM_M40(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M39(m, d, __VA_ARGS__)
-#define _ENUM_M41(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M40(m, d, __VA_ARGS__)
-#define _ENUM_M42(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M41(m, d, __VA_ARGS__)
-#define _ENUM_M43(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M42(m, d, __VA_ARGS__)
-#define _ENUM_M44(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M43(m, d, __VA_ARGS__)
-#define _ENUM_M45(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M44(m, d, __VA_ARGS__)
-#define _ENUM_M46(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M45(m, d, __VA_ARGS__)
-#define _ENUM_M47(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M46(m, d, __VA_ARGS__)
-#define _ENUM_M48(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M47(m, d, __VA_ARGS__)
-#define _ENUM_M49(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M48(m, d, __VA_ARGS__)
-#define _ENUM_M50(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M49(m, d, __VA_ARGS__)
-#define _ENUM_M51(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M50(m, d, __VA_ARGS__)
-#define _ENUM_M52(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M51(m, d, __VA_ARGS__)
-#define _ENUM_M53(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M52(m, d, __VA_ARGS__)
-#define _ENUM_M54(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M53(m, d, __VA_ARGS__)
-#define _ENUM_M55(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M54(m, d, __VA_ARGS__)
-#define _ENUM_M56(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M55(m, d, __VA_ARGS__)
-#define _ENUM_M57(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M56(m, d, __VA_ARGS__)
-#define _ENUM_M58(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M57(m, d, __VA_ARGS__)
-#define _ENUM_M59(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M58(m, d, __VA_ARGS__)
-#define _ENUM_M60(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M59(m, d, __VA_ARGS__)
-#define _ENUM_M61(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M60(m, d, __VA_ARGS__)
-#define _ENUM_M62(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M61(m, d, __VA_ARGS__)
-#define _ENUM_M63(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M62(m, d, __VA_ARGS__)
-#define _ENUM_M64(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M63(m, d, __VA_ARGS__)
-#define _ENUM_M65(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M64(m, d, __VA_ARGS__)
-#define _ENUM_M66(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M65(m, d, __VA_ARGS__)
-#define _ENUM_M67(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M66(m, d, __VA_ARGS__)
-#define _ENUM_M68(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M67(m, d, __VA_ARGS__)
-#define _ENUM_M69(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M68(m, d, __VA_ARGS__)
-#define _ENUM_M70(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M69(m, d, __VA_ARGS__)
-#define _ENUM_M71(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M70(m, d, __VA_ARGS__)
-#define _ENUM_M72(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M71(m, d, __VA_ARGS__)
-#define _ENUM_M73(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M72(m, d, __VA_ARGS__)
-#define _ENUM_M74(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M73(m, d, __VA_ARGS__)
-#define _ENUM_M75(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M74(m, d, __VA_ARGS__)
-#define _ENUM_M76(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M75(m, d, __VA_ARGS__)
-#define _ENUM_M77(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M76(m, d, __VA_ARGS__)
-#define _ENUM_M78(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M77(m, d, __VA_ARGS__)
-#define _ENUM_M79(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M78(m, d, __VA_ARGS__)
-#define _ENUM_M80(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M79(m, d, __VA_ARGS__)
-#define _ENUM_M81(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M80(m, d, __VA_ARGS__)
-#define _ENUM_M82(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M81(m, d, __VA_ARGS__)
-#define _ENUM_M83(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M82(m, d, __VA_ARGS__)
-#define _ENUM_M84(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M83(m, d, __VA_ARGS__)
-#define _ENUM_M85(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M84(m, d, __VA_ARGS__)
-#define _ENUM_M86(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M85(m, d, __VA_ARGS__)
-#define _ENUM_M87(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M86(m, d, __VA_ARGS__)
-#define _ENUM_M88(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M87(m, d, __VA_ARGS__)
-#define _ENUM_M89(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M88(m, d, __VA_ARGS__)
-#define _ENUM_M90(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M89(m, d, __VA_ARGS__)
-#define _ENUM_M91(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M90(m, d, __VA_ARGS__)
-#define _ENUM_M92(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M91(m, d, __VA_ARGS__)
-#define _ENUM_M93(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M92(m, d, __VA_ARGS__)
-#define _ENUM_M94(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M93(m, d, __VA_ARGS__)
-#define _ENUM_M95(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M94(m, d, __VA_ARGS__)
-#define _ENUM_M96(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M95(m, d, __VA_ARGS__)
-#define _ENUM_M97(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M96(m, d, __VA_ARGS__)
-#define _ENUM_M98(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M97(m, d, __VA_ARGS__)
-#define _ENUM_M99(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M98(m, d, __VA_ARGS__)
-#define _ENUM_M100(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M99(m, d, __VA_ARGS__)
-#define _ENUM_M101(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M100(m, d, __VA_ARGS__)
-#define _ENUM_M102(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M101(m, d, __VA_ARGS__)
-#define _ENUM_M103(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M102(m, d, __VA_ARGS__)
-#define _ENUM_M104(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M103(m, d, __VA_ARGS__)
-#define _ENUM_M105(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M104(m, d, __VA_ARGS__)
-#define _ENUM_M106(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M105(m, d, __VA_ARGS__)
-#define _ENUM_M107(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M106(m, d, __VA_ARGS__)
-#define _ENUM_M108(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M107(m, d, __VA_ARGS__)
-#define _ENUM_M109(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M108(m, d, __VA_ARGS__)
-#define _ENUM_M110(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M109(m, d, __VA_ARGS__)
-#define _ENUM_M111(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M110(m, d, __VA_ARGS__)
-#define _ENUM_M112(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M111(m, d, __VA_ARGS__)
-#define _ENUM_M113(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M112(m, d, __VA_ARGS__)
-#define _ENUM_M114(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M113(m, d, __VA_ARGS__)
-#define _ENUM_M115(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M114(m, d, __VA_ARGS__)
-#define _ENUM_M116(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M115(m, d, __VA_ARGS__)
-#define _ENUM_M117(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M116(m, d, __VA_ARGS__)
-#define _ENUM_M118(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M117(m, d, __VA_ARGS__)
-#define _ENUM_M119(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M118(m, d, __VA_ARGS__)
-#define _ENUM_M120(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M119(m, d, __VA_ARGS__)
-#define _ENUM_M121(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M120(m, d, __VA_ARGS__)
-#define _ENUM_M122(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M121(m, d, __VA_ARGS__)
-#define _ENUM_M123(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M122(m, d, __VA_ARGS__)
-#define _ENUM_M124(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M123(m, d, __VA_ARGS__)
-#define _ENUM_M125(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M124(m, d, __VA_ARGS__)
-#define _ENUM_M126(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M125(m, d, __VA_ARGS__)
-#define _ENUM_M127(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M126(m, d, __VA_ARGS__)
-#define _ENUM_M128(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M127(m, d, __VA_ARGS__)
-#define _ENUM_M129(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M128(m, d, __VA_ARGS__)
-#define _ENUM_M130(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M129(m, d, __VA_ARGS__)
-#define _ENUM_M131(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M130(m, d, __VA_ARGS__)
-#define _ENUM_M132(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M131(m, d, __VA_ARGS__)
-#define _ENUM_M133(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M132(m, d, __VA_ARGS__)
-#define _ENUM_M134(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M133(m, d, __VA_ARGS__)
-#define _ENUM_M135(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M134(m, d, __VA_ARGS__)
-#define _ENUM_M136(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M135(m, d, __VA_ARGS__)
-#define _ENUM_M137(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M136(m, d, __VA_ARGS__)
-#define _ENUM_M138(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M137(m, d, __VA_ARGS__)
-#define _ENUM_M139(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M138(m, d, __VA_ARGS__)
-#define _ENUM_M140(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M139(m, d, __VA_ARGS__)
-#define _ENUM_M141(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M140(m, d, __VA_ARGS__)
-#define _ENUM_M142(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M141(m, d, __VA_ARGS__)
-#define _ENUM_M143(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M142(m, d, __VA_ARGS__)
-#define _ENUM_M144(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M143(m, d, __VA_ARGS__)
-#define _ENUM_M145(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M144(m, d, __VA_ARGS__)
-#define _ENUM_M146(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M145(m, d, __VA_ARGS__)
-#define _ENUM_M147(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M146(m, d, __VA_ARGS__)
-#define _ENUM_M148(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M147(m, d, __VA_ARGS__)
-#define _ENUM_M149(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M148(m, d, __VA_ARGS__)
-#define _ENUM_M150(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M149(m, d, __VA_ARGS__)
-#define _ENUM_M151(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M150(m, d, __VA_ARGS__)
-#define _ENUM_M152(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M151(m, d, __VA_ARGS__)
-#define _ENUM_M153(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M152(m, d, __VA_ARGS__)
-#define _ENUM_M154(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M153(m, d, __VA_ARGS__)
-#define _ENUM_M155(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M154(m, d, __VA_ARGS__)
-#define _ENUM_M156(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M155(m, d, __VA_ARGS__)
-#define _ENUM_M157(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M156(m, d, __VA_ARGS__)
-#define _ENUM_M158(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M157(m, d, __VA_ARGS__)
-#define _ENUM_M159(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M158(m, d, __VA_ARGS__)
-#define _ENUM_M160(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M159(m, d, __VA_ARGS__)
-#define _ENUM_M161(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M160(m, d, __VA_ARGS__)
-#define _ENUM_M162(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M161(m, d, __VA_ARGS__)
-#define _ENUM_M163(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M162(m, d, __VA_ARGS__)
-#define _ENUM_M164(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M163(m, d, __VA_ARGS__)
-#define _ENUM_M165(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M164(m, d, __VA_ARGS__)
-#define _ENUM_M166(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M165(m, d, __VA_ARGS__)
-#define _ENUM_M167(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M166(m, d, __VA_ARGS__)
-#define _ENUM_M168(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M167(m, d, __VA_ARGS__)
-#define _ENUM_M169(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M168(m, d, __VA_ARGS__)
-#define _ENUM_M170(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M169(m, d, __VA_ARGS__)
-#define _ENUM_M171(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M170(m, d, __VA_ARGS__)
-#define _ENUM_M172(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M171(m, d, __VA_ARGS__)
-#define _ENUM_M173(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M172(m, d, __VA_ARGS__)
-#define _ENUM_M174(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M173(m, d, __VA_ARGS__)
-#define _ENUM_M175(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M174(m, d, __VA_ARGS__)
-#define _ENUM_M176(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M175(m, d, __VA_ARGS__)
-#define _ENUM_M177(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M176(m, d, __VA_ARGS__)
-#define _ENUM_M178(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M177(m, d, __VA_ARGS__)
-#define _ENUM_M179(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M178(m, d, __VA_ARGS__)
-#define _ENUM_M180(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M179(m, d, __VA_ARGS__)
-#define _ENUM_M181(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M180(m, d, __VA_ARGS__)
-#define _ENUM_M182(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M181(m, d, __VA_ARGS__)
-#define _ENUM_M183(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M182(m, d, __VA_ARGS__)
-#define _ENUM_M184(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M183(m, d, __VA_ARGS__)
-#define _ENUM_M185(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M184(m, d, __VA_ARGS__)
-#define _ENUM_M186(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M185(m, d, __VA_ARGS__)
-#define _ENUM_M187(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M186(m, d, __VA_ARGS__)
-#define _ENUM_M188(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M187(m, d, __VA_ARGS__)
-#define _ENUM_M189(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M188(m, d, __VA_ARGS__)
-#define _ENUM_M190(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M189(m, d, __VA_ARGS__)
-#define _ENUM_M191(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M190(m, d, __VA_ARGS__)
-#define _ENUM_M192(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M191(m, d, __VA_ARGS__)
-#define _ENUM_M193(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M192(m, d, __VA_ARGS__)
-#define _ENUM_M194(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M193(m, d, __VA_ARGS__)
-#define _ENUM_M195(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M194(m, d, __VA_ARGS__)
-#define _ENUM_M196(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M195(m, d, __VA_ARGS__)
-#define _ENUM_M197(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M196(m, d, __VA_ARGS__)
-#define _ENUM_M198(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M197(m, d, __VA_ARGS__)
-#define _ENUM_M199(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M198(m, d, __VA_ARGS__)
-#define _ENUM_M200(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M199(m, d, __VA_ARGS__)
-#define _ENUM_M201(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M200(m, d, __VA_ARGS__)
-#define _ENUM_M202(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M201(m, d, __VA_ARGS__)
-#define _ENUM_M203(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M202(m, d, __VA_ARGS__)
-#define _ENUM_M204(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M203(m, d, __VA_ARGS__)
-#define _ENUM_M205(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M204(m, d, __VA_ARGS__)
-#define _ENUM_M206(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M205(m, d, __VA_ARGS__)
-#define _ENUM_M207(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M206(m, d, __VA_ARGS__)
-#define _ENUM_M208(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M207(m, d, __VA_ARGS__)
-#define _ENUM_M209(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M208(m, d, __VA_ARGS__)
-#define _ENUM_M210(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M209(m, d, __VA_ARGS__)
-#define _ENUM_M211(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M210(m, d, __VA_ARGS__)
-#define _ENUM_M212(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M211(m, d, __VA_ARGS__)
-#define _ENUM_M213(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M212(m, d, __VA_ARGS__)
-#define _ENUM_M214(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M213(m, d, __VA_ARGS__)
-#define _ENUM_M215(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M214(m, d, __VA_ARGS__)
-#define _ENUM_M216(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M215(m, d, __VA_ARGS__)
-#define _ENUM_M217(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M216(m, d, __VA_ARGS__)
-#define _ENUM_M218(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M217(m, d, __VA_ARGS__)
-#define _ENUM_M219(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M218(m, d, __VA_ARGS__)
-#define _ENUM_M220(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M219(m, d, __VA_ARGS__)
-#define _ENUM_M221(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M220(m, d, __VA_ARGS__)
-#define _ENUM_M222(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M221(m, d, __VA_ARGS__)
-#define _ENUM_M223(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M222(m, d, __VA_ARGS__)
-#define _ENUM_M224(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M223(m, d, __VA_ARGS__)
-#define _ENUM_M225(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M224(m, d, __VA_ARGS__)
-#define _ENUM_M226(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M225(m, d, __VA_ARGS__)
-#define _ENUM_M227(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M226(m, d, __VA_ARGS__)
-#define _ENUM_M228(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M227(m, d, __VA_ARGS__)
-#define _ENUM_M229(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M228(m, d, __VA_ARGS__)
-#define _ENUM_M230(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M229(m, d, __VA_ARGS__)
-#define _ENUM_M231(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M230(m, d, __VA_ARGS__)
-#define _ENUM_M232(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M231(m, d, __VA_ARGS__)
-#define _ENUM_M233(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M232(m, d, __VA_ARGS__)
-#define _ENUM_M234(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M233(m, d, __VA_ARGS__)
-#define _ENUM_M235(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M234(m, d, __VA_ARGS__)
-#define _ENUM_M236(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M235(m, d, __VA_ARGS__)
-#define _ENUM_M237(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M236(m, d, __VA_ARGS__)
-#define _ENUM_M238(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M237(m, d, __VA_ARGS__)
-#define _ENUM_M239(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M238(m, d, __VA_ARGS__)
-#define _ENUM_M240(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M239(m, d, __VA_ARGS__)
-#define _ENUM_M241(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M240(m, d, __VA_ARGS__)
-#define _ENUM_M242(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M241(m, d, __VA_ARGS__)
-#define _ENUM_M243(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M242(m, d, __VA_ARGS__)
-#define _ENUM_M244(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M243(m, d, __VA_ARGS__)
-#define _ENUM_M245(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M244(m, d, __VA_ARGS__)
-#define _ENUM_M246(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M245(m, d, __VA_ARGS__)
-#define _ENUM_M247(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M246(m, d, __VA_ARGS__)
-#define _ENUM_M248(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M247(m, d, __VA_ARGS__)
-#define _ENUM_M249(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M248(m, d, __VA_ARGS__)
-#define _ENUM_M250(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M249(m, d, __VA_ARGS__)
-#define _ENUM_M251(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M250(m, d, __VA_ARGS__)
-#define _ENUM_M252(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M251(m, d, __VA_ARGS__)
-#define _ENUM_M253(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M252(m, d, __VA_ARGS__)
-#define _ENUM_M254(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M253(m, d, __VA_ARGS__)
-#define _ENUM_M255(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M254(m, d, __VA_ARGS__)
-#define _ENUM_M256(m, d, x, ...) _ENUM_A(m, d, x), _ENUM_M255(m, d, __VA_ARGS__)
+#define _ENUM_M1(m, d, x) _ENUM_A(m, d, 0, x)
+#define _ENUM_M2(m,d,x,...) _ENUM_A(m,d,1,x) _ENUM_M1(m,d,__VA_ARGS__)
+#define _ENUM_M3(m,d,x,...) _ENUM_A(m,d,2,x) _ENUM_M2(m,d,__VA_ARGS__)
+#define _ENUM_M4(m,d,x,...) _ENUM_A(m,d,3,x) _ENUM_M3(m,d,__VA_ARGS__)
+#define _ENUM_M5(m,d,x,...) _ENUM_A(m,d,4,x) _ENUM_M4(m,d,__VA_ARGS__)
+#define _ENUM_M6(m,d,x,...) _ENUM_A(m,d,5,x) _ENUM_M5(m,d,__VA_ARGS__)
+#define _ENUM_M7(m,d,x,...) _ENUM_A(m,d,6,x) _ENUM_M6(m,d,__VA_ARGS__)
+#define _ENUM_M8(m,d,x,...) _ENUM_A(m,d,7,x) _ENUM_M7(m,d,__VA_ARGS__)
+#define _ENUM_M9(m,d,x,...) _ENUM_A(m,d,8,x) _ENUM_M8(m,d,__VA_ARGS__)
+#define _ENUM_M10(m,d,x,...) _ENUM_A(m,d,9,x) _ENUM_M9(m,d,__VA_ARGS__)
+#define _ENUM_M11(m,d,x,...) _ENUM_A(m,d,10,x) _ENUM_M10(m,d,__VA_ARGS__)
+#define _ENUM_M12(m,d,x,...) _ENUM_A(m,d,11,x) _ENUM_M11(m,d,__VA_ARGS__)
+#define _ENUM_M13(m,d,x,...) _ENUM_A(m,d,12,x) _ENUM_M12(m,d,__VA_ARGS__)
+#define _ENUM_M14(m,d,x,...) _ENUM_A(m,d,13,x) _ENUM_M13(m,d,__VA_ARGS__)
+#define _ENUM_M15(m,d,x,...) _ENUM_A(m,d,14,x) _ENUM_M14(m,d,__VA_ARGS__)
+#define _ENUM_M16(m,d,x,...) _ENUM_A(m,d,15,x) _ENUM_M15(m,d,__VA_ARGS__)
+#define _ENUM_M17(m,d,x,...) _ENUM_A(m,d,16,x) _ENUM_M16(m,d,__VA_ARGS__)
+#define _ENUM_M18(m,d,x,...) _ENUM_A(m,d,17,x) _ENUM_M17(m,d,__VA_ARGS__)
+#define _ENUM_M19(m,d,x,...) _ENUM_A(m,d,18,x) _ENUM_M18(m,d,__VA_ARGS__)
+#define _ENUM_M20(m,d,x,...) _ENUM_A(m,d,19,x) _ENUM_M19(m,d,__VA_ARGS__)
+#define _ENUM_M21(m,d,x,...) _ENUM_A(m,d,20,x) _ENUM_M20(m,d,__VA_ARGS__)
+#define _ENUM_M22(m,d,x,...) _ENUM_A(m,d,21,x) _ENUM_M21(m,d,__VA_ARGS__)
+#define _ENUM_M23(m,d,x,...) _ENUM_A(m,d,22,x) _ENUM_M22(m,d,__VA_ARGS__)
+#define _ENUM_M24(m,d,x,...) _ENUM_A(m,d,23,x) _ENUM_M23(m,d,__VA_ARGS__)
+#define _ENUM_M25(m,d,x,...) _ENUM_A(m,d,24,x) _ENUM_M24(m,d,__VA_ARGS__)
+#define _ENUM_M26(m,d,x,...) _ENUM_A(m,d,25,x) _ENUM_M25(m,d,__VA_ARGS__)
+#define _ENUM_M27(m,d,x,...) _ENUM_A(m,d,26,x) _ENUM_M26(m,d,__VA_ARGS__)
+#define _ENUM_M28(m,d,x,...) _ENUM_A(m,d,27,x) _ENUM_M27(m,d,__VA_ARGS__)
+#define _ENUM_M29(m,d,x,...) _ENUM_A(m,d,28,x) _ENUM_M28(m,d,__VA_ARGS__)
+#define _ENUM_M30(m,d,x,...) _ENUM_A(m,d,29,x) _ENUM_M29(m,d,__VA_ARGS__)
+#define _ENUM_M31(m,d,x,...) _ENUM_A(m,d,30,x) _ENUM_M30(m,d,__VA_ARGS__)
+#define _ENUM_M32(m,d,x,...) _ENUM_A(m,d,31,x) _ENUM_M31(m,d,__VA_ARGS__)
+#define _ENUM_M33(m,d,x,...) _ENUM_A(m,d,32,x) _ENUM_M32(m,d,__VA_ARGS__)
+#define _ENUM_M34(m,d,x,...) _ENUM_A(m,d,33,x) _ENUM_M33(m,d,__VA_ARGS__)
+#define _ENUM_M35(m,d,x,...) _ENUM_A(m,d,34,x) _ENUM_M34(m,d,__VA_ARGS__)
+#define _ENUM_M36(m,d,x,...) _ENUM_A(m,d,35,x) _ENUM_M35(m,d,__VA_ARGS__)
+#define _ENUM_M37(m,d,x,...) _ENUM_A(m,d,36,x) _ENUM_M36(m,d,__VA_ARGS__)
+#define _ENUM_M38(m,d,x,...) _ENUM_A(m,d,37,x) _ENUM_M37(m,d,__VA_ARGS__)
+#define _ENUM_M39(m,d,x,...) _ENUM_A(m,d,38,x) _ENUM_M38(m,d,__VA_ARGS__)
+#define _ENUM_M40(m,d,x,...) _ENUM_A(m,d,39,x) _ENUM_M39(m,d,__VA_ARGS__)
+#define _ENUM_M41(m,d,x,...) _ENUM_A(m,d,40,x) _ENUM_M40(m,d,__VA_ARGS__)
+#define _ENUM_M42(m,d,x,...) _ENUM_A(m,d,41,x) _ENUM_M41(m,d,__VA_ARGS__)
+#define _ENUM_M43(m,d,x,...) _ENUM_A(m,d,42,x) _ENUM_M42(m,d,__VA_ARGS__)
+#define _ENUM_M44(m,d,x,...) _ENUM_A(m,d,43,x) _ENUM_M43(m,d,__VA_ARGS__)
+#define _ENUM_M45(m,d,x,...) _ENUM_A(m,d,44,x) _ENUM_M44(m,d,__VA_ARGS__)
+#define _ENUM_M46(m,d,x,...) _ENUM_A(m,d,45,x) _ENUM_M45(m,d,__VA_ARGS__)
+#define _ENUM_M47(m,d,x,...) _ENUM_A(m,d,46,x) _ENUM_M46(m,d,__VA_ARGS__)
+#define _ENUM_M48(m,d,x,...) _ENUM_A(m,d,47,x) _ENUM_M47(m,d,__VA_ARGS__)
+#define _ENUM_M49(m,d,x,...) _ENUM_A(m,d,48,x) _ENUM_M48(m,d,__VA_ARGS__)
+#define _ENUM_M50(m,d,x,...) _ENUM_A(m,d,49,x) _ENUM_M49(m,d,__VA_ARGS__)
+#define _ENUM_M51(m,d,x,...) _ENUM_A(m,d,50,x) _ENUM_M50(m,d,__VA_ARGS__)
+#define _ENUM_M52(m,d,x,...) _ENUM_A(m,d,51,x) _ENUM_M51(m,d,__VA_ARGS__)
+#define _ENUM_M53(m,d,x,...) _ENUM_A(m,d,52,x) _ENUM_M52(m,d,__VA_ARGS__)
+#define _ENUM_M54(m,d,x,...) _ENUM_A(m,d,53,x) _ENUM_M53(m,d,__VA_ARGS__)
+#define _ENUM_M55(m,d,x,...) _ENUM_A(m,d,54,x) _ENUM_M54(m,d,__VA_ARGS__)
+#define _ENUM_M56(m,d,x,...) _ENUM_A(m,d,55,x) _ENUM_M55(m,d,__VA_ARGS__)
+#define _ENUM_M57(m,d,x,...) _ENUM_A(m,d,56,x) _ENUM_M56(m,d,__VA_ARGS__)
+#define _ENUM_M58(m,d,x,...) _ENUM_A(m,d,57,x) _ENUM_M57(m,d,__VA_ARGS__)
+#define _ENUM_M59(m,d,x,...) _ENUM_A(m,d,58,x) _ENUM_M58(m,d,__VA_ARGS__)
+#define _ENUM_M60(m,d,x,...) _ENUM_A(m,d,59,x) _ENUM_M59(m,d,__VA_ARGS__)
+#define _ENUM_M61(m,d,x,...) _ENUM_A(m,d,60,x) _ENUM_M60(m,d,__VA_ARGS__)
+#define _ENUM_M62(m,d,x,...) _ENUM_A(m,d,61,x) _ENUM_M61(m,d,__VA_ARGS__)
+#define _ENUM_M63(m,d,x,...) _ENUM_A(m,d,62,x) _ENUM_M62(m,d,__VA_ARGS__)
+#define _ENUM_M64(m,d,x,...) _ENUM_A(m,d,63,x) _ENUM_M63(m,d,__VA_ARGS__)
+#define _ENUM_M65(m,d,x,...) _ENUM_A(m,d,64,x) _ENUM_M64(m,d,__VA_ARGS__)
+#define _ENUM_M66(m,d,x,...) _ENUM_A(m,d,65,x) _ENUM_M65(m,d,__VA_ARGS__)
+#define _ENUM_M67(m,d,x,...) _ENUM_A(m,d,66,x) _ENUM_M66(m,d,__VA_ARGS__)
+#define _ENUM_M68(m,d,x,...) _ENUM_A(m,d,67,x) _ENUM_M67(m,d,__VA_ARGS__)
+#define _ENUM_M69(m,d,x,...) _ENUM_A(m,d,68,x) _ENUM_M68(m,d,__VA_ARGS__)
+#define _ENUM_M70(m,d,x,...) _ENUM_A(m,d,69,x) _ENUM_M69(m,d,__VA_ARGS__)
+#define _ENUM_M71(m,d,x,...) _ENUM_A(m,d,70,x) _ENUM_M70(m,d,__VA_ARGS__)
+#define _ENUM_M72(m,d,x,...) _ENUM_A(m,d,71,x) _ENUM_M71(m,d,__VA_ARGS__)
+#define _ENUM_M73(m,d,x,...) _ENUM_A(m,d,72,x) _ENUM_M72(m,d,__VA_ARGS__)
+#define _ENUM_M74(m,d,x,...) _ENUM_A(m,d,73,x) _ENUM_M73(m,d,__VA_ARGS__)
+#define _ENUM_M75(m,d,x,...) _ENUM_A(m,d,74,x) _ENUM_M74(m,d,__VA_ARGS__)
+#define _ENUM_M76(m,d,x,...) _ENUM_A(m,d,75,x) _ENUM_M75(m,d,__VA_ARGS__)
+#define _ENUM_M77(m,d,x,...) _ENUM_A(m,d,76,x) _ENUM_M76(m,d,__VA_ARGS__)
+#define _ENUM_M78(m,d,x,...) _ENUM_A(m,d,77,x) _ENUM_M77(m,d,__VA_ARGS__)
+#define _ENUM_M79(m,d,x,...) _ENUM_A(m,d,78,x) _ENUM_M78(m,d,__VA_ARGS__)
+#define _ENUM_M80(m,d,x,...) _ENUM_A(m,d,79,x) _ENUM_M79(m,d,__VA_ARGS__)
+#define _ENUM_M81(m,d,x,...) _ENUM_A(m,d,80,x) _ENUM_M80(m,d,__VA_ARGS__)
+#define _ENUM_M82(m,d,x,...) _ENUM_A(m,d,81,x) _ENUM_M81(m,d,__VA_ARGS__)
+#define _ENUM_M83(m,d,x,...) _ENUM_A(m,d,82,x) _ENUM_M82(m,d,__VA_ARGS__)
+#define _ENUM_M84(m,d,x,...) _ENUM_A(m,d,83,x) _ENUM_M83(m,d,__VA_ARGS__)
+#define _ENUM_M85(m,d,x,...) _ENUM_A(m,d,84,x) _ENUM_M84(m,d,__VA_ARGS__)
+#define _ENUM_M86(m,d,x,...) _ENUM_A(m,d,85,x) _ENUM_M85(m,d,__VA_ARGS__)
+#define _ENUM_M87(m,d,x,...) _ENUM_A(m,d,86,x) _ENUM_M86(m,d,__VA_ARGS__)
+#define _ENUM_M88(m,d,x,...) _ENUM_A(m,d,87,x) _ENUM_M87(m,d,__VA_ARGS__)
+#define _ENUM_M89(m,d,x,...) _ENUM_A(m,d,88,x) _ENUM_M88(m,d,__VA_ARGS__)
+#define _ENUM_M90(m,d,x,...) _ENUM_A(m,d,89,x) _ENUM_M89(m,d,__VA_ARGS__)
+#define _ENUM_M91(m,d,x,...) _ENUM_A(m,d,90,x) _ENUM_M90(m,d,__VA_ARGS__)
+#define _ENUM_M92(m,d,x,...) _ENUM_A(m,d,91,x) _ENUM_M91(m,d,__VA_ARGS__)
+#define _ENUM_M93(m,d,x,...) _ENUM_A(m,d,92,x) _ENUM_M92(m,d,__VA_ARGS__)
+#define _ENUM_M94(m,d,x,...) _ENUM_A(m,d,93,x) _ENUM_M93(m,d,__VA_ARGS__)
+#define _ENUM_M95(m,d,x,...) _ENUM_A(m,d,94,x) _ENUM_M94(m,d,__VA_ARGS__)
+#define _ENUM_M96(m,d,x,...) _ENUM_A(m,d,95,x) _ENUM_M95(m,d,__VA_ARGS__)
+#define _ENUM_M97(m,d,x,...) _ENUM_A(m,d,96,x) _ENUM_M96(m,d,__VA_ARGS__)
+#define _ENUM_M98(m,d,x,...) _ENUM_A(m,d,97,x) _ENUM_M97(m,d,__VA_ARGS__)
+#define _ENUM_M99(m,d,x,...) _ENUM_A(m,d,98,x) _ENUM_M98(m,d,__VA_ARGS__)
+#define _ENUM_M100(m,d,x,...) _ENUM_A(m,d,99,x) _ENUM_M99(m,d,__VA_ARGS__)
+#define _ENUM_M101(m,d,x,...) _ENUM_A(m,d,100,x) _ENUM_M100(m,d,__VA_ARGS__)
+#define _ENUM_M102(m,d,x,...) _ENUM_A(m,d,101,x) _ENUM_M101(m,d,__VA_ARGS__)
+#define _ENUM_M103(m,d,x,...) _ENUM_A(m,d,102,x) _ENUM_M102(m,d,__VA_ARGS__)
+#define _ENUM_M104(m,d,x,...) _ENUM_A(m,d,103,x) _ENUM_M103(m,d,__VA_ARGS__)
+#define _ENUM_M105(m,d,x,...) _ENUM_A(m,d,104,x) _ENUM_M104(m,d,__VA_ARGS__)
+#define _ENUM_M106(m,d,x,...) _ENUM_A(m,d,105,x) _ENUM_M105(m,d,__VA_ARGS__)
+#define _ENUM_M107(m,d,x,...) _ENUM_A(m,d,106,x) _ENUM_M106(m,d,__VA_ARGS__)
+#define _ENUM_M108(m,d,x,...) _ENUM_A(m,d,107,x) _ENUM_M107(m,d,__VA_ARGS__)
+#define _ENUM_M109(m,d,x,...) _ENUM_A(m,d,108,x) _ENUM_M108(m,d,__VA_ARGS__)
+#define _ENUM_M110(m,d,x,...) _ENUM_A(m,d,109,x) _ENUM_M109(m,d,__VA_ARGS__)
+#define _ENUM_M111(m,d,x,...) _ENUM_A(m,d,110,x) _ENUM_M110(m,d,__VA_ARGS__)
+#define _ENUM_M112(m,d,x,...) _ENUM_A(m,d,111,x) _ENUM_M111(m,d,__VA_ARGS__)
+#define _ENUM_M113(m,d,x,...) _ENUM_A(m,d,112,x) _ENUM_M112(m,d,__VA_ARGS__)
+#define _ENUM_M114(m,d,x,...) _ENUM_A(m,d,113,x) _ENUM_M113(m,d,__VA_ARGS__)
+#define _ENUM_M115(m,d,x,...) _ENUM_A(m,d,114,x) _ENUM_M114(m,d,__VA_ARGS__)
+#define _ENUM_M116(m,d,x,...) _ENUM_A(m,d,115,x) _ENUM_M115(m,d,__VA_ARGS__)
+#define _ENUM_M117(m,d,x,...) _ENUM_A(m,d,116,x) _ENUM_M116(m,d,__VA_ARGS__)
+#define _ENUM_M118(m,d,x,...) _ENUM_A(m,d,117,x) _ENUM_M117(m,d,__VA_ARGS__)
+#define _ENUM_M119(m,d,x,...) _ENUM_A(m,d,118,x) _ENUM_M118(m,d,__VA_ARGS__)
+#define _ENUM_M120(m,d,x,...) _ENUM_A(m,d,119,x) _ENUM_M119(m,d,__VA_ARGS__)
+#define _ENUM_M121(m,d,x,...) _ENUM_A(m,d,120,x) _ENUM_M120(m,d,__VA_ARGS__)
+#define _ENUM_M122(m,d,x,...) _ENUM_A(m,d,121,x) _ENUM_M121(m,d,__VA_ARGS__)
+#define _ENUM_M123(m,d,x,...) _ENUM_A(m,d,122,x) _ENUM_M122(m,d,__VA_ARGS__)
+#define _ENUM_M124(m,d,x,...) _ENUM_A(m,d,123,x) _ENUM_M123(m,d,__VA_ARGS__)
+#define _ENUM_M125(m,d,x,...) _ENUM_A(m,d,124,x) _ENUM_M124(m,d,__VA_ARGS__)
+#define _ENUM_M126(m,d,x,...) _ENUM_A(m,d,125,x) _ENUM_M125(m,d,__VA_ARGS__)
+#define _ENUM_M127(m,d,x,...) _ENUM_A(m,d,126,x) _ENUM_M126(m,d,__VA_ARGS__)
+#define _ENUM_M128(m,d,x,...) _ENUM_A(m,d,127,x) _ENUM_M127(m,d,__VA_ARGS__)
+#define _ENUM_M129(m,d,x,...) _ENUM_A(m,d,128,x) _ENUM_M128(m,d,__VA_ARGS__)
+#define _ENUM_M130(m,d,x,...) _ENUM_A(m,d,129,x) _ENUM_M129(m,d,__VA_ARGS__)
+#define _ENUM_M131(m,d,x,...) _ENUM_A(m,d,130,x) _ENUM_M130(m,d,__VA_ARGS__)
+#define _ENUM_M132(m,d,x,...) _ENUM_A(m,d,131,x) _ENUM_M131(m,d,__VA_ARGS__)
+#define _ENUM_M133(m,d,x,...) _ENUM_A(m,d,132,x) _ENUM_M132(m,d,__VA_ARGS__)
+#define _ENUM_M134(m,d,x,...) _ENUM_A(m,d,133,x) _ENUM_M133(m,d,__VA_ARGS__)
+#define _ENUM_M135(m,d,x,...) _ENUM_A(m,d,134,x) _ENUM_M134(m,d,__VA_ARGS__)
+#define _ENUM_M136(m,d,x,...) _ENUM_A(m,d,135,x) _ENUM_M135(m,d,__VA_ARGS__)
+#define _ENUM_M137(m,d,x,...) _ENUM_A(m,d,136,x) _ENUM_M136(m,d,__VA_ARGS__)
+#define _ENUM_M138(m,d,x,...) _ENUM_A(m,d,137,x) _ENUM_M137(m,d,__VA_ARGS__)
+#define _ENUM_M139(m,d,x,...) _ENUM_A(m,d,138,x) _ENUM_M138(m,d,__VA_ARGS__)
+#define _ENUM_M140(m,d,x,...) _ENUM_A(m,d,139,x) _ENUM_M139(m,d,__VA_ARGS__)
+#define _ENUM_M141(m,d,x,...) _ENUM_A(m,d,140,x) _ENUM_M140(m,d,__VA_ARGS__)
+#define _ENUM_M142(m,d,x,...) _ENUM_A(m,d,141,x) _ENUM_M141(m,d,__VA_ARGS__)
+#define _ENUM_M143(m,d,x,...) _ENUM_A(m,d,142,x) _ENUM_M142(m,d,__VA_ARGS__)
+#define _ENUM_M144(m,d,x,...) _ENUM_A(m,d,143,x) _ENUM_M143(m,d,__VA_ARGS__)
+#define _ENUM_M145(m,d,x,...) _ENUM_A(m,d,144,x) _ENUM_M144(m,d,__VA_ARGS__)
+#define _ENUM_M146(m,d,x,...) _ENUM_A(m,d,145,x) _ENUM_M145(m,d,__VA_ARGS__)
+#define _ENUM_M147(m,d,x,...) _ENUM_A(m,d,146,x) _ENUM_M146(m,d,__VA_ARGS__)
+#define _ENUM_M148(m,d,x,...) _ENUM_A(m,d,147,x) _ENUM_M147(m,d,__VA_ARGS__)
+#define _ENUM_M149(m,d,x,...) _ENUM_A(m,d,148,x) _ENUM_M148(m,d,__VA_ARGS__)
+#define _ENUM_M150(m,d,x,...) _ENUM_A(m,d,149,x) _ENUM_M149(m,d,__VA_ARGS__)
+#define _ENUM_M151(m,d,x,...) _ENUM_A(m,d,150,x) _ENUM_M150(m,d,__VA_ARGS__)
+#define _ENUM_M152(m,d,x,...) _ENUM_A(m,d,151,x) _ENUM_M151(m,d,__VA_ARGS__)
+#define _ENUM_M153(m,d,x,...) _ENUM_A(m,d,152,x) _ENUM_M152(m,d,__VA_ARGS__)
+#define _ENUM_M154(m,d,x,...) _ENUM_A(m,d,153,x) _ENUM_M153(m,d,__VA_ARGS__)
+#define _ENUM_M155(m,d,x,...) _ENUM_A(m,d,154,x) _ENUM_M154(m,d,__VA_ARGS__)
+#define _ENUM_M156(m,d,x,...) _ENUM_A(m,d,155,x) _ENUM_M155(m,d,__VA_ARGS__)
+#define _ENUM_M157(m,d,x,...) _ENUM_A(m,d,156,x) _ENUM_M156(m,d,__VA_ARGS__)
+#define _ENUM_M158(m,d,x,...) _ENUM_A(m,d,157,x) _ENUM_M157(m,d,__VA_ARGS__)
+#define _ENUM_M159(m,d,x,...) _ENUM_A(m,d,158,x) _ENUM_M158(m,d,__VA_ARGS__)
+#define _ENUM_M160(m,d,x,...) _ENUM_A(m,d,159,x) _ENUM_M159(m,d,__VA_ARGS__)
+#define _ENUM_M161(m,d,x,...) _ENUM_A(m,d,160,x) _ENUM_M160(m,d,__VA_ARGS__)
+#define _ENUM_M162(m,d,x,...) _ENUM_A(m,d,161,x) _ENUM_M161(m,d,__VA_ARGS__)
+#define _ENUM_M163(m,d,x,...) _ENUM_A(m,d,162,x) _ENUM_M162(m,d,__VA_ARGS__)
+#define _ENUM_M164(m,d,x,...) _ENUM_A(m,d,163,x) _ENUM_M163(m,d,__VA_ARGS__)
+#define _ENUM_M165(m,d,x,...) _ENUM_A(m,d,164,x) _ENUM_M164(m,d,__VA_ARGS__)
+#define _ENUM_M166(m,d,x,...) _ENUM_A(m,d,165,x) _ENUM_M165(m,d,__VA_ARGS__)
+#define _ENUM_M167(m,d,x,...) _ENUM_A(m,d,166,x) _ENUM_M166(m,d,__VA_ARGS__)
+#define _ENUM_M168(m,d,x,...) _ENUM_A(m,d,167,x) _ENUM_M167(m,d,__VA_ARGS__)
+#define _ENUM_M169(m,d,x,...) _ENUM_A(m,d,168,x) _ENUM_M168(m,d,__VA_ARGS__)
+#define _ENUM_M170(m,d,x,...) _ENUM_A(m,d,169,x) _ENUM_M169(m,d,__VA_ARGS__)
+#define _ENUM_M171(m,d,x,...) _ENUM_A(m,d,170,x) _ENUM_M170(m,d,__VA_ARGS__)
+#define _ENUM_M172(m,d,x,...) _ENUM_A(m,d,171,x) _ENUM_M171(m,d,__VA_ARGS__)
+#define _ENUM_M173(m,d,x,...) _ENUM_A(m,d,172,x) _ENUM_M172(m,d,__VA_ARGS__)
+#define _ENUM_M174(m,d,x,...) _ENUM_A(m,d,173,x) _ENUM_M173(m,d,__VA_ARGS__)
+#define _ENUM_M175(m,d,x,...) _ENUM_A(m,d,174,x) _ENUM_M174(m,d,__VA_ARGS__)
+#define _ENUM_M176(m,d,x,...) _ENUM_A(m,d,175,x) _ENUM_M175(m,d,__VA_ARGS__)
+#define _ENUM_M177(m,d,x,...) _ENUM_A(m,d,176,x) _ENUM_M176(m,d,__VA_ARGS__)
+#define _ENUM_M178(m,d,x,...) _ENUM_A(m,d,177,x) _ENUM_M177(m,d,__VA_ARGS__)
+#define _ENUM_M179(m,d,x,...) _ENUM_A(m,d,178,x) _ENUM_M178(m,d,__VA_ARGS__)
+#define _ENUM_M180(m,d,x,...) _ENUM_A(m,d,179,x) _ENUM_M179(m,d,__VA_ARGS__)
+#define _ENUM_M181(m,d,x,...) _ENUM_A(m,d,180,x) _ENUM_M180(m,d,__VA_ARGS__)
+#define _ENUM_M182(m,d,x,...) _ENUM_A(m,d,181,x) _ENUM_M181(m,d,__VA_ARGS__)
+#define _ENUM_M183(m,d,x,...) _ENUM_A(m,d,182,x) _ENUM_M182(m,d,__VA_ARGS__)
+#define _ENUM_M184(m,d,x,...) _ENUM_A(m,d,183,x) _ENUM_M183(m,d,__VA_ARGS__)
+#define _ENUM_M185(m,d,x,...) _ENUM_A(m,d,184,x) _ENUM_M184(m,d,__VA_ARGS__)
+#define _ENUM_M186(m,d,x,...) _ENUM_A(m,d,185,x) _ENUM_M185(m,d,__VA_ARGS__)
+#define _ENUM_M187(m,d,x,...) _ENUM_A(m,d,186,x) _ENUM_M186(m,d,__VA_ARGS__)
+#define _ENUM_M188(m,d,x,...) _ENUM_A(m,d,187,x) _ENUM_M187(m,d,__VA_ARGS__)
+#define _ENUM_M189(m,d,x,...) _ENUM_A(m,d,188,x) _ENUM_M188(m,d,__VA_ARGS__)
+#define _ENUM_M190(m,d,x,...) _ENUM_A(m,d,189,x) _ENUM_M189(m,d,__VA_ARGS__)
+#define _ENUM_M191(m,d,x,...) _ENUM_A(m,d,190,x) _ENUM_M190(m,d,__VA_ARGS__)
+#define _ENUM_M192(m,d,x,...) _ENUM_A(m,d,191,x) _ENUM_M191(m,d,__VA_ARGS__)
+#define _ENUM_M193(m,d,x,...) _ENUM_A(m,d,192,x) _ENUM_M192(m,d,__VA_ARGS__)
+#define _ENUM_M194(m,d,x,...) _ENUM_A(m,d,193,x) _ENUM_M193(m,d,__VA_ARGS__)
+#define _ENUM_M195(m,d,x,...) _ENUM_A(m,d,194,x) _ENUM_M194(m,d,__VA_ARGS__)
+#define _ENUM_M196(m,d,x,...) _ENUM_A(m,d,195,x) _ENUM_M195(m,d,__VA_ARGS__)
+#define _ENUM_M197(m,d,x,...) _ENUM_A(m,d,196,x) _ENUM_M196(m,d,__VA_ARGS__)
+#define _ENUM_M198(m,d,x,...) _ENUM_A(m,d,197,x) _ENUM_M197(m,d,__VA_ARGS__)
+#define _ENUM_M199(m,d,x,...) _ENUM_A(m,d,198,x) _ENUM_M198(m,d,__VA_ARGS__)
+#define _ENUM_M200(m,d,x,...) _ENUM_A(m,d,199,x) _ENUM_M199(m,d,__VA_ARGS__)
+#define _ENUM_M201(m,d,x,...) _ENUM_A(m,d,200,x) _ENUM_M200(m,d,__VA_ARGS__)
+#define _ENUM_M202(m,d,x,...) _ENUM_A(m,d,201,x) _ENUM_M201(m,d,__VA_ARGS__)
+#define _ENUM_M203(m,d,x,...) _ENUM_A(m,d,202,x) _ENUM_M202(m,d,__VA_ARGS__)
+#define _ENUM_M204(m,d,x,...) _ENUM_A(m,d,203,x) _ENUM_M203(m,d,__VA_ARGS__)
+#define _ENUM_M205(m,d,x,...) _ENUM_A(m,d,204,x) _ENUM_M204(m,d,__VA_ARGS__)
+#define _ENUM_M206(m,d,x,...) _ENUM_A(m,d,205,x) _ENUM_M205(m,d,__VA_ARGS__)
+#define _ENUM_M207(m,d,x,...) _ENUM_A(m,d,206,x) _ENUM_M206(m,d,__VA_ARGS__)
+#define _ENUM_M208(m,d,x,...) _ENUM_A(m,d,207,x) _ENUM_M207(m,d,__VA_ARGS__)
+#define _ENUM_M209(m,d,x,...) _ENUM_A(m,d,208,x) _ENUM_M208(m,d,__VA_ARGS__)
+#define _ENUM_M210(m,d,x,...) _ENUM_A(m,d,209,x) _ENUM_M209(m,d,__VA_ARGS__)
+#define _ENUM_M211(m,d,x,...) _ENUM_A(m,d,210,x) _ENUM_M210(m,d,__VA_ARGS__)
+#define _ENUM_M212(m,d,x,...) _ENUM_A(m,d,211,x) _ENUM_M211(m,d,__VA_ARGS__)
+#define _ENUM_M213(m,d,x,...) _ENUM_A(m,d,212,x) _ENUM_M212(m,d,__VA_ARGS__)
+#define _ENUM_M214(m,d,x,...) _ENUM_A(m,d,213,x) _ENUM_M213(m,d,__VA_ARGS__)
+#define _ENUM_M215(m,d,x,...) _ENUM_A(m,d,214,x) _ENUM_M214(m,d,__VA_ARGS__)
+#define _ENUM_M216(m,d,x,...) _ENUM_A(m,d,215,x) _ENUM_M215(m,d,__VA_ARGS__)
+#define _ENUM_M217(m,d,x,...) _ENUM_A(m,d,216,x) _ENUM_M216(m,d,__VA_ARGS__)
+#define _ENUM_M218(m,d,x,...) _ENUM_A(m,d,217,x) _ENUM_M217(m,d,__VA_ARGS__)
+#define _ENUM_M219(m,d,x,...) _ENUM_A(m,d,218,x) _ENUM_M218(m,d,__VA_ARGS__)
+#define _ENUM_M220(m,d,x,...) _ENUM_A(m,d,219,x) _ENUM_M219(m,d,__VA_ARGS__)
+#define _ENUM_M221(m,d,x,...) _ENUM_A(m,d,220,x) _ENUM_M220(m,d,__VA_ARGS__)
+#define _ENUM_M222(m,d,x,...) _ENUM_A(m,d,221,x) _ENUM_M221(m,d,__VA_ARGS__)
+#define _ENUM_M223(m,d,x,...) _ENUM_A(m,d,222,x) _ENUM_M222(m,d,__VA_ARGS__)
+#define _ENUM_M224(m,d,x,...) _ENUM_A(m,d,223,x) _ENUM_M223(m,d,__VA_ARGS__)
+#define _ENUM_M225(m,d,x,...) _ENUM_A(m,d,224,x) _ENUM_M224(m,d,__VA_ARGS__)
+#define _ENUM_M226(m,d,x,...) _ENUM_A(m,d,225,x) _ENUM_M225(m,d,__VA_ARGS__)
+#define _ENUM_M227(m,d,x,...) _ENUM_A(m,d,226,x) _ENUM_M226(m,d,__VA_ARGS__)
+#define _ENUM_M228(m,d,x,...) _ENUM_A(m,d,227,x) _ENUM_M227(m,d,__VA_ARGS__)
+#define _ENUM_M229(m,d,x,...) _ENUM_A(m,d,228,x) _ENUM_M228(m,d,__VA_ARGS__)
+#define _ENUM_M230(m,d,x,...) _ENUM_A(m,d,229,x) _ENUM_M229(m,d,__VA_ARGS__)
+#define _ENUM_M231(m,d,x,...) _ENUM_A(m,d,230,x) _ENUM_M230(m,d,__VA_ARGS__)
+#define _ENUM_M232(m,d,x,...) _ENUM_A(m,d,231,x) _ENUM_M231(m,d,__VA_ARGS__)
+#define _ENUM_M233(m,d,x,...) _ENUM_A(m,d,232,x) _ENUM_M232(m,d,__VA_ARGS__)
+#define _ENUM_M234(m,d,x,...) _ENUM_A(m,d,233,x) _ENUM_M233(m,d,__VA_ARGS__)
+#define _ENUM_M235(m,d,x,...) _ENUM_A(m,d,234,x) _ENUM_M234(m,d,__VA_ARGS__)
+#define _ENUM_M236(m,d,x,...) _ENUM_A(m,d,235,x) _ENUM_M235(m,d,__VA_ARGS__)
+#define _ENUM_M237(m,d,x,...) _ENUM_A(m,d,236,x) _ENUM_M236(m,d,__VA_ARGS__)
+#define _ENUM_M238(m,d,x,...) _ENUM_A(m,d,237,x) _ENUM_M237(m,d,__VA_ARGS__)
+#define _ENUM_M239(m,d,x,...) _ENUM_A(m,d,238,x) _ENUM_M238(m,d,__VA_ARGS__)
+#define _ENUM_M240(m,d,x,...) _ENUM_A(m,d,239,x) _ENUM_M239(m,d,__VA_ARGS__)
+#define _ENUM_M241(m,d,x,...) _ENUM_A(m,d,240,x) _ENUM_M240(m,d,__VA_ARGS__)
+#define _ENUM_M242(m,d,x,...) _ENUM_A(m,d,241,x) _ENUM_M241(m,d,__VA_ARGS__)
+#define _ENUM_M243(m,d,x,...) _ENUM_A(m,d,242,x) _ENUM_M242(m,d,__VA_ARGS__)
+#define _ENUM_M244(m,d,x,...) _ENUM_A(m,d,243,x) _ENUM_M243(m,d,__VA_ARGS__)
+#define _ENUM_M245(m,d,x,...) _ENUM_A(m,d,244,x) _ENUM_M244(m,d,__VA_ARGS__)
+#define _ENUM_M246(m,d,x,...) _ENUM_A(m,d,245,x) _ENUM_M245(m,d,__VA_ARGS__)
+#define _ENUM_M247(m,d,x,...) _ENUM_A(m,d,246,x) _ENUM_M246(m,d,__VA_ARGS__)
+#define _ENUM_M248(m,d,x,...) _ENUM_A(m,d,247,x) _ENUM_M247(m,d,__VA_ARGS__)
+#define _ENUM_M249(m,d,x,...) _ENUM_A(m,d,248,x) _ENUM_M248(m,d,__VA_ARGS__)
+#define _ENUM_M250(m,d,x,...) _ENUM_A(m,d,249,x) _ENUM_M249(m,d,__VA_ARGS__)
+#define _ENUM_M251(m,d,x,...) _ENUM_A(m,d,250,x) _ENUM_M250(m,d,__VA_ARGS__)
+#define _ENUM_M252(m,d,x,...) _ENUM_A(m,d,251,x) _ENUM_M251(m,d,__VA_ARGS__)
+#define _ENUM_M253(m,d,x,...) _ENUM_A(m,d,252,x) _ENUM_M252(m,d,__VA_ARGS__)
+#define _ENUM_M254(m,d,x,...) _ENUM_A(m,d,253,x) _ENUM_M253(m,d,__VA_ARGS__)
+#define _ENUM_M255(m,d,x,...) _ENUM_A(m,d,254,x) _ENUM_M254(m,d,__VA_ARGS__)
+#define _ENUM_M256(m,d,x,...) _ENUM_A(m,d,255,x) _ENUM_M255(m,d,__VA_ARGS__)
 
 #define _ENUM_PP_COUNT_IMPL(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, \
     _13, _14, _15, _16, _17, _18, _19, _20, _21, _22, _23, _24, _25, _26, _27, \
@@ -326,6 +325,12 @@
     28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10,\
     9, 8, 7, 6, 5, 4, 3, 2, 1)
 
+#define _ENUM_ITERATE(X, f, l) X(f, l, 0) X(f, l, 1) X(f, l, 2) X(f, l, 3)     \
+    X(f, l, 4) X(f, l, 5) X(f, l, 6) X(f, l, 7) X(f, l, 8) X(f, l, 9)          \
+    X(f, l, 10) X(f, l, 11) X(f, l, 12) X(f, l, 13) X(f, l, 14) X(f, l, 15)    \
+    X(f, l, 16) X(f, l, 17) X(f, l, 18) X(f, l, 19) X(f, l, 20) X(f, l, 21)    \
+    X(f, l, 22) X(f, l, 23)
+
 #endif // #ifdef BETTER_ENUM_PP_MAP_FILE
 
 
@@ -364,19 +369,6 @@ struct _eat_assign {
     EnumType    _value;
 };
 
-#define _ENUM_EAT_ASSIGN_SINGLE(EnumType, expression)                          \
-    ((_enum::_eat_assign<EnumType>)_Base::expression)
-
-#define _ENUM_EAT_ASSIGN(EnumType, ...)                                        \
-    _ENUM_PP_MAP(_ENUM_EAT_ASSIGN_SINGLE, EnumType, __VA_ARGS__)
-
-
-
-#define _ENUM_STRINGIZE_SINGLE(ignored, expression)     #expression
-
-#define _ENUM_STRINGIZE(...)                                                   \
-    _ENUM_PP_MAP(_ENUM_STRINGIZE_SINGLE, ignored, __VA_ARGS__)
-
 
 
 #define _ENUM_NAME_ENDERS   "= \t\n"
@@ -394,6 +386,24 @@ constexpr bool _endsName(char c, size_t index = 0)
         _ENUM_NAME_ENDERS[index] == '\0' ? false :
         // Otherwise, go on to the next character in _ENUM_ENDERS.
         _endsName(c, index + 1);
+}
+
+constexpr bool _hasExplicitValue(const char *s, size_t index = 0)
+{
+    return
+        s[index] == '\0' ? false :
+        s[index] == '=' ? true :
+        _hasExplicitValue(s, index + 1);
+}
+
+constexpr size_t _constantLength(const char *s, size_t index = 0)
+{
+    return _endsName(s[index]) ? index : _constantLength(s, index + 1);
+}
+
+constexpr char _select(const char *from, size_t from_length, size_t index)
+{
+    return index >= from_length ? '\0' : from[index];
 }
 
 constexpr char _toLowercaseAscii(char c)
@@ -471,51 +481,43 @@ constexpr EnumType _findMax(const EnumType *values, size_t count)
 
 
 
-static inline const char * const* _processNames(const char * const *rawNames,
-                                                size_t count)
-{
-    // Allocate the replacement names array.
-    const char      **processedNames = new const char*[count];
-    if (processedNames == nullptr)
-        return nullptr;
-
-    // Count the number of bytes needed in the replacement names array (an upper
-    // bound).
-    size_t          bytesNeeded = 0;
-    for (size_t index = 0; index < count; ++index)
-        bytesNeeded += std::strlen(rawNames[index]) + 1;
-
-    // Allocate memory for the string data.
-    char            *nameStorage = new char[bytesNeeded];
-    if (nameStorage == nullptr) {
-        delete[] processedNames;
-        return nullptr;
-    }
-
-    // Trim each name and place the result in storage, then save a pointer to
-    // it.
-    char            *writePointer = nameStorage;
-    for (size_t index = 0; index < count; ++index) {
-        const char  *nameEnd =
-            std::strpbrk(rawNames[index], _ENUM_NAME_ENDERS);
-
-        size_t      symbolCount =
-            nameEnd == nullptr ?
-                std::strlen(rawNames[index]) :
-                nameEnd - rawNames[index];
-
-        std::strncpy(writePointer, rawNames[index], symbolCount);
-        processedNames[index] = writePointer;
-        writePointer += symbolCount;
-
-        *writePointer = '\0';
-        ++writePointer;
-    }
-
-    return processedNames;
-}
-
 } // namespace _enum
+
+
+
+#define _ENUM_EAT_ASSIGN_SINGLE(EnumType, index, expression)                   \
+    ((_enum::_eat_assign<EnumType>)_Base::expression),
+
+#define _ENUM_EAT_ASSIGN(EnumType, ...)                                        \
+    _ENUM_PP_MAP(_ENUM_EAT_ASSIGN_SINGLE, EnumType, __VA_ARGS__)
+
+
+
+#define _ENUM_SELECT_SINGLE_CHARACTER(from, from_length, index)                \
+    _select(from, from_length, index),
+
+#define _ENUM_SELECT_CHARACTERS(from, from_length)                             \
+    _ENUM_ITERATE(_ENUM_SELECT_SINGLE_CHARACTER, from, from_length)
+
+
+
+#define _ENUM_TRIM_SINGLE_STRING(ignored, index, expression)                   \
+constexpr size_t        _length_ ## index = _constantLength(#expression);      \
+constexpr const char    _trimmed_ ## index [] =                                \
+    { _ENUM_SELECT_CHARACTERS(#expression, _length_ ## index) };               \
+constexpr const char    *_final_ ## index =                                    \
+    _hasExplicitValue(#expression) ? _trimmed_ ## index : #expression;
+
+#define _ENUM_TRIM_STRINGS(...)                                                \
+    _ENUM_PP_MAP(_ENUM_TRIM_SINGLE_STRING, ignored, __VA_ARGS__)
+
+
+
+#define _ENUM_REFER_TO_SINGLE_STRING(ignored, index, expression)               \
+    _final_ ## index,
+
+#define _ENUM_REFER_TO_STRINGS(...)                                            \
+    _ENUM_PP_MAP(_ENUM_REFER_TO_SINGLE_STRING, ignored, __VA_ARGS__)
 
 
 
@@ -562,9 +564,6 @@ enum { __VA_ARGS__ };                                                          \
 constexpr const _Base           _value_array[] =                               \
     { _ENUM_EAT_ASSIGN(_Base, __VA_ARGS__) };                                  \
                                                                                \
-constexpr const char * const    _name_array[] =                                \
-    { _ENUM_STRINGIZE(__VA_ARGS__) };                                          \
-                                                                               \
 constexpr const size_t          _size =                                        \
     sizeof(_value_array) / sizeof(_Base::_Enumerated);                         \
                                                                                \
@@ -574,6 +573,11 @@ constexpr const _Base           _first = _value_array[0];                      \
 constexpr const _Base           _last = _value_array[_size - 1];               \
 constexpr const _Base           _min = _enum::_findMin(_value_array, _size);   \
 constexpr const _Base           _max = _enum::_findMax(_value_array, _size);   \
+                                                                               \
+_ENUM_TRIM_STRINGS(__VA_ARGS__);                                               \
+                                                                               \
+constexpr const char * const    _name_array[] =                                \
+    { _ENUM_REFER_TO_STRINGS(__VA_ARGS__) };                                   \
                                                                                \
 constexpr const _Iterable<_Base>           _values{_value_array, _size};       \
 constexpr const _Iterable<const char*>     _names{_name_array, _size};         \
@@ -622,16 +626,9 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return (_Enumerated)value;                                             \
     }                                                                          \
                                                                                \
-    const char* to_string() const                                              \
+    constexpr const char* to_string() const                                    \
     {                                                                          \
-        _processNames();                                                       \
-                                                                               \
-        for (size_t index = 0; index < _size; ++index) {                       \
-            if (_value_array[index]._value == _value)                          \
-                return _processedNames[index];                                 \
-        }                                                                      \
-                                                                               \
-        throw std::domain_error("Enum::_to_string: invalid enum value");       \
+        return _name_array[_from_int_loop(_value, true)];                      \
     }                                                                          \
                                                                                \
     constexpr static const EnumType _from_string(const char *name)             \
@@ -661,22 +658,6 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
                                                                                \
     constexpr operator _Enumerated() const { return _value; }                  \
                                                                                \
-  protected:                                                                   \
-    static const char * const           *_processedNames;                      \
-                                                                               \
-    static void _processNames()                                                \
-    {                                                                          \
-        if (_processedNames == nullptr)                                        \
-            _processedNames = _enum::_processNames(_name_array, _size);        \
-    }                                                                          \
-                                                                               \
-    static const char* _getProcessedName(size_t index)                         \
-    {                                                                          \
-        _processNames();                                                       \
-        return _processedNames[index];                                         \
-    }                                                                          \
-                                                                               \
-  public:                                                                      \
     constexpr static auto       &_values = _ENUM_NS(EnumType)::_values;        \
     constexpr static auto       &_names = _ENUM_NS(EnumType)::_names;          \
                                                                                \
@@ -724,16 +705,12 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     }                                                                          \
 };
 
-#define _ENUM_WEAK      __attribute__((weak))
-
 #define _ENUM_GLOBALS(EnumType)                                                \
 constexpr const EnumType operator +(EnumType::_Enumerated enumerated)          \
     { return (EnumType)enumerated; }                                           \
                                                                                \
 constexpr const EnumType operator +(_ENUM_NS(EnumType)::_Base base)            \
-    { return (EnumType)base; }                                                 \
-                                                                               \
-const char * const * _ENUM_WEAK EnumType::_processedNames = nullptr;
+    { return (EnumType)base; }
 
 #define ENUM(EnumType, Integral, ...)                                          \
     _ENUM_DATA(EnumType, Integral, __VA_ARGS__);                               \
