@@ -25,30 +25,18 @@ for (Channel channel : Channel::_values) {
 }
 ```
 
-...and more. See the [project page](http://aantron.github.io/better-enums) and
+...and more. See the
+[project page](http://aantron.github.io/better-enums#tutorial) and
 [examples](https://github.com/aantron/better-enums/tree/master/example) for a
 tutorial.
 
 ## Installation
 
-Simply add `enum.h` and `enum_preprocessor_map.h` to your project. The current
-version can be found at
-[https://github.com/aantron/better-enums/releases](https://github.com/aantron/better-enums/releases).
-
-`enum_preprocessor_map.h` can handle enums with up to 256 constants. If you have
-more, re-generate it by running something like:
-
-    ./pp_map_gen.py enum_preprocessor_map.h 512
-
-This only needs to be done once when the constant limit is exceeded. You don't
-need to do this on every build. I hope to remove the need for this completely in
-a future version.
+Simply add `enum.h` from `master` to your project.
 
 ## Features
 
 - Generated at compile time by `constexpr` functions and the preprocessor.
-  `pp_map_gen.py` is only needed if you have an enum with more than 256
-  constants.
 - Safe conversions between enums and integers and strings.
   [1-basic.cc](https://github.com/aantron/better-enums/blob/master/example/1-basic.cc)
 - Iterable collections of constants and names.
@@ -58,22 +46,21 @@ a future version.
   [2-iterate.cc](https://github.com/aantron/better-enums/blob/master/example/2-iterate.cc)
 - Switch case checking.
   [3-switch.cc](https://github.com/aantron/better-enums/blob/master/example/3-switch.cc)
-- Almost all operations are `constexpr` and can be used at compile time in your
-  own `constexpr` code.
+- All operations are `constexpr` and can be used at compile time in your own
+  `constexpr` code.
   [4-constexpr.cc](https://github.com/aantron/better-enums/blob/master/example/4-constexpr.cc)
 - Constant values can be set (`Red = 1`) and aliased (`Favorite = Green`), just
   like with built-in enums.
-- Generating a large number of enums is faster than including a typical standard
-  header like `iostream` – performance test included.
+- Generating a large number of enums is about as fast as including a typical
+  standard header like `iostream` – performance test included.
 - Explicit choice of underlying representation type.
 - Header-only.
 - No dependencies besides the standard library.
 - Tested on gcc 4.9 and clang 3.6.
 
-The library compiles only with gcc and clang due to use of weak symbols and due
-to lagging C++11 support in msvc. It should ultimately be portable to msvc,
-since msvc has its own version of weak symbols. Everything else in the library
-is standard C++.
+The library is standard C++, but it compiles only with gcc and clang due to
+lagging C++11 support in msvc. A future runtime fallback version will allow
+msvc and non-C++11 usage.
 
 ## Contact
 
@@ -98,12 +85,6 @@ See the full [documentation](http://aantron.github.io/better-enums).
 
 There are several areas that still need improvement.
 
-- I will try to eliminate the need for `pp_map_gen.py`. The library will then
-  consist of one file, `enum.h`.
-- `to_string` can be made `constexpr`, like most of the rest of the code.
-- Iterators over defined constants should be made random-access. This would
-  allow `constexpr` functions to use them by adding 1 – the only way to advance
-  them now is by mutating increment.
 - Some enum types might have a sensible choice for a default constructor. The
   library should allow it to be customized.
 - All safety checks are currently done by linear scans. This may be a

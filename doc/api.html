@@ -637,17 +637,16 @@ do_something(Enum::A);  // converted silently</pre>
 
   <a id="to_string"></a>
   <h3>
-    <span>member</span> const char* enum_value.to_string()
+    <span>member constexpr</span> const char* enum_value.to_string()
     <span>const</span>
   </h3>
 
   <p>
     Returns the string representation of enum value on which the method is
     called. If multiple constants have the same numeric value, the string
-    returned can be the representation any of the constants. Note that this
-    method is <em>not</em> <tt>constexpr</tt>. Complexity is <em>linear</em> in
-    the number of constants. If the string does not name a constant,
-    <em>throws</em> <tt>std::runtime_error</tt>.
+    returned can be the representation any of the constants. Complexity is
+    <em>linear</em> in the number of constants. If the string does not name a
+    constant, <em>throws</em> <tt>std::runtime_error</tt>.
   </p>
 
   <a id="name"></a>
@@ -728,9 +727,9 @@ Enum::_values::end()</pre>
   <h3><span>class</span> _NameIterable::iterator</h3>
 
   <p>
-    An iterator over defined constant names with a dereference operator that is
-    <em>not</em> <tt>constexpr</tt>. Can be created explicitly by the
-    <tt>constexpr</tt> expressions
+    An iterator over defined constant names with a <tt>constexpr</tt>
+    dereference operator. Can be created explicitly by the <tt>constexpr</tt>
+    expressions
   </p>
 
   <pre>Enum::_names::begin()

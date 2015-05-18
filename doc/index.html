@@ -59,8 +59,8 @@
 
     <p>
       Better Enums gives you rich, reflective enums with the nicest syntax yet
-      seen.<sup><a href="#note">1</a></sup> All you have to do is add two short,
-      simple header files to your project, and you are ready to go.
+      seen.<sup><a href="#note">1</a></sup> All you have to do is add one short
+      and simple header file to your project, and you are ready to go.
     </p>
 
     <pre>#include &lt;enum.h&gt;
@@ -71,15 +71,16 @@ ENUM(Channel, int, Red, Green, Blue);</pre>
       reflective capacity, including string conversions, value listing,
       compile-time operations, static information about the range of declared
       constants, and (last and probably least) the name <code>"Channel"</code>
-      itself.
+      itself. You can even assign explicit values to constants and alias them
+      like with a normal built-in <code>enum</code>.
     </p>
 
     <p>
       The enum is easy to maintain. There is no duplication of value names,
       no repetition of cumbersome macros, and no generator to run on every
       build. The library is header-only and has no dependencies, so there aren't
-      any object files to link with. You can assign explicit values to constants
-      and alias them like with a normal <code>enum</code>.
+      any object files to link with. It is also standard
+      <span class="cpp">C++</span>.
     </p>
 
     <p>
@@ -95,13 +96,11 @@ ENUM(Channel, int, Red, Green, Blue);</pre>
     <h2>Installation</h2>
 
     <p>
-      Download the
-      <a href="https://github.com/aantron/better-enums/releases/latest">
-        latest release</a>, then copy the files
-      <code>enum.h</code> and <code>enum_preprocessor_map.h</code> to your
-      project. That's it! Just make sure both files are in your include path and
-      you are compiling with <span class="cc">gcc</span> or
-      <span class="cc">clang</span> in
+      Download
+      <a href="https://github.com/aantron/better-enums/blob/master/enum.h">
+      enum.h</a> and copy it to your project. That's it! Just make sure it's in
+      your include path and you are compiling with <span class="cc">gcc</span>
+      or <span class="cc">clang</span> in
       <span class="cpp">C++</span><span class="eleven">11</span> mode.
     </p>
 
@@ -212,13 +211,13 @@ Channel   my_channel = Channel::_from_integral(2);</pre>
     <hr />
 
     <p>
-      Finally, most of the above is declared <code>constexpr</code> and can be
-      run at compile time. This means you can do all sorts of parsing and
-      processing at the same time the rest of your code is being compiled,
-      improving runtime and startup performance! See some
+      Finally, all of the above can be done at compile time. This means you can
+      do all sorts of parsing and processing at the same time the rest of your
+      code is being compiled, improving runtime and startup performance! See
+      some
       <a href="https://github.com/aantron/better-enums/blob/master/example/4-constexpr.cc">examples</a>
-      and another
-      <a href="https://github.com/aantron/better-enums/blob/master/example/6-traits.cc">example</a>.
+      <a href="https://github.com/aantron/better-enums/blob/master/example/6-traits.cc">2</a>
+      <a href="https://github.com/aantron/better-enums/blob/master/example/8-constexpr-iterate.cc">3</a>.
     </p>
   </section>
 
