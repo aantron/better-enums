@@ -346,6 +346,8 @@ struct _Iterable {
     constexpr iterator begin() const { return iterator(_array); }
     constexpr iterator end() const { return iterator(_array + _size); }
     constexpr size_t size() const { return _size; }
+    constexpr const Element& operator [](size_t index) const
+        { return _array[index]; }
 
     constexpr _Iterable(const Element *array, size_t size) :
         _array(array), _size(size) { };

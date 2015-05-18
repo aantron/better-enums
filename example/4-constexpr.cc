@@ -33,6 +33,7 @@ constexpr bool          should_be_invalid_3 = Channel::_is_valid_nocase("reed");
 // _names and _values collections and iterators.
 constexpr Channel       channel_5 = *(Channel::_values.begin() + 1);
 constexpr const char    *name_through_iterator = *(Channel::_names.begin() + 1);
+constexpr const char    *name_through_subscript = Channel::_names[2];
 
 // Range properties.
 constexpr Channel       channel_6 = Channel::_max;
@@ -89,6 +90,8 @@ int main()
     std::cout << "constexpr trimmed name: " << channel_1_name << std::endl;
     std::cout << "constexpr name through iterator: "
               << name_through_iterator << std::endl;
+    std::cout << "constexpr name through suscript: "
+              << name_through_subscript << std::endl;
     std::cout << "span: " << span << std::endl;
     std::cout << "type name: " << name << std::endl;
 

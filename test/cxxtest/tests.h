@@ -128,7 +128,13 @@ static_assert_1(!Channel::_is_valid_nocase("greeen"));
 // Iterables.
 static_assert_1(Channel::_values.size() == Channel::_size);
 static_assert_1(*Channel::_values.begin() == Channel::_first);
+static_assert_1(*(Channel::_values.begin() + 1) == Channel::Green);
+static_assert_1(*(Channel::_values.begin() + 2) == Channel::Blue);
+static_assert_1(Channel::_values[1] == Channel::Green);
+static_assert_1(Channel::_values[2] == Channel::Blue);
 static_assert_1(Channel::_names.size() == Channel::_size);
+// The next one is a little janky, but actually the pointers should be the same.
+static_assert_1(*Channel::_names.begin() == (+Channel::_first).to_string());
 
 
 
@@ -149,7 +155,8 @@ class EnumTests : public CxxTest::TestSuite {
     void test_string_conversions()
     {
         TS_ASSERT_EQUALS(strcmp((+Channel::Green).to_string(), "Green"), 0);
-        TS_ASSERT_EQUALS(strcmp((+Channel::Blue).to_string(), "Blue"), 0);
+        TS_ASSERT_EQUALS(strcmp((+Depth::HighColor).to_string(),
+                         "HighColor"), 0);
 
         TS_ASSERT_THROWS(Channel::_from_string("green"), std::runtime_error);
         TS_ASSERT_THROWS(Channel::_from_string_nocase("a"), std::runtime_error);
