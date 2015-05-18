@@ -3,8 +3,8 @@
 
 #pragma once
 
-#ifndef _BETTER_ENUM_ENUM_H_
-#define _BETTER_ENUM_ENUM_H_
+#ifndef _BETTER_ENUMS_ENUM_H_
+#define _BETTER_ENUMS_ENUM_H_
 
 
 
@@ -14,9 +14,9 @@
 
 
 
-#ifdef BETTER_ENUM_PP_MAP_FILE
+#ifdef BETTER_ENUMS_MACRO_FILE
 
-#include BETTER_ENUM_PP_MAP_FILE
+#include BETTER_ENUMS_MACRO_FILE
 
 #else
 
@@ -331,7 +331,7 @@
     X(f, l, 16) X(f, l, 17) X(f, l, 18) X(f, l, 19) X(f, l, 20) X(f, l, 21)    \
     X(f, l, 22) X(f, l, 23)
 
-#endif // #ifdef BETTER_ENUM_PP_MAP_FILE
+#endif // #ifdef BETTER_ENUMS_MACRO_FILE
 
 
 
@@ -590,6 +590,19 @@ constexpr const _Iterable<const char*>     _names{_name_array, _size};         \
 #define _ENUM_NS(EnumType)      _enum::_data_ ## EnumType
 #define _ENUM_NOT_FOUND         ((size_t)-1)
 
+#ifndef BETTER_ENUMS_SAFER_SWITCH
+
+#define _ENUM_CONVERSION_FOR_SWITCH(Integral, ...)                             \
+    constexpr operator _Enumerated() const { return _value; }
+
+#else
+
+#define _ENUM_CONVERSION_FOR_SWITCH(Integral, ...)                             \
+    enum class _Case : Integral { __VA_ARGS__ };                               \
+    constexpr operator _Case() const { return (_Case)_value; }
+
+#endif // #ifndef BETTER_ENUMS_SAFER_SWITCH
+
 #define _ENUM_TYPE(EnumType, Integral, ...)                                    \
 class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
   protected:                                                                   \
@@ -658,7 +671,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return _from_string_nocase_loop(name, false) != _ENUM_NOT_FOUND;       \
     }                                                                          \
                                                                                \
-    constexpr operator _Enumerated() const { return _value; }                  \
+    _ENUM_CONVERSION_FOR_SWITCH(Integral, __VA_ARGS__);                        \
                                                                                \
     constexpr static auto       &_values = _ENUM_NS(EnumType)::_values;        \
     constexpr static auto       &_names = _ENUM_NS(EnumType)::_names;          \
@@ -721,4 +734,4 @@ constexpr const EnumType operator +(_ENUM_NS(EnumType)::_Base base)            \
 
 
 
-#endif // #ifndef _BETTER_ENUM_ENUM_H_
+#endif // #ifndef _BETTER_ENUMS_ENUM_H_
