@@ -35,10 +35,6 @@ constexpr Channel       channel_5 = *(Channel::_values.begin() + 1);
 constexpr const char    *name_through_iterator = *(Channel::_names.begin() + 1);
 constexpr const char    *name_through_subscript = Channel::_names[2];
 
-// Range properties.
-constexpr Channel       channel_6 = Channel::_max;
-constexpr size_t        span = Channel::_span;
-
 // Type name.
 constexpr auto          name = Channel::_name;
 
@@ -85,14 +81,12 @@ int main()
     print_validity(false, should_be_invalid_3);
 
     PRINT(5);
-    PRINT(6);
 
     std::cout << "constexpr trimmed name: " << channel_1_name << std::endl;
     std::cout << "constexpr name through iterator: "
               << name_through_iterator << std::endl;
     std::cout << "constexpr name through suscript: "
               << name_through_subscript << std::endl;
-    std::cout << "span: " << span << std::endl;
     std::cout << "type name: " << name << std::endl;
 
     return 0;

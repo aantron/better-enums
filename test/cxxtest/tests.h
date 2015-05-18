@@ -66,25 +66,6 @@ static_assert_1((std::is_convertible<Channel, Channel::_Integral>()));
 
 
 
-// Range properties.
-static_assert_1(Channel::_size == 3);
-static_assert_1(Depth::_size == 2);
-
-static_assert_1(Channel::_span == 3);
-static_assert_1(Depth::_span == 21);
-
-static_assert_1(Channel::_first == Channel::Red);
-static_assert_1(Channel::_last == Channel::Blue);
-static_assert_1(Depth::_first == Depth::HighColor);
-static_assert_1(Depth::_last == Depth::TrueColor);
-
-static_assert_1(Channel::_min == Channel::Red);
-static_assert_1(Channel::_max == Channel::Blue);
-static_assert_1(Depth::_min == Depth::TrueColor);
-static_assert_1(Depth::_max == Depth::HighColor);
-
-
-
 // Constant values.
 static_assert_1((+Channel::Red).to_integral() == 0);
 static_assert_1((+Channel::Green).to_integral() == 1);
@@ -126,15 +107,18 @@ static_assert_1(!Channel::_is_valid_nocase("greeen"));
 
 
 // Iterables.
+static_assert_1(Channel::_size == 3);
+static_assert_1(Depth::_size == 2);
 static_assert_1(Channel::_values.size() == Channel::_size);
-static_assert_1(*Channel::_values.begin() == Channel::_first);
+static_assert_1(*Channel::_values.begin() == Channel::Red);
 static_assert_1(*(Channel::_values.begin() + 1) == Channel::Green);
 static_assert_1(*(Channel::_values.begin() + 2) == Channel::Blue);
 static_assert_1(Channel::_values[1] == Channel::Green);
 static_assert_1(Channel::_values[2] == Channel::Blue);
+
 static_assert_1(Channel::_names.size() == Channel::_size);
 // The next one is a little janky, but actually the pointers should be the same.
-static_assert_1(*Channel::_names.begin() == (+Channel::_first).to_string());
+static_assert_1(*Channel::_names.begin() == (+Channel::Red).to_string());
 
 
 

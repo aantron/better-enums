@@ -447,42 +447,6 @@ constexpr bool _namesMatchNocase(const char *stringizedName,
 
 
 
-template <typename EnumType>
-constexpr EnumType _findMinLoop(const EnumType *values, size_t valueCount,
-                                size_t index, EnumType best)
-{
-    return
-        index == valueCount ? best :
-        values[index]._value < best._value ?
-            _findMinLoop(values, valueCount, index + 1, values[index]) :
-            _findMinLoop(values, valueCount, index + 1, best);
-}
-
-template <typename EnumType>
-constexpr EnumType _findMin(const EnumType *values, size_t valueCount)
-{
-    return _findMinLoop(values, valueCount, 1, values[0]);
-}
-
-template <typename EnumType>
-constexpr EnumType _findMaxLoop(const EnumType *values, size_t valueCount,
-                                size_t index, EnumType best)
-{
-    return
-        index == valueCount ? best :
-        values[index]._value > best._value ?
-            _findMaxLoop(values, valueCount, index + 1, values[index]) :
-            _findMaxLoop(values, valueCount, index + 1, best);
-}
-
-template <typename EnumType>
-constexpr EnumType _findMax(const EnumType *values, size_t count)
-{
-    return _findMaxLoop(values, count, 1, values[0]);
-}
-
-
-
 } // namespace _enum
 
 
@@ -571,11 +535,6 @@ constexpr const size_t          _size =                                        \
                                                                                \
 static_assert(_size > 0, "no constants defined in enum type");                 \
                                                                                \
-constexpr const _Base           _first = _value_array[0];                      \
-constexpr const _Base           _last = _value_array[_size - 1];               \
-constexpr const _Base           _min = _enum::_findMin(_value_array, _size);   \
-constexpr const _Base           _max = _enum::_findMax(_value_array, _size);   \
-                                                                               \
 _ENUM_TRIM_STRINGS(__VA_ARGS__);                                               \
                                                                                \
 constexpr const char * const    _name_array[] =                                \
@@ -614,13 +573,6 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
                                                                                \
     constexpr static const char     *_name = #EnumType;                        \
     constexpr static const size_t   _size = _ENUM_NS(EnumType)::_size;         \
-                                                                               \
-    constexpr static auto   &_first = _ENUM_NS(EnumType)::_first;              \
-    constexpr static auto   &_last  = _ENUM_NS(EnumType)::_last;               \
-    constexpr static auto   &_min   = _ENUM_NS(EnumType)::_min;                \
-    constexpr static auto   &_max   = _ENUM_NS(EnumType)::_max;                \
-                                                                               \
-    constexpr static const _Integral    _span = _max._value - _min._value + 1; \
                                                                                \
     EnumType() = delete;                                                       \
     constexpr EnumType(_Enumerated value) : _Base(value) { }                   \
@@ -724,8 +676,14 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
 constexpr const EnumType operator +(EnumType::_Enumerated enumerated)          \
     { return (EnumType)enumerated; }                                           \
                                                                                \
+namespace _enum {                                                              \
+namespace _data_ ## EnumType {                                                 \
+                                                                               \
 constexpr const EnumType operator +(_ENUM_NS(EnumType)::_Base base)            \
-    { return (EnumType)base; }
+    { return (EnumType)base; }                                                 \
+                                                                               \
+}                                                                              \
+}
 
 #define ENUM(EnumType, Integral, ...)                                          \
     _ENUM_DATA(EnumType, Integral, __VA_ARGS__);                               \

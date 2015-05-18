@@ -4,11 +4,22 @@
 #include <iostream>
 #include <enum.h>
 
+// Computes the maximum value of an enum at compile time.
+template <typename Enum>
+constexpr Enum maximum(Enum accumulator = Enum::_values[0], size_t index = 1)
+{
+    return
+        index >= Enum::_size ? accumulator :
+        Enum::_values[index] > accumulator ?
+            maximum(+Enum::_values[index], index + 1) :
+            maximum(accumulator, index + 1);
+}
+
 ENUM(Channel, int, Red, Green, Blue);
 
 int main()
 {
-    using ChannelSet = std::bitset<Channel::_span>;
+    using ChannelSet = std::bitset<maximum<Channel>() + 1>;
 
     ChannelSet  red_only;
     red_only.set(Channel::Red);

@@ -54,7 +54,7 @@ void format_declaration(char *storage)
         std::strcat(storage, *name_iterator);
         std::strcat(storage, ", ");
     }
-    std::strcat(storage, (+Enum::_last).to_string());
+    std::strcat(storage, Enum::_names[Enum::_size - 1]);
 
     std::strcat(storage, ");");
 
