@@ -10,14 +10,16 @@
 
 #include <cstddef>          // For size_t.
 #include <stdexcept>
-#include <type_traits>
+
+#ifdef BETTER_ENUMS_EXTRA_INCLUDE
+#   include BETTER_ENUMS_EXTRA_INCLUDE
+#endif
+
 
 
 
 #ifdef BETTER_ENUMS_MACRO_FILE
-
-#include BETTER_ENUMS_MACRO_FILE
-
+#   include BETTER_ENUMS_MACRO_FILE
 #else
 
 #define _ENUM_PP_MAP(macro, data, ...) \
@@ -335,7 +337,75 @@
 
 
 
+namespace better_enums {
+
+#ifdef BETTER_ENUMS_USE_OPTIONAL
+
+template <typename T>
+using optional = BETTER_ENUMS_USE_OPTIONAL<T>;
+
+#else
+
+template <typename T>
+constexpr T _default()
+{
+    return (typename T::_Enumerated)0;
+}
+
+template <>
+constexpr const char* _default<const char*>()
+{
+    return nullptr;
+}
+
+template <>
+constexpr size_t _default<size_t>()
+{
+    return 0;
+}
+
+template <typename T>
+struct optional {
+    constexpr optional() : _valid(false), _value(_default<T>()) { }
+    constexpr optional(T value) : _valid(true), _value(value) { }
+
+    constexpr const T& operator *() const { return _value; }
+    constexpr const T& operator ->() const { return _value; }
+
+    constexpr operator bool() const { return _valid; }
+
+    constexpr const T& value() const { return _value; }
+
+  private:
+    bool    _valid;
+    T       _value;
+};
+
+#endif
+
+}
+
+
+
 namespace _enum {
+
+
+
+template <typename T>
+using _optional = better_enums::optional<T>;
+
+template <typename CastTo, typename Element>
+constexpr static _optional<CastTo>
+_map_index(const Element *array, _optional<size_t> index)
+{
+    return index ? (CastTo)array[*index] : _optional<CastTo>();
+}
+
+template <typename T>
+constexpr static T _or_throw(_optional<T> maybe, const char *message)
+{
+    return maybe ? *maybe : throw std::runtime_error(message);
+}
 
 
 
@@ -547,7 +617,6 @@ constexpr const _Iterable<const char*>     _names{_name_array, _size};         \
 }
 
 #define _ENUM_NS(EnumType)      _enum::_data_ ## EnumType
-#define _ENUM_NOT_FOUND         ((size_t)-1)
 
 #ifndef BETTER_ENUMS_SAFER_SWITCH
 
@@ -568,6 +637,9 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     constexpr static auto _value_array = _ENUM_NS(EnumType)::_value_array;     \
     constexpr static auto _name_array  = _ENUM_NS(EnumType)::_name_array;      \
                                                                                \
+    template <typename T>                                                      \
+    using _optional = better_enums::optional<T>;                               \
+                                                                               \
   public:                                                                      \
     using _Integral = Integral;                                                \
                                                                                \
@@ -583,9 +655,18 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return _value;                                                         \
     }                                                                          \
                                                                                \
+    constexpr static const _optional<EnumType>                                 \
+    _from_integral_nothrow(_Integral value)                                    \
+    {                                                                          \
+        return                                                                 \
+            _enum::_map_index<EnumType>(_value_array, _from_int_loop(value));  \
+    }                                                                          \
+                                                                               \
     constexpr static const EnumType _from_integral(_Integral value)            \
     {                                                                          \
-        return _value_array[_from_int_loop(value, true)];                      \
+        return                                                                 \
+            _enum::_or_throw(_from_integral_nothrow(value),                    \
+                             "_from_integral_or_throw: invalid argument");     \
     }                                                                          \
                                                                                \
     constexpr static const EnumType _from_integral_unchecked(_Integral value)  \
@@ -595,32 +676,55 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
                                                                                \
     constexpr const char* to_string() const                                    \
     {                                                                          \
-        return _name_array[_from_int_loop(_value, true)];                      \
+        return                                                                 \
+            _enum::_or_throw(                                                  \
+                _enum::_map_index<const char*>(_name_array,                    \
+                                               _from_int_loop(_value)),        \
+                "to_string: invalid enum value");                              \
+    }                                                                          \
+                                                                               \
+    constexpr static const _optional<EnumType>                                 \
+    _from_string_nothrow(const char *name)                                     \
+    {                                                                          \
+        return                                                                 \
+            _enum::_map_index<EnumType>(_value_array, _from_string_loop(name));\
     }                                                                          \
                                                                                \
     constexpr static const EnumType _from_string(const char *name)             \
     {                                                                          \
-        return _value_array[_from_string_loop(name, true)];                    \
+        return                                                                 \
+            _enum::_or_throw(_from_string_nothrow(name),                       \
+                             "_from_string_or_throw: invalid argument");       \
+    }                                                                          \
+                                                                               \
+    constexpr static const _optional<EnumType>                                 \
+    _from_string_nocase_nothrow(const char *name)                              \
+    {                                                                          \
+        return                                                                 \
+            _enum::_map_index<EnumType>(_value_array,                          \
+                                        _from_string_nocase_loop(name));       \
     }                                                                          \
                                                                                \
     constexpr static const EnumType _from_string_nocase(const char *name)      \
     {                                                                          \
-        return _value_array[_from_string_nocase_loop(name, true)];             \
+        return                                                                 \
+            _enum::_or_throw(_from_string_nocase_nothrow(name),                \
+                             "_from_string_nocase_or_throw: invalid argument");\
     }                                                                          \
                                                                                \
     constexpr static bool _is_valid(_Integral value)                           \
     {                                                                          \
-        return _from_int_loop(value, false) != _ENUM_NOT_FOUND;                \
+        return _from_int_loop(value);                                          \
     }                                                                          \
                                                                                \
     constexpr static bool _is_valid(const char *name)                          \
     {                                                                          \
-        return _from_string_loop(name, false) != _ENUM_NOT_FOUND;              \
+        return _from_string_loop(name);                                        \
     }                                                                          \
                                                                                \
     constexpr static bool _is_valid_nocase(const char *name)                   \
     {                                                                          \
-        return _from_string_nocase_loop(name, false) != _ENUM_NOT_FOUND;       \
+        return _from_string_nocase_loop(name);                                 \
     }                                                                          \
                                                                                \
     _ENUM_CONVERSION_FOR_SWITCH(Integral, __VA_ARGS__);                        \
@@ -629,46 +733,33 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     constexpr static auto       &_names = _ENUM_NS(EnumType)::_names;          \
                                                                                \
   protected:                                                                   \
-    constexpr static size_t _from_int_loop(_Integral value,                    \
-                                           bool throw_exception,               \
-                                           size_t index = 0)                   \
+    constexpr static _optional<size_t> _from_int_loop(_Integral value,         \
+                                                      size_t index = 0)        \
     {                                                                          \
         return                                                                 \
-            index == _size ?                                                   \
-                (throw_exception ?                                             \
-                    throw std::runtime_error(                                  \
-                        "Enum::_from_integral: invalid integer value") :       \
-                    _ENUM_NOT_FOUND) :                                         \
-            _value_array[index]._value == value ? index :                      \
-            _from_int_loop(value, throw_exception, index + 1);                 \
+            index == _size ? _optional<size_t>() :                             \
+            _value_array[index]._value == value ? _optional<size_t>(index) :   \
+            _from_int_loop(value, index + 1);                                  \
     }                                                                          \
                                                                                \
-    constexpr static size_t _from_string_loop(const char *name,                \
-                                              bool throw_exception,            \
-                                              size_t index = 0)                \
+    constexpr static _optional<size_t> _from_string_loop(const char *name,     \
+                                                         size_t index = 0)     \
     {                                                                          \
         return                                                                 \
-            index == _size ?                                                   \
-                (throw_exception ?                                             \
-                    throw std::runtime_error(                                  \
-                        "Enum::_from_string: invalid string argument") :       \
-                    _ENUM_NOT_FOUND) :                                         \
-            _enum::_namesMatch(_name_array[index], name) ? index :             \
-            _from_string_loop(name, throw_exception, index + 1);               \
+            index == _size ? _optional<size_t>() :                             \
+            _enum::_namesMatch(_name_array[index], name) ?                     \
+                _optional<size_t>(index) :                                     \
+            _from_string_loop(name, index + 1);                                \
     }                                                                          \
                                                                                \
-    constexpr static size_t _from_string_nocase_loop(const char *name,         \
-                                                     bool throw_exception,     \
-                                                     size_t index = 0)         \
+    constexpr static _optional<size_t>                                         \
+        _from_string_nocase_loop(const char *name, size_t index = 0)           \
     {                                                                          \
         return                                                                 \
-            index == _size ?                                                   \
-                (throw_exception ?                                             \
-                    throw std::runtime_error(                                  \
-                        "Enum::_from_string_nocase: invalid string argument") :\
-                    _ENUM_NOT_FOUND) :                                         \
-                _enum::_namesMatchNocase(_name_array[index], name) ? index :   \
-                _from_string_nocase_loop(name, throw_exception, index + 1);    \
+            index == _size ? _optional<size_t>() :                             \
+                _enum::_namesMatchNocase(_name_array[index], name) ?           \
+                    _optional<size_t>(index) :                                 \
+                _from_string_nocase_loop(name, index + 1);                     \
     }                                                                          \
 };
 

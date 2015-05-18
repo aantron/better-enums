@@ -63,6 +63,18 @@ int main()
 
 
 
+    // Conversions with the nothrow (optional) interface.
+    auto    maybe_channel = Channel::_from_string_nothrow("foo");
+    if (maybe_channel)
+        throw std::logic_error("expected conversion failure");
+
+    maybe_channel = Channel::_from_string_nothrow("Blue");
+    if (!maybe_channel)
+        throw std::logic_error("expected successful conversion");
+    print_channel(*maybe_channel);
+
+
+
     // Unsafe unchecked cast.
     channel = Channel::_from_integral_unchecked(2);
 
