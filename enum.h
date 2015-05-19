@@ -177,7 +177,7 @@ using optional = BETTER_ENUMS_USE_OPTIONAL<T>;
 template <typename T>
 _ENUM_CONSTEXPR T _default()
 {
-    return (typename T::_Enumerated)0;
+    return (typename T::_enumerated)0;
 }
 
 template <>
@@ -417,7 +417,7 @@ void _trim_names(const char * const *raw_names, const char **trimmed_names,
     EnumType() = delete;
 
 #define _ENUM_SIZED(Integral)           : Integral
-#define _ENUM_REPRESENTATION(Integral)  _Enumerated
+#define _ENUM_REPRESENTATION(Integral)  _enumerated
 
 #else
 
@@ -437,33 +437,33 @@ namespace _enum {                                                              \
 namespace _data_ ## EnumType {                                                 \
                                                                                \
 struct _Base {                                                                 \
-    enum _Enumerated _ENUM_SIZED(Integral) { __VA_ARGS__ };                    \
+    enum _enumerated _ENUM_SIZED(Integral) { __VA_ARGS__ };                    \
                                                                                \
-    _ENUM_CONSTEXPR _Base(_Enumerated value) : _value(value) { }               \
+    _ENUM_CONSTEXPR _Base(_enumerated value) : _value(value) { }               \
                                                                                \
     _ENUM_CONSTEXPR bool operator ==(const _Base &other) const                 \
         { return _value == other._value; }                                     \
-    _ENUM_CONSTEXPR bool operator ==(_Enumerated value) const                  \
+    _ENUM_CONSTEXPR bool operator ==(_enumerated value) const                  \
         { return _value == value; }                                            \
     _ENUM_CONSTEXPR bool operator !=(const _Base &other) const                 \
         { return !(*this == other); }                                          \
-    _ENUM_CONSTEXPR bool operator !=(_Enumerated value) const                  \
+    _ENUM_CONSTEXPR bool operator !=(_enumerated value) const                  \
         { return !(*this == value); }                                          \
     _ENUM_CONSTEXPR bool operator <(const _Base &other) const                  \
         { return _value < other._value; }                                      \
-    _ENUM_CONSTEXPR bool operator <(_Enumerated value) const                   \
+    _ENUM_CONSTEXPR bool operator <(_enumerated value) const                   \
         { return _value < value; }                                             \
     _ENUM_CONSTEXPR bool operator <=(const _Base &other) const                 \
         { return _value <= other._value; }                                     \
-    _ENUM_CONSTEXPR bool operator <=(_Enumerated value) const                  \
+    _ENUM_CONSTEXPR bool operator <=(_enumerated value) const                  \
         { return _value <= value; }                                            \
     _ENUM_CONSTEXPR bool operator >(const _Base &other) const                  \
         { return _value > other._value; }                                      \
-    _ENUM_CONSTEXPR bool operator >(_Enumerated value) const                   \
+    _ENUM_CONSTEXPR bool operator >(_enumerated value) const                   \
         { return _value > value; }                                             \
     _ENUM_CONSTEXPR bool operator >=(const _Base &other) const                 \
         { return _value >= other._value; }                                     \
-    _ENUM_CONSTEXPR bool operator >=(_Enumerated value) const                  \
+    _ENUM_CONSTEXPR bool operator >=(_enumerated value) const                  \
         { return _value >= value; }                                            \
                                                                                \
     _ENUM_REPRESENTATION(Integral)  _value;                                    \
@@ -477,7 +477,7 @@ _ENUM_CONSTEXPR const _Base     _value_array[] =                               \
     { _ENUM_EAT_ASSIGN(_Base, __VA_ARGS__) };                                  \
                                                                                \
 _ENUM_CONSTEXPR const size_t    _size =                                        \
-    sizeof(_value_array) / sizeof(_Base::_Enumerated);                         \
+    sizeof(_value_array) / sizeof(_Base::_enumerated);                         \
                                                                                \
 }                                                                              \
 }
@@ -541,7 +541,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     using _optional = better_enums::optional<T>;                               \
                                                                                \
   public:                                                                      \
-    using _Integral = Integral;                                                \
+    using _integral = Integral;                                                \
                                                                                \
     constexpr static const char     *_name = #EnumType;                        \
     constexpr static const size_t   _size = _ENUM_NS(EnumType)::_size;         \
@@ -552,31 +552,31 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     }                                                                          \
                                                                                \
     EnumType() = delete;                                                       \
-    constexpr EnumType(_Enumerated value) : _Base(value) { }                   \
+    constexpr EnumType(_enumerated value) : _Base(value) { }                   \
     constexpr EnumType(_ENUM_NS(EnumType)::_Base value) : _Base(value) { }     \
                                                                                \
-    constexpr _Integral to_integral() const                                    \
+    constexpr _integral to_integral() const                                    \
     {                                                                          \
         return _value;                                                         \
     }                                                                          \
                                                                                \
     constexpr static const _optional<EnumType>                                 \
-    _from_integral_nothrow(_Integral value)                                    \
+    _from_integral_nothrow(_integral value)                                    \
     {                                                                          \
         return                                                                 \
             _enum::_map_index<EnumType>(_value_array, _from_int_loop(value));  \
     }                                                                          \
                                                                                \
-    constexpr static const EnumType _from_integral(_Integral value)            \
+    constexpr static const EnumType _from_integral(_integral value)            \
     {                                                                          \
         return                                                                 \
             _enum::_or_throw(_from_integral_nothrow(value),                    \
                              "Enum::_from_integral: invalid argument");        \
     }                                                                          \
                                                                                \
-    constexpr static const EnumType _from_integral_unchecked(_Integral value)  \
+    constexpr static const EnumType _from_integral_unchecked(_integral value)  \
     {                                                                          \
-        return (_Enumerated)value;                                             \
+        return (_enumerated)value;                                             \
     }                                                                          \
                                                                                \
     constexpr const char* to_string() const                                    \
@@ -617,7 +617,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
                              "Enum::_from_string_nocase: invalid argument");   \
     }                                                                          \
                                                                                \
-    constexpr static bool _is_valid(_Integral value)                           \
+    constexpr static bool _is_valid(_integral value)                           \
     {                                                                          \
         return _from_int_loop(value);                                          \
     }                                                                          \
@@ -659,7 +659,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     }                                                                          \
                                                                                \
   protected:                                                                   \
-    constexpr static _optional<size_t> _from_int_loop(_Integral value,         \
+    constexpr static _optional<size_t> _from_int_loop(_integral value,         \
                                                       size_t index = 0)        \
     {                                                                          \
         return                                                                 \
@@ -698,9 +698,9 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     typedef better_enums::optional<size_t>      _optional_index;               \
                                                                                \
   public:                                                                      \
-    typedef Integral    _Integral;                                             \
+    typedef Integral    _integral;                                             \
                                                                                \
-    EnumType(_Enumerated value) : _Base(value) { }                             \
+    EnumType(_enumerated value) : _Base(value) { }                             \
     EnumType(_ENUM_NS(EnumType)::_Base value) : _Base(value) { }               \
                                                                                \
     static const char* _name_()                                                \
@@ -710,21 +710,21 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
                                                                                \
     static const size_t     _size = _ENUM_NS(EnumType)::_size;                 \
                                                                                \
-    _Integral to_integral() const                                              \
+    _integral to_integral() const                                              \
     {                                                                          \
         return _value;                                                         \
     }                                                                          \
                                                                                \
-    static _optional _from_integral_nothrow(_Integral value)                   \
+    static _optional _from_integral_nothrow(_integral value)                   \
     {                                                                          \
         _optional_index     index = _value_to_index(value);                    \
         if (!index)                                                            \
             return _optional();                                                \
                                                                                \
-        return EnumType((_Enumerated)value);                                   \
+        return EnumType((_enumerated)value);                                   \
     }                                                                          \
                                                                                \
-    static EnumType _from_integral(_Integral value)                            \
+    static EnumType _from_integral(_integral value)                            \
     {                                                                          \
         _optional           maybe = _from_integral_nothrow(value);             \
         if (!maybe)                                                            \
@@ -733,9 +733,9 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return *maybe;                                                         \
     }                                                                          \
                                                                                \
-    static EnumType _from_integral_unchecked(_Integral value)                  \
+    static EnumType _from_integral_unchecked(_integral value)                  \
     {                                                                          \
-        return (_Enumerated)value;                                             \
+        return (_enumerated)value;                                             \
     }                                                                          \
                                                                                \
     const char* to_string() const                                              \
@@ -747,9 +747,9 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return _ENUM_NS(EnumType)::_trimmed_names[*index];                     \
     }                                                                          \
                                                                                \
-    operator _Enumerated() const                                               \
+    operator _enumerated() const                                               \
     {                                                                          \
-        return (_Enumerated)_value;                                            \
+        return (_enumerated)_value;                                            \
     }                                                                          \
                                                                                \
     static _optional _from_string_nothrow(const char *name)                    \
@@ -790,7 +790,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return *maybe;                                                         \
     }                                                                          \
                                                                                \
-    static bool _is_valid(_Integral value)                                     \
+    static bool _is_valid(_integral value)                                     \
     {                                                                          \
         return _value_to_index(value);                                         \
     }                                                                          \
@@ -840,7 +840,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         _ENUM_NS(EnumType)::_initialized = true;                               \
     }                                                                          \
                                                                                \
-    static _optional_index _value_to_index(_Integral value)                    \
+    static _optional_index _value_to_index(_integral value)                    \
     {                                                                          \
         _initialize();                                                         \
                                                                                \
@@ -878,7 +878,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     }                                                                          \
                                                                                \
   private:                                                                     \
-    EnumType() : _Base((_Enumerated)0) { }                                     \
+    EnumType() : _Base((_enumerated)0) { }                                     \
 };
 
 #endif // #ifdef _ENUM_COMPILE_TIME
@@ -886,7 +886,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
 
 
 #define _ENUM_OPERATORS(EnumType)                                              \
-_ENUM_CONSTEXPR const EnumType operator +(EnumType::_Enumerated enumerated)    \
+_ENUM_CONSTEXPR const EnumType operator +(EnumType::_enumerated enumerated)    \
     { return (EnumType)enumerated; }                                           \
                                                                                \
 namespace _enum {                                                              \

@@ -23,21 +23,21 @@ static_assert_1(std::is_literal_type<Channel>());
 
 
 // Member type properties and identities.
-static_assert_1(std::is_integral<Channel::_Integral>());
-static_assert_1(std::is_enum<Channel::_Enumerated>());
+static_assert_1(std::is_integral<Channel::_integral>());
+static_assert_1(std::is_enum<Channel::_enumerated>());
 
-static_assert_1((std::is_same<short, Channel::_Integral>()));
+static_assert_1((std::is_same<short, Channel::_integral>()));
 static_assert_1((std::is_same<
-    short, std::underlying_type<Channel::_Enumerated>::type>()));
+    short, std::underlying_type<Channel::_enumerated>::type>()));
 
-static_assert_1(!(std::is_same<int, Channel::_Integral>()));
+static_assert_1(!(std::is_same<int, Channel::_integral>()));
 static_assert_1(!(std::is_same<
-    int, std::underlying_type<Channel::_Enumerated>::type>()));
+    int, std::underlying_type<Channel::_enumerated>::type>()));
 
 static_assert_1(sizeof(Channel) == sizeof(short));
 static_assert_1(alignof(Channel) == alignof(short));
 
-static_assert_1((std::is_same<decltype(Channel::Red), Channel::_Enumerated>()));
+static_assert_1((std::is_same<decltype(Channel::Red), Channel::_enumerated>()));
 
 
 
@@ -48,29 +48,29 @@ static_assert_1(!std::is_default_constructible<Channel>());
 static_assert_1(std::is_trivially_copyable<Channel>());
 #endif
 
-static_assert_1((std::is_constructible<Channel, Channel::_Enumerated>()));
-static_assert_1(!(std::is_constructible<Channel, Channel::_Integral>()));
+static_assert_1((std::is_constructible<Channel, Channel::_enumerated>()));
+static_assert_1(!(std::is_constructible<Channel, Channel::_integral>()));
 static_assert_1(!(std::is_constructible<Channel, Depth>()));
 
 
 
 // Intended implicit conversions.
-static_assert_1((std::is_convertible<Channel::_Enumerated, Channel>()));
+static_assert_1((std::is_convertible<Channel::_enumerated, Channel>()));
 
 // Regrettable implicit conversions.
 static_assert_1((std::is_convertible<decltype(Channel::Red),
-                                     Channel::_Integral>()));
+                                     Channel::_integral>()));
 
 // Disallowed implicit conversions.
-static_assert_1(!(std::is_convertible<Channel::_Integral, Channel>()));
-static_assert_1(!(std::is_convertible<Channel, Channel::_Integral>()));
+static_assert_1(!(std::is_convertible<Channel::_integral, Channel>()));
+static_assert_1(!(std::is_convertible<Channel, Channel::_integral>()));
 static_assert_1(!(std::is_convertible<Depth, Channel>()));
 static_assert_1(!(std::is_convertible<Channel, Depth>()));
-static_assert_1(!(std::is_convertible<Channel, Channel::_Enumerated>()));
+static_assert_1(!(std::is_convertible<Channel, Channel::_enumerated>()));
 static_assert_1(!(std::is_convertible<decltype(+Channel::Red),
-                                      Channel::_Integral>()));
+                                      Channel::_integral>()));
 static_assert_1(!(std::is_convertible<decltype(Channel::_values[0]),
-                                      Channel::_Integral>()));
+                                      Channel::_integral>()));
 
 
 
@@ -89,7 +89,7 @@ static_assert_1(Channel::_from_integral(1) != Channel::Blue);
 static_assert_1(Channel::_from_integral_unchecked(1) == Channel::Green);
 static_assert_1(Channel::_from_integral_unchecked(1) != Channel::Blue);
 
-static_assert_1(Channel::_is_valid((Channel::_Integral)0));
+static_assert_1(Channel::_is_valid((Channel::_integral)0));
 static_assert_1(Channel::_is_valid(1));
 static_assert_1(Channel::_is_valid(2));
 static_assert_1(!Channel::_is_valid(3));

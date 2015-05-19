@@ -106,5 +106,5 @@ static_assert(sizeof(Channel) == sizeof(uint16_t),
 static_assert(alignof(Channel) == alignof(uint16_t),
               "enum has the same alignment as its underlying integral type");
 
-static_assert(std::is_same<Channel::_Integral, uint16_t>(),
+static_assert(std::is_same<Channel::_integral, uint16_t>(),
               "the underlying integral type is accessible as a member");
