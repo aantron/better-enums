@@ -38,10 +38,7 @@ ENUM(Region, int,
      HornOfAfrica, NearEast, AlSham, EastAfrica, NileBasin, Palestine, Levant,
      Anatolia, AegeanSea, GreatSteppe, CongoBasin, SouthAfrica, WestAfrica,
      Sahara, WestSahara, NorthwestTerritory, YukonAlaska, Quebec, NewEngland,
-     DeepSouth, PacificCoast, BajaCalifornia, Yucatan, NorthAmerica,
-     CentralAmerica, LatinAmerica, SpanishAmerica, AmazonBasin,
-     MississippiBasin, RioDeLaPlata, Andes, TierraDelFuego, Galapagos,
-     GranColombia);
+     DeepSouth);
 
 int main()
 {

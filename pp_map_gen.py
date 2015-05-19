@@ -8,7 +8,7 @@
 # this script if you are developing enum.h, or run into a limit.
 #
 # _ENUM_PP_MAP has a limit, which determines the maximum number of constants an
-# enum can have. By default, this limit is 256 constants.
+# enum can have. By default, this limit is 64 constants.
 #
 # _ENUM_ITERATE also has a limit. This one determines the maximum length of the
 # name of a constant that is followed by an explicit setting (" = 2"). By
@@ -65,8 +65,8 @@ def generate(stream, constants, length, script):
     print >> stream, ''
     print >> stream, '#pragma once'
     print >> stream, ''
-    print >> stream, '#ifndef _BETTER_ENUM_ENUM_PREPROCESSOR_MAP_H_'
-    print >> stream, '#define _BETTER_ENUM_ENUM_PREPROCESSOR_MAP_H_'
+    print >> stream, '#ifndef _BETTER_ENUM_MACRO_FILE_H_'
+    print >> stream, '#define _BETTER_ENUM_MACRO_FILE_H_'
 
     print >> stream, ''
     print >> stream, '#define _ENUM_PP_MAP(macro, data, ...) \\'
@@ -122,7 +122,7 @@ def generate(stream, constants, length, script):
     print >> stream, ''
 
     print >> stream, ''
-    print >> stream, '#endif // #ifndef _BETTER_ENUM_ENUM_PREPROCESSOR_MAP_H_'
+    print >> stream, '#endif // #ifndef _BETTER_ENUM_MACRO_FILE_H_'
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
