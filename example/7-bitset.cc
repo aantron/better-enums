@@ -10,7 +10,7 @@ constexpr Enum maximum(Enum accumulator = Enum::_values[0], size_t index = 1)
 {
     return
         index >= Enum::_size ? accumulator :
-        Enum::_values[index] > accumulator ?
+        +Enum::_values[index] > accumulator ?
             maximum(+Enum::_values[index], index + 1) :
             maximum(accumulator, index + 1);
 }
@@ -19,7 +19,7 @@ ENUM(Channel, int, Red, Green, Blue);
 
 int main()
 {
-    using ChannelSet = std::bitset<maximum<Channel>() + 1>;
+    using ChannelSet = std::bitset<maximum<Channel>().to_integral() + 1>;
 
     ChannelSet  red_only;
     red_only.set(Channel::Red);
@@ -33,7 +33,7 @@ int main()
         std::cout
             << channel.to_string()
             << " bit is set to "
-            << red_and_blue[channel]
+            << red_and_blue[channel.to_integral()]
             << std::endl;
     }
 

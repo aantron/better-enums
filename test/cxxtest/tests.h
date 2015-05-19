@@ -56,13 +56,21 @@ static_assert_1(!(std::is_constructible<Channel, Depth>()));
 
 // Intended implicit conversions.
 static_assert_1((std::is_convertible<Channel::_Enumerated, Channel>()));
-static_assert_1(!(std::is_convertible<Channel::_Integral, Channel>()));
-static_assert_1(!(std::is_convertible<Depth, Channel>()));
-static_assert_1(!(std::is_convertible<Channel, Depth>()));
 
 // Regrettable implicit conversions.
-static_assert_1((std::is_convertible<Channel, Channel::_Enumerated>()));
-static_assert_1((std::is_convertible<Channel, Channel::_Integral>()));
+static_assert_1((std::is_convertible<decltype(Channel::Red),
+                                     Channel::_Integral>()));
+
+// Disallowed implicit conversions.
+static_assert_1(!(std::is_convertible<Channel::_Integral, Channel>()));
+static_assert_1(!(std::is_convertible<Channel, Channel::_Integral>()));
+static_assert_1(!(std::is_convertible<Depth, Channel>()));
+static_assert_1(!(std::is_convertible<Channel, Depth>()));
+static_assert_1(!(std::is_convertible<Channel, Channel::_Enumerated>()));
+static_assert_1(!(std::is_convertible<decltype(+Channel::Red),
+                                      Channel::_Integral>()));
+static_assert_1(!(std::is_convertible<decltype(Channel::_values[0]),
+                                      Channel::_Integral>()));
 
 
 

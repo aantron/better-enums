@@ -597,6 +597,8 @@ struct _Base {                                                                 \
                                                                                \
 enum { __VA_ARGS__ };                                                          \
                                                                                \
+enum class _Case : Integral { __VA_ARGS__ };                                   \
+                                                                               \
 constexpr const _Base           _value_array[] =                               \
     { _ENUM_EAT_ASSIGN(_Base, __VA_ARGS__) };                                  \
                                                                                \
@@ -617,19 +619,6 @@ constexpr const _Iterable<const char*>     _names{_name_array, _size};         \
 }
 
 #define _ENUM_NS(EnumType)      _enum::_data_ ## EnumType
-
-#ifndef BETTER_ENUMS_SAFER_SWITCH
-
-#define _ENUM_CONVERSION_FOR_SWITCH(Integral, ...)                             \
-    constexpr operator _Enumerated() const { return _value; }
-
-#else
-
-#define _ENUM_CONVERSION_FOR_SWITCH(Integral, ...)                             \
-    enum class _Case : Integral { __VA_ARGS__ };                               \
-    constexpr operator _Case() const { return (_Case)_value; }
-
-#endif // #ifndef BETTER_ENUMS_SAFER_SWITCH
 
 #define _ENUM_TYPE(EnumType, Integral, ...)                                    \
 class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
@@ -727,7 +716,10 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return _from_string_nocase_loop(name);                                 \
     }                                                                          \
                                                                                \
-    _ENUM_CONVERSION_FOR_SWITCH(Integral, __VA_ARGS__);                        \
+    constexpr operator _ENUM_NS(EnumType)::_Case() const                       \
+    {                                                                          \
+        return (_ENUM_NS(EnumType)::_Case)_value;                              \
+    }                                                                          \
                                                                                \
     constexpr static auto       &_values = _ENUM_NS(EnumType)::_values;        \
     constexpr static auto       &_names = _ENUM_NS(EnumType)::_names;          \
