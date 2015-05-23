@@ -9,7 +9,7 @@ int main()
 {
     // Listing declared values. Output is 3 4 0.
     for (Channel channel : Channel::_values)
-        std::cout << channel.to_integral() << " ";
+        std::cout << channel._to_integral() << " ";
     std::cout << std::endl;
 
     // Listing declared names. Output is Red Green Blue.

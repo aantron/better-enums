@@ -11,9 +11,9 @@ void print_channel(Channel channel)
 {
     std::cout
         << "channel \'"
-        << channel.to_string()
+        << channel._to_string()
         << "\' has value "
-        << channel.to_integral()
+        << channel._to_integral()
         << std::endl;
 }
 
@@ -85,10 +85,10 @@ int main()
     // values of type Channel, but of type Channel::_Enumerated, and the
     // compiler isn't always able to implicitly promote the latter to the
     // former. + is used to force the promotion.
-    std::cout << (+Channel::Green).to_string() << std::endl;
+    std::cout << (+Channel::Green)._to_string() << std::endl;
 
     // This will not work.
-    // std::cout << (Channel::Green).to_string() << std::endl;
+    // std::cout << (Channel::Green)._to_string() << std::endl;
 
 
 

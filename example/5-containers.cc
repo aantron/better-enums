@@ -19,7 +19,7 @@ int main()
     vector.push_back(Channel::Red);
 
     for (Channel channel : vector)
-        std::cout << channel.to_string() << " ";
+        std::cout << channel._to_string() << " ";
     std::cout << std::endl;
 
 
@@ -31,7 +31,7 @@ int main()
     map.insert({"second", Channel::Green});
 
     for (Channel channel : Channel::_values)
-        map.insert({channel.to_string(), channel});
+        map.insert({channel._to_string(), channel});
 
     bool    first = true;
     for (auto item : map) {
@@ -43,7 +43,7 @@ int main()
         std::cout
             << item.first
             << " -> "
-            << item.second.to_string();
+            << item.second._to_string();
     }
     std::cout << std::endl;
 

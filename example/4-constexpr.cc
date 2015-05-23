@@ -17,8 +17,8 @@ constexpr Channel       channel_2 = Channel::_from_string("Blue");
 constexpr Channel       channel_3 = Channel::_from_string_nocase("gReEn");
 
 // Conversions to integers and strings.
-constexpr int           channel_1_representation = channel_1.to_integral();
-constexpr const char    *channel_1_name = channel_1.to_string();
+constexpr int           channel_1_representation = channel_1._to_integral();
+constexpr const char    *channel_1_name = channel_1._to_string();
 
 // Validity checks (including against strings).
 constexpr bool          should_be_valid_1 = Channel::_is_valid(2);
@@ -39,7 +39,7 @@ constexpr const char    *name_through_subscript = Channel::_names[2];
 constexpr auto          name = Channel::_name;
 
 // Explicit promotion.
-constexpr int           converted = (+Channel::Green).to_integral();
+constexpr int           converted = (+Channel::Green)._to_integral();
 
 
 
@@ -50,7 +50,7 @@ void print_channel(int number, Channel channel)
         << "channel_"
         << number
         << " is "
-        << channel.to_string()
+        << channel._to_string()
         << std::endl;
 }
 

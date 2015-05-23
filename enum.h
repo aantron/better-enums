@@ -555,7 +555,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
     constexpr EnumType(_enumerated value) : _Base(value) { }                   \
     constexpr EnumType(_ENUM_NS(EnumType)::_Base value) : _Base(value) { }     \
                                                                                \
-    constexpr _integral to_integral() const                                    \
+    constexpr _integral _to_integral() const                                   \
     {                                                                          \
         return _value;                                                         \
     }                                                                          \
@@ -579,7 +579,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return (_enumerated)value;                                             \
     }                                                                          \
                                                                                \
-    constexpr const char* to_string() const                                    \
+    constexpr const char* _to_string() const                                   \
     {                                                                          \
         return                                                                 \
             _enum::_or_throw(                                                  \
@@ -710,7 +710,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
                                                                                \
     static const size_t     _size = _ENUM_NS(EnumType)::_size;                 \
                                                                                \
-    _integral to_integral() const                                              \
+    _integral _to_integral() const                                             \
     {                                                                          \
         return _value;                                                         \
     }                                                                          \
@@ -738,7 +738,7 @@ class EnumType : public _ENUM_NS(EnumType)::_Base {                            \
         return (_enumerated)value;                                             \
     }                                                                          \
                                                                                \
-    const char* to_string() const                                              \
+    const char* _to_string() const                                             \
     {                                                                          \
         _optional_index     index = _value_to_index(_value);                   \
         if (!index)                                                            \

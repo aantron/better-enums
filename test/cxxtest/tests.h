@@ -75,11 +75,11 @@ static_assert_1(!(std::is_convertible<decltype(Channel::_values[0]),
 
 
 // Constant values.
-static_assert_1((+Channel::Red).to_integral() == 0);
-static_assert_1((+Channel::Green).to_integral() == 1);
-static_assert_1((+Channel::Blue).to_integral() == 2);
-static_assert_1((+Depth::HighColor).to_integral() == 40);
-static_assert_1((+Depth::TrueColor).to_integral() == 20);
+static_assert_1((+Channel::Red)._to_integral() == 0);
+static_assert_1((+Channel::Green)._to_integral() == 1);
+static_assert_1((+Channel::Blue)._to_integral() == 2);
+static_assert_1((+Depth::HighColor)._to_integral() == 40);
+static_assert_1((+Depth::TrueColor)._to_integral() == 20);
 
 
 
@@ -126,7 +126,7 @@ static_assert_1(Channel::_values[2] == Channel::Blue);
 
 static_assert_1(Channel::_names.size() == Channel::_size);
 // The next one is a little janky, but actually the pointers should be the same.
-static_assert_1(*Channel::_names.begin() == (+Channel::Red).to_string());
+static_assert_1(*Channel::_names.begin() == (+Channel::Red)._to_string());
 
 
 
@@ -146,8 +146,8 @@ class EnumTests : public CxxTest::TestSuite {
 
     void test_string_conversions()
     {
-        TS_ASSERT_EQUALS(strcmp((+Channel::Green).to_string(), "Green"), 0);
-        TS_ASSERT_EQUALS(strcmp((+Depth::HighColor).to_string(),
+        TS_ASSERT_EQUALS(strcmp((+Channel::Green)._to_string(), "Green"), 0);
+        TS_ASSERT_EQUALS(strcmp((+Depth::HighColor)._to_string(),
                          "HighColor"), 0);
 
         TS_ASSERT_THROWS(Channel::_from_string("green"), std::runtime_error);

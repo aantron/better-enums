@@ -19,7 +19,7 @@ ENUM(Channel, int, Red, Green, Blue)
 
 int main()
 {
-    using ChannelSet = std::bitset<maximum<Channel>().to_integral() + 1>;
+    using ChannelSet = std::bitset<maximum<Channel>()._to_integral() + 1>;
 
     ChannelSet  red_only;
     red_only.set(Channel::Red);
@@ -31,9 +31,9 @@ int main()
 
     for (Channel channel : Channel::_values) {
         std::cout
-            << channel.to_string()
+            << channel._to_string()
             << " bit is set to "
-            << red_and_blue[channel.to_integral()]
+            << red_and_blue[channel._to_integral()]
             << std::endl;
     }
 
