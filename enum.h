@@ -441,31 +441,6 @@ struct _Base {                                                                 \
                                                                                \
     _ENUM_CONSTEXPR _Base(_enumerated value) : _value(value) { }               \
                                                                                \
-    _ENUM_CONSTEXPR bool operator ==(const _Base &other) const                 \
-        { return _value == other._value; }                                     \
-    _ENUM_CONSTEXPR bool operator ==(_enumerated value) const                  \
-        { return _value == value; }                                            \
-    _ENUM_CONSTEXPR bool operator !=(const _Base &other) const                 \
-        { return !(*this == other); }                                          \
-    _ENUM_CONSTEXPR bool operator !=(_enumerated value) const                  \
-        { return !(*this == value); }                                          \
-    _ENUM_CONSTEXPR bool operator <(const _Base &other) const                  \
-        { return _value < other._value; }                                      \
-    _ENUM_CONSTEXPR bool operator <(_enumerated value) const                   \
-        { return _value < value; }                                             \
-    _ENUM_CONSTEXPR bool operator <=(const _Base &other) const                 \
-        { return _value <= other._value; }                                     \
-    _ENUM_CONSTEXPR bool operator <=(_enumerated value) const                  \
-        { return _value <= value; }                                            \
-    _ENUM_CONSTEXPR bool operator >(const _Base &other) const                  \
-        { return _value > other._value; }                                      \
-    _ENUM_CONSTEXPR bool operator >(_enumerated value) const                   \
-        { return _value > value; }                                             \
-    _ENUM_CONSTEXPR bool operator >=(const _Base &other) const                 \
-        { return _value >= other._value; }                                     \
-    _ENUM_CONSTEXPR bool operator >=(_enumerated value) const                  \
-        { return _value >= value; }                                            \
-                                                                               \
     _ENUM_REPRESENTATION(Integral)  _value;                                    \
                                                                                \
     _ENUM_NOT_DEFAULT_CONSTRUCTIBLE(_Base)                                     \
@@ -894,6 +869,19 @@ namespace _data_ ## EnumType {                                                 \
                                                                                \
 _ENUM_CONSTEXPR const EnumType operator +(_ENUM_NS(EnumType)::_Base base)      \
     { return (EnumType)base; }                                                 \
+                                                                               \
+_ENUM_CONSTEXPR bool operator ==(const EnumType &a, const EnumType &b)         \
+    { return a._value == b._value; }                                           \
+_ENUM_CONSTEXPR bool operator !=(const EnumType &a, const EnumType &b)         \
+    { return a._value != b._value; }                                           \
+_ENUM_CONSTEXPR bool operator <(const EnumType &a, const EnumType &b)          \
+    { return a._value < b._value; }                                            \
+_ENUM_CONSTEXPR bool operator <=(const EnumType &a, const EnumType &b)         \
+    { return a._value <= b._value; }                                           \
+_ENUM_CONSTEXPR bool operator >(const EnumType &a, const EnumType &b)          \
+    { return a._value > b._value; }                                            \
+_ENUM_CONSTEXPR bool operator >=(const EnumType &a, const EnumType &b)         \
+    { return a._value >= b._value; }                                           \
                                                                                \
 }                                                                              \
 }
