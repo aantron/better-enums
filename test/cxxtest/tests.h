@@ -15,9 +15,9 @@ ENUM(Compression, short, None, Huffman, Default = Huffman)
 
 // Type properties.
 static_assert_1(std::is_class<Channel>());
-static_assert_1(std::is_trivial<Channel>());
+static_assert_1(!std::is_trivial<Channel>());
 static_assert_1(std::is_standard_layout<Channel>());
-static_assert_1(std::is_pod<Channel>());
+static_assert_1(!std::is_pod<Channel>());
 static_assert_1(std::is_literal_type<Channel>());
 
 
