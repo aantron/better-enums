@@ -168,19 +168,19 @@
 namespace better_enums {
 
 template <typename T>
-_ENUM_CONSTEXPR T _default()
+_ENUM_CONSTEXPR inline T _default()
 {
     return (typename T::_enumerated)0;
 }
 
 template <>
-_ENUM_CONSTEXPR const char* _default<const char*>()
+_ENUM_CONSTEXPR inline const char* _default<const char*>()
 {
     return nullptr;
 }
 
 template <>
-_ENUM_CONSTEXPR size_t _default<size_t>()
+_ENUM_CONSTEXPR inline size_t _default<size_t>()
 {
     return 0;
 }
@@ -263,7 +263,7 @@ struct _Iterable {
 
 
 
-_ENUM_CONSTEXPR bool _endsName(char c, size_t index = 0)
+_ENUM_CONSTEXPR inline bool _endsName(char c, size_t index = 0)
 {
     return
         // First, test whether c is equal to the current character in
@@ -278,7 +278,7 @@ _ENUM_CONSTEXPR bool _endsName(char c, size_t index = 0)
         _endsName(c, index + 1);
 }
 
-_ENUM_CONSTEXPR bool _hasExplicitValue(const char *s, size_t index = 0)
+_ENUM_CONSTEXPR inline bool _hasExplicitValue(const char *s, size_t index = 0)
 {
     return
         s[index] == '\0' ? false :
@@ -286,44 +286,36 @@ _ENUM_CONSTEXPR bool _hasExplicitValue(const char *s, size_t index = 0)
         _hasExplicitValue(s, index + 1);
 }
 
-_ENUM_CONSTEXPR size_t _constantLength(const char *s, size_t index = 0)
+_ENUM_CONSTEXPR inline size_t _constantLength(const char *s, size_t index = 0)
 {
     return _endsName(s[index]) ? index : _constantLength(s, index + 1);
 }
 
-_ENUM_CONSTEXPR char _select(const char *from, size_t from_length, size_t index)
+_ENUM_CONSTEXPR inline char _select(const char *from, size_t from_length,
+                                    size_t index)
 {
     return index >= from_length ? '\0' : from[index];
 }
 
-_ENUM_CONSTEXPR char _toLowercaseAscii(char c)
+_ENUM_CONSTEXPR inline char _toLowercaseAscii(char c)
 {
     return c >= 0x41 && c <= 0x5A ? (char) (c + 0x20) : c;
 }
 
-_ENUM_CONSTEXPR bool _namesMatch(const char *stringizedName,
-                                 const char *referenceName,
-                                 size_t index = 0)
+_ENUM_CONSTEXPR inline bool _namesMatch(const char *stringizedName,
+                                        const char *referenceName,
+                                        size_t index = 0)
 {
     return
-        // If the current character in the stringized name is a name ender,
-        // return true if the reference name ends as well, and false otherwise.
         _endsName(stringizedName[index]) ? referenceName[index] == '\0' :
-        // The current character in the stringized name is not a name ender. If
-        // the reference name ended, then it is too short, so return false.
-        referenceName[index] == '\0'     ? false                        :
-        // Neither name has ended. If the two current characters don't match,
-        // return false.
-        stringizedName[index] !=
-            referenceName[index]         ? false                        :
-        // Otherwise, if the characters match, continue by comparing the rest of
-        // the names.
+        referenceName[index] == '\0' ? false :
+        stringizedName[index] != referenceName[index] ? false :
         _namesMatch(stringizedName, referenceName, index + 1);
 }
 
-_ENUM_CONSTEXPR bool _namesMatchNocase(const char *stringizedName,
-                                       const char *referenceName,
-                                       size_t index = 0)
+_ENUM_CONSTEXPR inline bool _namesMatchNocase(const char *stringizedName,
+                                              const char *referenceName,
+                                              size_t index = 0)
 {
     return
         _endsName(stringizedName[index]) ? referenceName[index] == '\0' :
@@ -374,7 +366,6 @@ constexpr const char    *_final_ ## index =                                    \
 
 
 #include <cstring>
-// #include <map>
 
 #define _ENUM_STRINGIZE_SINGLE(ignored, index, expression)      #expression,
 
@@ -475,7 +466,7 @@ class Enum : public _ENUM_NS(Enum)::Base {                                     \
         return                                                                 \
             _enum::_or_throw(                                                  \
                 _enum::_map_index<const char*>(                                \
-                    _ENUM_NS(Enum)::name_array,                                \
+                    _ENUM_NS(Enum)::name_array(),                              \
                     _from_int_loop(CallInitialize(_value))),                   \
                 "Enum::to_string: invalid enum value");                        \
     }                                                                          \
@@ -551,7 +542,8 @@ class Enum : public _ENUM_NS(Enum)::Base {                                     \
     _ENUM_CONSTEXPR static _name_iterable _names_()                            \
     {                                                                          \
         return                                                                 \
-            _name_iterable(_ENUM_NS(Enum)::name_array, CallInitialize(_size)); \
+            _name_iterable(_ENUM_NS(Enum)::name_array(),                       \
+                           CallInitialize(_size));                             \
     }                                                                          \
                                                                                \
     ShortIterableAliases(Enum)                                                 \
@@ -576,7 +568,7 @@ class Enum : public _ENUM_NS(Enum)::Base {                                     \
     {                                                                          \
         return                                                                 \
             index == _size ? _optional_index() :                               \
-            _enum::_namesMatch(_ENUM_NS(Enum)::name_array[index], name) ?      \
+            _enum::_namesMatch(_ENUM_NS(Enum)::name_array()[index], name) ?    \
                 _optional_index(index) :                                       \
             _from_string_loop(name, index + 1);                                \
     }                                                                          \
@@ -587,32 +579,32 @@ class Enum : public _ENUM_NS(Enum)::Base {                                     \
         return                                                                 \
             index == _size ? _optional_index() :                               \
                 _enum::_namesMatchNocase(                                      \
-                    _ENUM_NS(Enum)::name_array[index], name) ?                 \
+                    _ENUM_NS(Enum)::name_array()[index], name) ?               \
                         _optional_index(index) :                               \
                         _from_string_nocase_loop(name, index + 1);             \
     }                                                                          \
 };                                                                             \
                                                                                \
-_ENUM_CONSTEXPR const Enum operator +(Enum::_enumerated enumerated)            \
+_ENUM_CONSTEXPR inline const Enum operator +(Enum::_enumerated enumerated)     \
     { return (Enum)enumerated; }                                               \
                                                                                \
 namespace _enum {                                                              \
 namespace _data_ ## Enum {                                                     \
                                                                                \
-_ENUM_CONSTEXPR const Enum operator +(_ENUM_NS(Enum)::Base base)               \
+_ENUM_CONSTEXPR inline const Enum operator +(_ENUM_NS(Enum)::Base base)        \
     { return (Enum)base; }                                                     \
                                                                                \
-_ENUM_CONSTEXPR bool operator ==(const Enum &a, const Enum &b)                 \
+_ENUM_CONSTEXPR inline bool operator ==(const Enum &a, const Enum &b)          \
     { return a._value == b._value; }                                           \
-_ENUM_CONSTEXPR bool operator !=(const Enum &a, const Enum &b)                 \
+_ENUM_CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)          \
     { return a._value != b._value; }                                           \
-_ENUM_CONSTEXPR bool operator <(const Enum &a, const Enum &b)                  \
+_ENUM_CONSTEXPR inline bool operator <(const Enum &a, const Enum &b)           \
     { return a._value < b._value; }                                            \
-_ENUM_CONSTEXPR bool operator <=(const Enum &a, const Enum &b)                 \
+_ENUM_CONSTEXPR inline bool operator <=(const Enum &a, const Enum &b)          \
     { return a._value <= b._value; }                                           \
-_ENUM_CONSTEXPR bool operator >(const Enum &a, const Enum &b)                  \
+_ENUM_CONSTEXPR inline bool operator >(const Enum &a, const Enum &b)           \
     { return a._value > b._value; }                                            \
-_ENUM_CONSTEXPR bool operator >=(const Enum &a, const Enum &b)                 \
+_ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
     { return a._value >= b._value; }                                           \
                                                                                \
 }                                                                              \
@@ -656,7 +648,7 @@ _ENUM_CONSTEXPR bool operator >=(const Enum &a, const Enum &b)                 \
 // C++11
 #define _ENUM_SHORT_ITERABLE_DECLARATIONS                                      \
     constexpr const _Iterable<Base>         values{value_array, size};         \
-    constexpr const _Iterable<const char*>  names{name_array, size};
+    constexpr const _Iterable<const char*>  names{name_array(), size};
 
 // C++98, C++11
 #define _ENUM_SHORT_ITERABLE_ALIASES_NOT_AVAILABLE(Enum)
@@ -667,30 +659,53 @@ _ENUM_CONSTEXPR bool operator >=(const Enum &a, const Enum &b)                 \
     constexpr static const _name_iterable   &_names = _ENUM_NS(Enum)::names;   \
     constexpr static const char             *_name = #Enum;
 
-// C++98, C++11 fast version
-#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME(...)                        \
-    _ENUM_CONSTEXPR const char  *raw_names[] =                                 \
-        { _ENUM_STRINGIZE(__VA_ARGS__) };                                      \
-    _ENUM_CONSTEXPR const char  *name_array[size];                             \
-    bool                        initialized = false;
+// C++98
+#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED(...)                \
+    inline const char** raw_names()                                            \
+    {                                                                          \
+        static const char*  value[] = { _ENUM_STRINGIZE(__VA_ARGS__) };        \
+        return value;                                                          \
+    }                                                                          \
+                                                                               \
+    inline const char** name_array()                                           \
+    {                                                                          \
+        static const char*  value[size];                                       \
+        return value;                                                          \
+    }                                                                          \
+                                                                               \
+    inline bool& initialized()                                                 \
+    {                                                                          \
+        static bool         value = false;                                     \
+        return value;                                                          \
+    }
+
+// C++11 fast version
+#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_CONSTEXPR(...)              \
+    constexpr const char    *raw_names[] = { _ENUM_STRINGIZE(__VA_ARGS__) };   \
+    const char              *name_array[size];                                 \
+    bool                    initialized = false;
 
 // C++11 slow all-constexpr version
 #define _ENUM_GENERATE_STRINGS_COMPILE_TIME(...)                               \
     _ENUM_TRIM_STRINGS(__VA_ARGS__)                                            \
-    constexpr const char * const    name_array[] =                             \
-        { _ENUM_REFER_TO_STRINGS(__VA_ARGS__) };
+    constexpr const char * const    the_name_array[] =                         \
+        { _ENUM_REFER_TO_STRINGS(__VA_ARGS__) };                               \
+    constexpr const char * const * name_array()                                \
+    {                                                                          \
+        return the_name_array;                                                 \
+    }
 
 // C++98, C++11 fast version
 #define _ENUM_DEFINE_INITIALIZE(Enum)                                          \
     static int initialize()                                                    \
     {                                                                          \
-        if (_ENUM_NS(Enum)::initialized)                                       \
+        if (_ENUM_NS(Enum)::initialized())                                     \
             return 0;                                                          \
                                                                                \
-        _enum::_trim_names(_ENUM_NS(Enum)::raw_names,                          \
-                           _ENUM_NS(Enum)::name_array, _size);                 \
+        _enum::_trim_names(_ENUM_NS(Enum)::raw_names(),                        \
+                           _ENUM_NS(Enum)::name_array(), _size);               \
                                                                                \
-        _ENUM_NS(Enum)::initialized = true;                                    \
+        _ENUM_NS(Enum)::initialized() = true;                                  \
                                                                                \
         return 0;                                                              \
     }
@@ -731,7 +746,7 @@ _ENUM_CONSTEXPR bool operator >=(const Enum &a, const Enum &b)                 \
                _ENUM_GENERATE_SWITCH_TYPE_REGULAR_ENUM,                        \
                _ENUM_SHORT_ITERABLE_DECLARATIONS_NOT_AVAILABLE,                \
                _ENUM_SHORT_ITERABLE_ALIASES_NOT_AVAILABLE,                     \
-               _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME,                     \
+               _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED,             \
                _ENUM_DEFINE_INITIALIZE,                                        \
                _ENUM_CALL_INITIALIZE,                                          \
                Enum, Integral, __VA_ARGS__)
