@@ -198,7 +198,7 @@ struct optional {
     _ENUM_CONSTEXPR optional(T v) : _valid(true), _value(v) { }
 
     _ENUM_CONSTEXPR const T& operator *() const { return _value; }
-    _ENUM_CONSTEXPR const T& operator ->() const { return _value; }
+    _ENUM_CONSTEXPR const T* operator ->() const { return &_value; }
 
     _ENUM_CONSTEXPR operator bool() const { return _valid; }
 
