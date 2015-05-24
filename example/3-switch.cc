@@ -10,15 +10,15 @@ void respond_to_channel(Channel channel)
     // Try adding an extra case or removing one. Your compiler should issue a
     // warning.
     switch (channel) {
-        case +Channel::Red:
+        case Channel::Red:
             std::cout << "red channel" << std::endl;
             break;
 
-        case +Channel::Green:
+        case Channel::Green:
             std::cout << "green channel" << std::endl;
             break;
 
-        case +Channel::Blue:
+        case Channel::Blue:
             std::cout << "blue channel" << std::endl;
             break;
 

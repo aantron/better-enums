@@ -401,7 +401,7 @@ GenerateSwitchType(Integral, __VA_ARGS__);                                     \
 }                                                                              \
                                                                                \
 class Enum {                                                                   \
-  protected:                                                                   \
+  private:                                                                     \
     typedef better_enums::optional<Enum>    _optional;                         \
     typedef better_enums::optional<size_t>  _optional_index;                   \
                                                                                \
@@ -449,7 +449,7 @@ class Enum {                                                                   \
                                                                                \
     DisableDefault(Enum)                                                       \
                                                                                \
-  protected:                                                                   \
+  private:                                                                     \
     DeclareInitialize                                                          \
                                                                                \
     _ENUM_CONSTEXPR static _optional_index                                     \
@@ -751,6 +751,20 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 
 
 
+#ifdef BETTER_ENUMS_FORCE_STRICT_CONVERSION
+#   define _ENUM_DEFAULT_SWITCH_TYPE                                           \
+        _ENUM_SWITCH_TYPE_IS_ENUM_CLASS
+#   define _ENUM_DEFAULT_GENERATE_SWITCH_TYPE                                  \
+        _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS
+#else
+#   define _ENUM_DEFAULT_SWITCH_TYPE                                           \
+        _ENUM_SWITCH_TYPE_IS_REGULAR_ENUM
+#   define _ENUM_DEFAULT_GENERATE_SWITCH_TYPE                                  \
+        _ENUM_GENERATE_SWITCH_TYPE_REGULAR_ENUM
+#endif
+
+
+
 #ifdef _ENUM_HAVE_CONSTEXPR
 
 #ifdef BETTER_ENUMS_FORCE_CONSTEXPR_TO_STRING
@@ -780,8 +794,8 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 #define ENUM(Enum, Integral, ...)                                              \
     _ENUM_TYPE(_ENUM_SET_UNDERLYING_TYPE_IMPLEMENTED,                          \
                _ENUM_DISABLE_DEFAULT_BY_DELETE,                                \
-               _ENUM_SWITCH_TYPE_IS_ENUM_CLASS,                                \
-               _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS,                          \
+               _ENUM_DEFAULT_SWITCH_TYPE,                                      \
+               _ENUM_DEFAULT_GENERATE_SWITCH_TYPE,                             \
                _ENUM_DEFAULT_CONSTEXPR_TO_STRING,                              \
                _ENUM_DEFAULT_TO_STRING_CONSTEXPR,                              \
                _ENUM_DEFAULT_INITIALIZE_DECLARATION,                           \
@@ -792,8 +806,8 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 #define CONSTEXPR_TO_STRING_ENUM(Enum, Integral, ...)                          \
     _ENUM_TYPE(_ENUM_SET_UNDERLYING_TYPE_IMPLEMENTED,                          \
                _ENUM_DISABLE_DEFAULT_BY_DELETE,                                \
-               _ENUM_SWITCH_TYPE_IS_ENUM_CLASS,                                \
-               _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS,                          \
+               _ENUM_DEFAULT_SWITCH_TYPE,                                      \
+               _ENUM_DEFAULT_GENERATE_SWITCH_TYPE,                             \
                _ENUM_GENERATE_STRINGS_COMPILE_TIME,                            \
                _ENUM_TO_STRING_CONSTEXPR,                                      \
                _ENUM_INITIALIZE_DECLARATION_NOT_NEEDED,                        \
@@ -806,8 +820,8 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 #define ENUM(Enum, Integral, ...)                                              \
     _ENUM_TYPE(_ENUM_SET_UNDERLYING_TYPE_NO_OP,                                \
                _ENUM_DISABLE_DEFAULT_BY_PRIVATE,                               \
-               _ENUM_SWITCH_TYPE_IS_REGULAR_ENUM,                              \
-               _ENUM_GENERATE_SWITCH_TYPE_REGULAR_ENUM,                        \
+               _ENUM_DEFAULT_SWITCH_TYPE,                                      \
+               _ENUM_DEFAULT_GENERATE_SWITCH_TYPE,                             \
                _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED,             \
                _ENUM_TO_STRING_NOT_CONSTEXPR,                                  \
                _ENUM_DECLARE_INITIALIZE,                                       \
