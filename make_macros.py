@@ -11,9 +11,10 @@
 # enum can have. By default, this limit is 64 constants.
 #
 # _ENUM_ITERATE also has a limit. This one determines the maximum length of the
-# name of a constant that is followed by an explicit setting (" = 2"). By
-# default, this is 23 (24 with the obligatory null terminator). Constants
-# without explicit setting can have any length.
+# name of a constant that is followed by an initializer (" = 2") when compiling
+# an enum with constexpr to_string function (i.e. usually, this limit does not
+# apply). By default, the limit is 23 characters (24 with the obligatory null
+# terminator).
 #
 # If either of these limits is inadequate, you can still compile your code
 # without changing enum.h. You need to generate an external macro file with
@@ -23,7 +24,7 @@
 #
 # 0. MACRO_FILE is the name of the external macro file. Make sure you put it
 #    somewhere in your include path.
-# 1. Run python pp_map_gen.py 512 128 > MACRO_FILE
+# 1. Run python make_macros.py 512 128 > MACRO_FILE
 # 2. Build your code with an additional compiler flag:
 #    - for gcc and clang, -BETTER_ENUMS_MACRO_FILE='<MACRO_FILE>'
 #    - for VC++, /BETTER_ENUMS_MACRO_FILE='<MACRO_FILE>'

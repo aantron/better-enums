@@ -395,7 +395,7 @@ inline void _trim_names(const char * const *raw_names,
 namespace _enum {                                                              \
 namespace _data_ ## Enum {                                                     \
                                                                                \
-GenerateSwitchType(Integral, __VA_ARGS__);                                     \
+GenerateSwitchType(Integral, __VA_ARGS__)                                      \
                                                                                \
 }                                                                              \
 }                                                                              \
@@ -621,37 +621,35 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 
 
 // C++98, C++11
-#define _ENUM_SET_UNDERLYING_TYPE_NO_OP(Integral)
+#define _ENUM_CXX98_UNDERLYING_TYPE(Integral)
 
 // C++11
-#define _ENUM_SET_UNDERLYING_TYPE_IMPLEMENTED(Integral)                        \
+#define _ENUM_CXX11_UNDERLYING_TYPE(Integral)                                  \
     : Integral
 
 // C++98, C++11
-#define _ENUM_DISABLE_DEFAULT_BY_PRIVATE(Type)                                 \
-    private: Type() { }
+#define _ENUM_CXX98_NO_DEFAULT_CONSTRUCTOR(Type)                               \
 
 // C++11
-#define _ENUM_DISABLE_DEFAULT_BY_DELETE(Type)                                  \
-    Type() = delete;
+#define _ENUM_CXX11_NO_DEFAULT_CONSTRUCTOR(Type)                               \
 
 // C++98, C++11
-#define _ENUM_SWITCH_TYPE_IS_REGULAR_ENUM(Type)                                \
+#define _ENUM_REGULAR_ENUM_SWITCH_TYPE(Type)                                   \
     _enumerated
 
 // C++11
-#define _ENUM_SWITCH_TYPE_IS_ENUM_CLASS(Type)                                  \
+#define _ENUM_ENUM_CLASS_SWITCH_TYPE(Type)                                     \
     _ENUM_NS(Type)::EnumClassForSwitchStatements
 
 // C++98, C++11
-#define _ENUM_GENERATE_SWITCH_TYPE_REGULAR_ENUM(Integral, ...)
+#define _ENUM_REGULAR_ENUM_SWITCH_TYPE_GENERATE(Integral, ...)
 
 // C++11
-#define _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS(Integral, ...)                   \
-    enum class EnumClassForSwitchStatements : Integral { __VA_ARGS__ }
+#define _ENUM_ENUM_CLASS_SWITCH_TYPE_GENERATE(Integral, ...)                   \
+    enum class EnumClassForSwitchStatements : Integral { __VA_ARGS__ };
 
 // C++98
-#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED(Enum, ...)          \
+#define _ENUM_CXX98_TRIM_STRINGS_ARRAYS(Enum, ...)                             \
     inline const char** raw_names()                                            \
     {                                                                          \
         static const char   *value[] = { _ENUM_STRINGIZE(__VA_ARGS__) };       \
@@ -671,7 +669,7 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
     }
 
 // C++11 fast version
-#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_CONSTEXPR(Enum, ...)        \
+#define _ENUM_CXX11_PARTIAL_CONSTEXPR_TRIM_STRINGS_ARRAYS(Enum, ...)           \
     constexpr const char    *the_raw_names[] =                                 \
         { _ENUM_STRINGIZE(__VA_ARGS__) };                                      \
                                                                                \
@@ -693,7 +691,7 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
     }
 
 // C++11 slow all-constexpr version
-#define _ENUM_GENERATE_STRINGS_COMPILE_TIME(Enum, ...)                         \
+#define _ENUM_CXX11_FULL_CONSTEXPR_TRIM_STRINGS_ARRAYS(Enum, ...)              \
     _ENUM_TRIM_STRINGS(__VA_ARGS__)                                            \
                                                                                \
     constexpr const char * const    the_name_array[] =                         \
@@ -710,21 +708,21 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
     }
 
 // C++98, C++11 fast version
-#define _ENUM_TO_STRING_NOT_CONSTEXPR
+#define _ENUM_NO_CONSTEXPR_TO_STRING_KEYWORD
 
 // C++11 slow all-constexpr version
-#define _ENUM_TO_STRING_CONSTEXPR                                              \
+#define _ENUM_CONSTEXPR_TO_STRING_KEYWORD                                      \
     constexpr
 
 // C++98, C++11 fast version
-#define _ENUM_DECLARE_INITIALIZE                                               \
+#define _ENUM_DO_DECLARE_INITIALIZE                                            \
     static int initialize();
 
 // C++11 slow all-constexpr version
-#define _ENUM_INITIALIZE_DECLARATION_NOT_NEEDED
+#define _ENUM_DO_NOT_DECLARE_INITIALIZE
 
 // C++98, C++11 fast version
-#define _ENUM_DEFINE_INITIALIZE(Enum)                                          \
+#define _ENUM_DO_DEFINE_INITIALIZE(Enum)                                       \
     inline int Enum::initialize()                                              \
     {                                                                          \
         if (_ENUM_NS(Enum)::initialized())                                     \
@@ -739,28 +737,28 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
     }
 
 // C++11 slow all-constexpr version
-#define _ENUM_DEFINE_INITIALIZE_NOT_NEEDED(Enum)
+#define _ENUM_DO_NOT_DEFINE_INITIALIZE(Enum)
 
 // C++98, C++11 fast version
-#define _ENUM_CALL_INITIALIZE(value)                                           \
+#define _ENUM_DO_CALL_INITIALIZE(value)                                        \
     _enum::continue_with(initialize(), value)
 
 // C++11 slow all-constexpr version
-#define _ENUM_CALL_INITIALIZE_IS_NO_OP(value)                                  \
+#define _ENUM_DO_NOT_CALL_INITIALIZE(value)                                    \
     value
 
 
 
 #ifdef BETTER_ENUMS_FORCE_STRICT_CONVERSION
 #   define _ENUM_DEFAULT_SWITCH_TYPE                                           \
-        _ENUM_SWITCH_TYPE_IS_ENUM_CLASS
-#   define _ENUM_DEFAULT_GENERATE_SWITCH_TYPE                                  \
-        _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS
+        _ENUM_ENUM_CLASS_SWITCH_TYPE
+#   define _ENUM_DEFAULT_SWITCH_TYPE_GENERATE                                  \
+        _ENUM_ENUM_CLASS_SWITCH_TYPE_GENERATE
 #else
 #   define _ENUM_DEFAULT_SWITCH_TYPE                                           \
-        _ENUM_SWITCH_TYPE_IS_REGULAR_ENUM
-#   define _ENUM_DEFAULT_GENERATE_SWITCH_TYPE                                  \
-        _ENUM_GENERATE_SWITCH_TYPE_REGULAR_ENUM
+        _ENUM_REGULAR_ENUM_SWITCH_TYPE
+#   define _ENUM_DEFAULT_SWITCH_TYPE_GENERATE                                  \
+        _ENUM_REGULAR_ENUM_SWITCH_TYPE_GENERATE
 #endif
 
 
@@ -768,65 +766,65 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 #ifdef _ENUM_HAVE_CONSTEXPR
 
 #ifdef BETTER_ENUMS_FORCE_CONSTEXPR_TO_STRING
-#   define _ENUM_DEFAULT_CONSTEXPR_TO_STRING                                   \
-        _ENUM_GENERATE_STRINGS_COMPILE_TIME
-#   define _ENUM_DEFAULT_TO_STRING_CONSTEXPR                                   \
-        _ENUM_TO_STRING_CONSTEXPR
-#   define _ENUM_DEFAULT_INITIALIZE_DECLARATION                                \
-        _ENUM_INITIALIZE_DECLARATION_NOT_NEEDED
-#   define _ENUM_DEFAULT_INITIALIZE_DEFINITION                                 \
-        _ENUM_DEFINE_INITIALIZE_NOT_NEEDED
+#   define _ENUM_DEFAULT_TRIM_STRINGS_ARRAYS                                   \
+        _ENUM_CXX11_FULL_CONSTEXPR_TRIM_STRINGS_ARRAYS
+#   define _ENUM_DEFAULT_TO_STRING_KEYWORD                                     \
+        _ENUM_CONSTEXPR_TO_STRING_KEYWORD
+#   define _ENUM_DEFAULT_DECLARE_INITIALIZE                                    \
+        _ENUM_DO_NOT_DECLARE_INITIALIZE
+#   define _ENUM_DEFAULT_DEFINE_INITIALIZE                                     \
+        _ENUM_DO_NOT_DEFINE_INITIALIZE
 #   define _ENUM_DEFAULT_CALL_INITIALIZE                                       \
-        _ENUM_CALL_INITIALIZE_IS_NO_OP
+        _ENUM_DO_NOT_CALL_INITIALIZE
 #else
-#   define _ENUM_DEFAULT_CONSTEXPR_TO_STRING                                   \
-        _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_CONSTEXPR
-#   define _ENUM_DEFAULT_TO_STRING_CONSTEXPR                                   \
-        _ENUM_TO_STRING_NOT_CONSTEXPR
-#   define _ENUM_DEFAULT_INITIALIZE_DECLARATION                                \
-        _ENUM_DECLARE_INITIALIZE
-#   define _ENUM_DEFAULT_INITIALIZE_DEFINITION                                 \
-        _ENUM_DEFINE_INITIALIZE
+#   define _ENUM_DEFAULT_TRIM_STRINGS_ARRAYS                                   \
+        _ENUM_CXX11_PARTIAL_CONSTEXPR_TRIM_STRINGS_ARRAYS
+#   define _ENUM_DEFAULT_TO_STRING_KEYWORD                                     \
+        _ENUM_NO_CONSTEXPR_TO_STRING_KEYWORD
+#   define _ENUM_DEFAULT_DECLARE_INITIALIZE                                    \
+        _ENUM_DO_DECLARE_INITIALIZE
+#   define _ENUM_DEFAULT_DEFINE_INITIALIZE                                     \
+        _ENUM_DO_DEFINE_INITIALIZE
 #   define _ENUM_DEFAULT_CALL_INITIALIZE                                       \
-        _ENUM_CALL_INITIALIZE
+        _ENUM_DO_CALL_INITIALIZE
 #endif
 
 #define ENUM(Enum, Integral, ...)                                              \
-    _ENUM_TYPE(_ENUM_SET_UNDERLYING_TYPE_IMPLEMENTED,                          \
-               _ENUM_DISABLE_DEFAULT_BY_DELETE,                                \
+    _ENUM_TYPE(_ENUM_CXX11_UNDERLYING_TYPE,                                    \
+               _ENUM_CXX11_NO_DEFAULT_CONSTRUCTOR,                             \
                _ENUM_DEFAULT_SWITCH_TYPE,                                      \
-               _ENUM_DEFAULT_GENERATE_SWITCH_TYPE,                             \
-               _ENUM_DEFAULT_CONSTEXPR_TO_STRING,                              \
-               _ENUM_DEFAULT_TO_STRING_CONSTEXPR,                              \
-               _ENUM_DEFAULT_INITIALIZE_DECLARATION,                           \
-               _ENUM_DEFAULT_INITIALIZE_DEFINITION,                            \
+               _ENUM_DEFAULT_SWITCH_TYPE_GENERATE,                             \
+               _ENUM_DEFAULT_TRIM_STRINGS_ARRAYS,                              \
+               _ENUM_DEFAULT_TO_STRING_KEYWORD,                                \
+               _ENUM_DEFAULT_DECLARE_INITIALIZE,                               \
+               _ENUM_DEFAULT_DEFINE_INITIALIZE,                                \
                _ENUM_DEFAULT_CALL_INITIALIZE,                                  \
                Enum, Integral, __VA_ARGS__)
 
 #define CONSTEXPR_TO_STRING_ENUM(Enum, Integral, ...)                          \
-    _ENUM_TYPE(_ENUM_SET_UNDERLYING_TYPE_IMPLEMENTED,                          \
-               _ENUM_DISABLE_DEFAULT_BY_DELETE,                                \
+    _ENUM_TYPE(_ENUM_CXX11_UNDERLYING_TYPE,                                    \
+               _ENUM_CXX11_NO_DEFAULT_CONSTRUCTOR,                             \
                _ENUM_DEFAULT_SWITCH_TYPE,                                      \
-               _ENUM_DEFAULT_GENERATE_SWITCH_TYPE,                             \
-               _ENUM_GENERATE_STRINGS_COMPILE_TIME,                            \
-               _ENUM_TO_STRING_CONSTEXPR,                                      \
-               _ENUM_INITIALIZE_DECLARATION_NOT_NEEDED,                        \
-               _ENUM_DEFINE_INITIALIZE_NOT_NEEDED,                             \
-               _ENUM_CALL_INITIALIZE_IS_NO_OP,                                 \
+               _ENUM_DEFAULT_SWITCH_TYPE_GENERATE,                             \
+               _ENUM_CXX11_FULL_CONSTEXPR_TRIM_STRINGS_ARRAYS,                 \
+               _ENUM_CONSTEXPR_TO_STRING_KEYWORD,                              \
+               _ENUM_DO_NOT_DECLARE_INITIALIZE,                                \
+               _ENUM_DO_NOT_DEFINE_INITIALIZE,                                 \
+               _ENUM_DO_NOT_CALL_INITIALIZE,                                   \
                Enum, Integral, __VA_ARGS__)
 
 #else
 
 #define ENUM(Enum, Integral, ...)                                              \
-    _ENUM_TYPE(_ENUM_SET_UNDERLYING_TYPE_NO_OP,                                \
-               _ENUM_DISABLE_DEFAULT_BY_PRIVATE,                               \
+    _ENUM_TYPE(_ENUM_CXX98_UNDERLYING_TYPE,                                    \
+               _ENUM_CXX98_NO_DEFAULT_CONSTRUCTOR,                             \
                _ENUM_DEFAULT_SWITCH_TYPE,                                      \
-               _ENUM_DEFAULT_GENERATE_SWITCH_TYPE,                             \
-               _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED,             \
-               _ENUM_TO_STRING_NOT_CONSTEXPR,                                  \
-               _ENUM_DECLARE_INITIALIZE,                                       \
-               _ENUM_DEFINE_INITIALIZE,                                        \
-               _ENUM_CALL_INITIALIZE,                                          \
+               _ENUM_DEFAULT_SWITCH_TYPE_GENERATE,                             \
+               _ENUM_CXX98_TRIM_STRINGS_ARRAYS,                                \
+               _ENUM_NO_CONSTEXPR_TO_STRING_KEYWORD,                           \
+               _ENUM_DO_DECLARE_INITIALIZE,                                    \
+               _ENUM_DO_DEFINE_INITIALIZE,                                     \
+               _ENUM_DO_CALL_INITIALIZE,                                       \
                Enum, Integral, __VA_ARGS__)
 
 #endif
