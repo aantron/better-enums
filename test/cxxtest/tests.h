@@ -124,10 +124,6 @@ static_assert_1(*(Channel::_values().begin() + 2) == Channel::Blue);
 static_assert_1(Channel::_values()[1] == Channel::Green);
 static_assert_1(Channel::_values()[2] == Channel::Blue);
 
-static_assert_1(Channel::_names().size() == Channel::_size);
-// The next one is a little janky, but actually the pointers should be the same.
-static_assert_1(*Channel::_names().begin() == (+Channel::Red)._to_string());
-
 
 
 // Aliases.

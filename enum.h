@@ -9,11 +9,8 @@
 
 
 #include <cstddef>
+#include <cstring>
 #include <stdexcept>
-
-#ifdef BETTER_ENUMS_EXTRA_INCLUDE
-#   include BETTER_ENUMS_EXTRA_INCLUDE
-#endif
 
 
 
@@ -365,8 +362,6 @@ constexpr const char    *_final_ ## index =                                    \
 
 
 
-#include <cstring>
-
 #define _ENUM_STRINGIZE_SINGLE(ignored, index, expression)      #expression,
 
 #define _ENUM_STRINGIZE(...)                                                   \
@@ -393,8 +388,8 @@ inline void _trim_names(const char * const *raw_names,
 
 
 #define _ENUM_TYPE(SetUnderlyingType, DisableDefault, SwitchType,              \
-                   GenerateSwitchType, GenerateStrings, DeclareInitialize,     \
-                   DefineInitialize, CallInitialize,                           \
+                   GenerateSwitchType, GenerateStrings, ToStringConstexpr,     \
+                   DeclareInitialize, DefineInitialize, CallInitialize,        \
                    Enum, Integral, ...)                                        \
                                                                                \
 namespace _enum {                                                              \
@@ -426,7 +421,7 @@ class Enum {                                                                   \
     _ENUM_CONSTEXPR static Enum _from_integral_unchecked(_integral value);     \
     _ENUM_CONSTEXPR static _optional _from_integral_nothrow(_integral value);  \
                                                                                \
-    _ENUM_CONSTEXPR const char* _to_string() const;                            \
+    ToStringConstexpr const char* _to_string() const;                          \
     _ENUM_CONSTEXPR static Enum _from_string(const char *name);                \
     _ENUM_CONSTEXPR static _optional _from_string_nothrow(const char *name);   \
                                                                                \
@@ -448,7 +443,7 @@ class Enum {                                                                   \
                                                                                \
     _ENUM_CONSTEXPR static const char* _name();                                \
     _ENUM_CONSTEXPR static _value_iterable _values();                          \
-    _ENUM_CONSTEXPR static _name_iterable _names();                            \
+    ToStringConstexpr static _name_iterable _names();                          \
                                                                                \
     _integral    _value;                                                       \
                                                                                \
@@ -507,7 +502,7 @@ Enum::_from_integral_nothrow(Enum::_integral value)                            \
                                 _from_int_loop(value));                        \
 }                                                                              \
                                                                                \
-_ENUM_CONSTEXPR inline const char* Enum::_to_string() const                    \
+ToStringConstexpr inline const char* Enum::_to_string() const                  \
 {                                                                              \
     return                                                                     \
         _enum::_or_throw(                                                      \
@@ -572,7 +567,7 @@ _ENUM_CONSTEXPR inline Enum::_value_iterable Enum::_values()                   \
     return _value_iterable(_ENUM_NS(Enum)::value_array, _size);                \
 }                                                                              \
                                                                                \
-_ENUM_CONSTEXPR inline Enum::_name_iterable Enum::_names()                     \
+ToStringConstexpr inline Enum::_name_iterable Enum::_names()                   \
 {                                                                              \
     return _name_iterable(_ENUM_NS(Enum)::name_array(), CallInitialize(_size));\
 }                                                                              \
@@ -594,7 +589,7 @@ Enum::_from_string_loop(const char *name, size_t index)                        \
 {                                                                              \
     return                                                                     \
         index == _size ? _optional_index() :                                   \
-        _enum::_namesMatch(_ENUM_NS(Enum)::name_array()[index], name) ?        \
+        _enum::_namesMatch(_ENUM_NS(Enum)::raw_names()[index], name) ?         \
             _optional_index(index) :                                           \
         _from_string_loop(name, index + 1);                                    \
 }                                                                              \
@@ -605,7 +600,7 @@ Enum::_from_string_nocase_loop(const char *name, size_t index)                 \
     return                                                                     \
         index == _size ? _optional_index() :                                   \
             _enum::_namesMatchNocase(                                          \
-                _ENUM_NS(Enum)::name_array()[index], name) ?                   \
+                _ENUM_NS(Enum)::raw_names()[index], name) ?                    \
                     _optional_index(index) :                                   \
                     _from_string_nocase_loop(name, index + 1);                 \
 }                                                                              \
@@ -659,13 +654,13 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 #define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED(Enum, ...)          \
     inline const char** raw_names()                                            \
     {                                                                          \
-        static const char*  value[] = { _ENUM_STRINGIZE(__VA_ARGS__) };        \
+        static const char   *value[] = { _ENUM_STRINGIZE(__VA_ARGS__) };       \
         return value;                                                          \
     }                                                                          \
                                                                                \
     inline const char** name_array()                                           \
     {                                                                          \
-        static const char*  value[Enum::_size];                                \
+        static const char   *value[Enum::_size];                               \
         return value;                                                          \
     }                                                                          \
                                                                                \
@@ -677,19 +672,49 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 
 // C++11 fast version
 #define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_CONSTEXPR(Enum, ...)        \
-    constexpr const char    *raw_names[] = { _ENUM_STRINGIZE(__VA_ARGS__) };   \
-    const char              *name_array[Enum::_size];                          \
-    bool                    initialized = false;
+    constexpr const char    *the_raw_names[] =                                 \
+        { _ENUM_STRINGIZE(__VA_ARGS__) };                                      \
+                                                                               \
+    constexpr const char * const * raw_names()                                 \
+    {                                                                          \
+        return the_raw_names;                                                  \
+    }                                                                          \
+                                                                               \
+    inline const char** name_array()                                           \
+    {                                                                          \
+        static const char   *value[Enum::_size];                               \
+        return value;                                                          \
+    }                                                                          \
+                                                                               \
+    inline bool& initialized()                                                 \
+    {                                                                          \
+        static bool         value = false;                                     \
+        return value;                                                          \
+    }
 
 // C++11 slow all-constexpr version
 #define _ENUM_GENERATE_STRINGS_COMPILE_TIME(Enum, ...)                         \
     _ENUM_TRIM_STRINGS(__VA_ARGS__)                                            \
+                                                                               \
     constexpr const char * const    the_name_array[] =                         \
         { _ENUM_REFER_TO_STRINGS(__VA_ARGS__) };                               \
+                                                                               \
     constexpr const char * const * name_array()                                \
     {                                                                          \
         return the_name_array;                                                 \
+    }                                                                          \
+                                                                               \
+    constexpr const char * const * raw_names()                                 \
+    {                                                                          \
+        return the_name_array;                                                 \
     }
+
+// C++98, C++11 fast version
+#define _ENUM_TO_STRING_NOT_CONSTEXPR
+
+// C++11 slow all-constexpr version
+#define _ENUM_TO_STRING_CONSTEXPR                                              \
+    constexpr
 
 // C++98, C++11 fast version
 #define _ENUM_DECLARE_INITIALIZE                                               \
@@ -728,12 +753,49 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 
 #ifdef _ENUM_HAVE_CONSTEXPR
 
+#ifdef BETTER_ENUMS_FORCE_CONSTEXPR_TO_STRING
+#   define _ENUM_DEFAULT_CONSTEXPR_TO_STRING                                   \
+        _ENUM_GENERATE_STRINGS_COMPILE_TIME
+#   define _ENUM_DEFAULT_TO_STRING_CONSTEXPR                                   \
+        _ENUM_TO_STRING_CONSTEXPR
+#   define _ENUM_DEFAULT_INITIALIZE_DECLARATION                                \
+        _ENUM_INITIALIZE_DECLARATION_NOT_NEEDED
+#   define _ENUM_DEFAULT_INITIALIZE_DEFINITION                                 \
+        _ENUM_DEFINE_INITIALIZE_NOT_NEEDED
+#   define _ENUM_DEFAULT_CALL_INITIALIZE                                       \
+        _ENUM_CALL_INITIALIZE_IS_NO_OP
+#else
+#   define _ENUM_DEFAULT_CONSTEXPR_TO_STRING                                   \
+        _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_CONSTEXPR
+#   define _ENUM_DEFAULT_TO_STRING_CONSTEXPR                                   \
+        _ENUM_TO_STRING_NOT_CONSTEXPR
+#   define _ENUM_DEFAULT_INITIALIZE_DECLARATION                                \
+        _ENUM_DECLARE_INITIALIZE
+#   define _ENUM_DEFAULT_INITIALIZE_DEFINITION                                 \
+        _ENUM_DEFINE_INITIALIZE
+#   define _ENUM_DEFAULT_CALL_INITIALIZE                                       \
+        _ENUM_CALL_INITIALIZE
+#endif
+
 #define ENUM(Enum, Integral, ...)                                              \
     _ENUM_TYPE(_ENUM_SET_UNDERLYING_TYPE_IMPLEMENTED,                          \
                _ENUM_DISABLE_DEFAULT_BY_DELETE,                                \
                _ENUM_SWITCH_TYPE_IS_ENUM_CLASS,                                \
                _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS,                          \
+               _ENUM_DEFAULT_CONSTEXPR_TO_STRING,                              \
+               _ENUM_DEFAULT_TO_STRING_CONSTEXPR,                              \
+               _ENUM_DEFAULT_INITIALIZE_DECLARATION,                           \
+               _ENUM_DEFAULT_INITIALIZE_DEFINITION,                            \
+               _ENUM_DEFAULT_CALL_INITIALIZE,                                  \
+               Enum, Integral, __VA_ARGS__)
+
+#define CONSTEXPR_TO_STRING_ENUM(Enum, Integral, ...)                          \
+    _ENUM_TYPE(_ENUM_SET_UNDERLYING_TYPE_IMPLEMENTED,                          \
+               _ENUM_DISABLE_DEFAULT_BY_DELETE,                                \
+               _ENUM_SWITCH_TYPE_IS_ENUM_CLASS,                                \
+               _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS,                          \
                _ENUM_GENERATE_STRINGS_COMPILE_TIME,                            \
+               _ENUM_TO_STRING_CONSTEXPR,                                      \
                _ENUM_INITIALIZE_DECLARATION_NOT_NEEDED,                        \
                _ENUM_DEFINE_INITIALIZE_NOT_NEEDED,                             \
                _ENUM_CALL_INITIALIZE_IS_NO_OP,                                 \
@@ -747,6 +809,7 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
                _ENUM_SWITCH_TYPE_IS_REGULAR_ENUM,                              \
                _ENUM_GENERATE_SWITCH_TYPE_REGULAR_ENUM,                        \
                _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED,             \
+               _ENUM_TO_STRING_NOT_CONSTEXPR,                                  \
                _ENUM_DECLARE_INITIALIZE,                                       \
                _ENUM_DEFINE_INITIALIZE,                                        \
                _ENUM_CALL_INITIALIZE,                                          \

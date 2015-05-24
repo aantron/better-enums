@@ -3,10 +3,12 @@
 // 1 (note - this means using "+ 1", not "++". The "++" operator is not
 // constexpr).
 
+// #define BETTER_ENUMS_FORCE_CONSTEXPR_TO_STRING
+
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, int, Red, Green = 2, Blue)
+CONSTEXPR_TO_STRING_ENUM(Channel, int, Red, Green = 2, Blue)
 
 // Initialization.
 constexpr Channel       channel_1 = Channel::Green;
