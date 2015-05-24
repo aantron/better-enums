@@ -173,7 +173,7 @@ _ENUM_CONSTEXPR inline T _default()
 template <>
 _ENUM_CONSTEXPR inline const char* _default<const char*>()
 {
-    return nullptr;
+    return (const char*)0;
 }
 
 template <>
@@ -629,9 +629,12 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 
 // C++98, C++11
 #define _ENUM_CXX98_NO_DEFAULT_CONSTRUCTOR(Type)                               \
+    private:                                                                   \
+        Type() { }
 
 // C++11
 #define _ENUM_CXX11_NO_DEFAULT_CONSTRUCTOR(Type)                               \
+    Type() = delete;
 
 // C++98, C++11
 #define _ENUM_REGULAR_ENUM_SWITCH_TYPE(Type)                                   \
@@ -801,7 +804,7 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
                _ENUM_DEFAULT_CALL_INITIALIZE,                                  \
                Enum, Integral, __VA_ARGS__)
 
-#define CONSTEXPR_TO_STRING_ENUM(Enum, Integral, ...)                          \
+#define SLOW_ENUM(Enum, Integral, ...)                                         \
     _ENUM_TYPE(_ENUM_CXX11_UNDERLYING_TYPE,                                    \
                _ENUM_CXX11_NO_DEFAULT_CONSTRUCTOR,                             \
                _ENUM_DEFAULT_SWITCH_TYPE,                                      \
