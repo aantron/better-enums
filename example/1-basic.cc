@@ -93,7 +93,7 @@ int main()
 
 
     // The type name is available as a string.
-    std::cout << Channel::_name << std::endl;
+    std::cout << Channel::_name() << std::endl;
 
 
 

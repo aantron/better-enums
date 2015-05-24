@@ -153,7 +153,7 @@
 
 
 #define _ENUM_EAT_ASSIGN_SINGLE(EnumType, index, expression)                   \
-    ((_enum::_eat_assign<EnumType>)Base::expression),
+    ((_enum::_eat_assign<EnumType>)EnumType::expression),
 
 #define _ENUM_EAT_ASSIGN(EnumType, ...)                                        \
     _ENUM_PP_MAP(_ENUM_EAT_ASSIGN_SINGLE, EnumType, __VA_ARGS__)
@@ -393,206 +393,222 @@ inline void _trim_names(const char * const *raw_names,
 
 
 #define _ENUM_TYPE(SetUnderlyingType, DisableDefault, SwitchType,              \
-                   GenerateSwitchType, ShortIterableDeclarations,              \
-                   ShortIterableAliases, GenerateStrings, DefineInitialize,    \
-                   CallInitialize,                                             \
+                   GenerateSwitchType, GenerateStrings, DeclareInitialize,     \
+                   DefineInitialize, CallInitialize,                           \
                    Enum, Integral, ...)                                        \
                                                                                \
 namespace _enum {                                                              \
 namespace _data_ ## Enum {                                                     \
                                                                                \
-struct Base {                                                                  \
-    enum _enumerated SetUnderlyingType(Integral) { __VA_ARGS__ };              \
-                                                                               \
-    _ENUM_CONSTEXPR Base(_enumerated value) : _value(value) { }                \
-                                                                               \
-    Integral    _value;                                                        \
-};                                                                             \
-                                                                               \
-enum PutNamesInThisScopeAlso { __VA_ARGS__ };                                  \
-                                                                               \
-_ENUM_CONSTEXPR const Base      value_array[] =                                \
-    { _ENUM_EAT_ASSIGN(Base, __VA_ARGS__) };                                   \
-                                                                               \
-_ENUM_CONSTEXPR const size_t    size = sizeof(value_array) / sizeof(Base);     \
-                                                                               \
 GenerateSwitchType(Integral, __VA_ARGS__);                                     \
                                                                                \
-GenerateStrings(__VA_ARGS__)                                                   \
-                                                                               \
-ShortIterableDeclarations                                                      \
-                                                                               \
 }                                                                              \
 }                                                                              \
                                                                                \
-class Enum : public _ENUM_NS(Enum)::Base {                                     \
+class Enum {                                                                   \
   protected:                                                                   \
     typedef better_enums::optional<Enum>    _optional;                         \
     typedef better_enums::optional<size_t>  _optional_index;                   \
                                                                                \
   public:                                                                      \
+    enum _enumerated SetUnderlyingType(Integral) { __VA_ARGS__ };              \
     typedef Integral                        _integral;                         \
                                                                                \
-    _ENUM_CONSTEXPR Enum(_enumerated value) : Base(value) { }                  \
-    _ENUM_CONSTEXPR Enum(_ENUM_NS(Enum)::Base value) : Base(value) { }         \
-                                                                               \
-    _ENUM_CONSTEXPR _integral _to_integral() const                             \
-    {                                                                          \
-        return _value;                                                         \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static const _optional                                     \
-    _from_integral_nothrow(_integral value)                                    \
-    {                                                                          \
-        return                                                                 \
-            _enum::_map_index<Enum>(_ENUM_NS(Enum)::value_array,               \
-                                    _from_int_loop(value));                    \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static const Enum _from_integral(_integral value)          \
-    {                                                                          \
-        return                                                                 \
-            _enum::_or_throw(_from_integral_nothrow(value),                    \
-                             "Enum::_from_integral: invalid argument");        \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static const Enum _from_integral_unchecked(_integral value)\
-    {                                                                          \
-        return (_enumerated)value;                                             \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR const char* _to_string() const                             \
-    {                                                                          \
-        return                                                                 \
-            _enum::_or_throw(                                                  \
-                _enum::_map_index<const char*>(                                \
-                    _ENUM_NS(Enum)::name_array(),                              \
-                    _from_int_loop(CallInitialize(_value))),                   \
-                "Enum::to_string: invalid enum value");                        \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static const _optional                                     \
-    _from_string_nothrow(const char *name)                                     \
-    {                                                                          \
-        return                                                                 \
-            _enum::_map_index<Enum>(                                           \
-                _ENUM_NS(Enum)::value_array, _from_string_loop(name));         \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static const Enum _from_string(const char *name)           \
-    {                                                                          \
-        return                                                                 \
-            _enum::_or_throw(_from_string_nothrow(name),                       \
-                             "Enum::_from_string: invalid argument");          \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static const _optional                                     \
-    _from_string_nocase_nothrow(const char *name)                              \
-    {                                                                          \
-        return                                                                 \
-            _enum::_map_index<Enum>(_ENUM_NS(Enum)::value_array,               \
-                                        _from_string_nocase_loop(name));       \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static const Enum _from_string_nocase(const char *name)    \
-    {                                                                          \
-        return                                                                 \
-            _enum::_or_throw(_from_string_nocase_nothrow(name),                \
-                             "Enum::_from_string_nocase: invalid argument");   \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static bool _is_valid(_integral value)                     \
-    {                                                                          \
-        return _from_int_loop(value);                                          \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static bool _is_valid(const char *name)                    \
-    {                                                                          \
-        return _from_string_loop(name);                                        \
-    }                                                                          \
-                                                                               \
-    _ENUM_CONSTEXPR static bool _is_valid_nocase(const char *name)             \
-    {                                                                          \
-        return _from_string_nocase_loop(name);                                 \
-    }                                                                          \
+    _ENUM_CONSTEXPR Enum(_enumerated value) : _value(value) { }                \
                                                                                \
     _ENUM_CONSTEXPR operator SwitchType(Enum)() const                          \
     {                                                                          \
         return (SwitchType(Enum))_value;                                       \
     }                                                                          \
                                                                                \
-    typedef _enum::_Iterable<_ENUM_NS(Enum)::Base>  _value_iterable;           \
-    typedef _enum::_Iterable<const char*>           _name_iterable;            \
+    _ENUM_CONSTEXPR _integral _to_integral() const;                            \
+    _ENUM_CONSTEXPR static Enum _from_integral(_integral value);               \
+    _ENUM_CONSTEXPR static Enum _from_integral_unchecked(_integral value);     \
+    _ENUM_CONSTEXPR static _optional _from_integral_nothrow(_integral value);  \
                                                                                \
-    typedef _value_iterable::iterator               _value_iterator;           \
-    typedef _name_iterable::iterator                _name_iterator;            \
+    _ENUM_CONSTEXPR const char* _to_string() const;                            \
+    _ENUM_CONSTEXPR static Enum _from_string(const char *name);                \
+    _ENUM_CONSTEXPR static _optional _from_string_nothrow(const char *name);   \
                                                                                \
-    _ENUM_CONSTEXPR static const size_t     _size = _ENUM_NS(Enum)::size;      \
+    _ENUM_CONSTEXPR static Enum _from_string_nocase(const char *name);         \
+    _ENUM_CONSTEXPR static _optional                                           \
+    _from_string_nocase_nothrow(const char *name);                             \
                                                                                \
-    _ENUM_CONSTEXPR static const char* _name_()                                \
-    {                                                                          \
-        return #Enum;                                                          \
-    }                                                                          \
+    _ENUM_CONSTEXPR static bool _is_valid(_integral value);                    \
+    _ENUM_CONSTEXPR static bool _is_valid(const char *name);                   \
+    _ENUM_CONSTEXPR static bool _is_valid_nocase(const char *name);            \
                                                                                \
-    _ENUM_CONSTEXPR static _value_iterable _values_()                          \
-    {                                                                          \
-        return _value_iterable(_ENUM_NS(Enum)::value_array, _size);            \
-    }                                                                          \
+    typedef _enum::_Iterable<Enum>          _value_iterable;                   \
+    typedef _enum::_Iterable<const char*>   _name_iterable;                    \
                                                                                \
-    _ENUM_CONSTEXPR static _name_iterable _names_()                            \
-    {                                                                          \
-        return                                                                 \
-            _name_iterable(_ENUM_NS(Enum)::name_array(),                       \
-                           CallInitialize(_size));                             \
-    }                                                                          \
+    typedef _value_iterable::iterator       _value_iterator;                   \
+    typedef _name_iterable::iterator        _name_iterator;                    \
                                                                                \
-    ShortIterableAliases(Enum)                                                 \
+    _ENUM_CONSTEXPR static const size_t _size = _ENUM_PP_COUNT(__VA_ARGS__);   \
+                                                                               \
+    _ENUM_CONSTEXPR static const char* _name();                                \
+    _ENUM_CONSTEXPR static _value_iterable _values();                          \
+    _ENUM_CONSTEXPR static _name_iterable _names();                            \
+                                                                               \
+    _integral    _value;                                                       \
                                                                                \
     DisableDefault(Enum)                                                       \
                                                                                \
   protected:                                                                   \
-    DefineInitialize(Enum)                                                     \
+    DeclareInitialize                                                          \
                                                                                \
     _ENUM_CONSTEXPR static _optional_index                                     \
-    _from_int_loop(_integral value, size_t index = 0)                          \
-    {                                                                          \
-        return                                                                 \
-            index == _size ? _optional_index() :                               \
-            _ENUM_NS(Enum)::value_array[index]._value == value ?               \
-                _optional_index(index) :                                       \
-                _from_int_loop(value, index + 1);                              \
-    }                                                                          \
-                                                                               \
+    _from_int_loop(_integral value, size_t index = 0);                         \
     _ENUM_CONSTEXPR static _optional_index                                     \
-    _from_string_loop(const char *name, size_t index = 0)                      \
-    {                                                                          \
-        return                                                                 \
-            index == _size ? _optional_index() :                               \
-            _enum::_namesMatch(_ENUM_NS(Enum)::name_array()[index], name) ?    \
-                _optional_index(index) :                                       \
-            _from_string_loop(name, index + 1);                                \
-    }                                                                          \
-                                                                               \
+    _from_string_loop(const char *name, size_t index = 0);                     \
     _ENUM_CONSTEXPR static _optional_index                                     \
-    _from_string_nocase_loop(const char *name, size_t index = 0)               \
-    {                                                                          \
-        return                                                                 \
-            index == _size ? _optional_index() :                               \
-                _enum::_namesMatchNocase(                                      \
-                    _ENUM_NS(Enum)::name_array()[index], name) ?               \
-                        _optional_index(index) :                               \
-                        _from_string_nocase_loop(name, index + 1);             \
-    }                                                                          \
+    _from_string_nocase_loop(const char *name, size_t index = 0);              \
 };                                                                             \
-                                                                               \
-_ENUM_CONSTEXPR inline const Enum operator +(Enum::_enumerated enumerated)     \
-    { return (Enum)enumerated; }                                               \
                                                                                \
 namespace _enum {                                                              \
 namespace _data_ ## Enum {                                                     \
                                                                                \
-_ENUM_CONSTEXPR inline const Enum operator +(_ENUM_NS(Enum)::Base base)        \
-    { return (Enum)base; }                                                     \
+enum PutNamesInThisScopeAlso { __VA_ARGS__ };                                  \
+                                                                               \
+_ENUM_CONSTEXPR const Enum      value_array[] =                                \
+    { _ENUM_EAT_ASSIGN(Enum, __VA_ARGS__) };                                   \
+                                                                               \
+GenerateStrings(Enum, __VA_ARGS__)                                             \
+                                                                               \
+}                                                                              \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline const Enum operator +(Enum::_enumerated enumerated)     \
+    { return (Enum)enumerated; }                                               \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_integral Enum::_to_integral() const              \
+{                                                                              \
+    return _value;                                                             \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum                                                    \
+Enum::_from_integral_unchecked(Enum::_integral value)                          \
+{                                                                              \
+    return (_enumerated)value;                                                 \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum Enum::_from_integral(Enum::_integral value)        \
+{                                                                              \
+    return                                                                     \
+        _enum::_or_throw(_from_integral_nothrow(value),                        \
+                         "Enum::_from_integral: invalid argument");            \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_optional                                         \
+Enum::_from_integral_nothrow(Enum::_integral value)                            \
+{                                                                              \
+    return                                                                     \
+        _enum::_map_index<Enum>(_ENUM_NS(Enum)::value_array,                   \
+                                _from_int_loop(value));                        \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline const char* Enum::_to_string() const                    \
+{                                                                              \
+    return                                                                     \
+        _enum::_or_throw(                                                      \
+            _enum::_map_index<const char*>(                                    \
+                _ENUM_NS(Enum)::name_array(),                                  \
+                _from_int_loop(CallInitialize(_value))),                       \
+            "Enum::to_string: invalid enum value");                            \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum Enum::_from_string(const char *name)               \
+{                                                                              \
+    return                                                                     \
+        _enum::_or_throw(_from_string_nothrow(name),                           \
+                         "Enum::_from_string: invalid argument");              \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_optional                                         \
+Enum::_from_string_nothrow(const char *name)                                   \
+{                                                                              \
+    return                                                                     \
+        _enum::_map_index<Enum>(                                               \
+            _ENUM_NS(Enum)::value_array, _from_string_loop(name));             \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum Enum::_from_string_nocase(const char *name)        \
+{                                                                              \
+    return                                                                     \
+        _enum::_or_throw(_from_string_nocase_nothrow(name),                    \
+                         "Enum::_from_string_nocase: invalid argument");       \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_optional                                         \
+Enum::_from_string_nocase_nothrow(const char *name)                            \
+{                                                                              \
+    return                                                                     \
+        _enum::_map_index<Enum>(_ENUM_NS(Enum)::value_array,                   \
+                                    _from_string_nocase_loop(name));           \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline bool Enum::_is_valid(Enum::_integral value)             \
+{                                                                              \
+    return _from_int_loop(value);                                              \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline bool Enum::_is_valid(const char *name)                  \
+{                                                                              \
+    return _from_string_loop(name);                                            \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline bool Enum::_is_valid_nocase(const char *name)           \
+{                                                                              \
+    return _from_string_nocase_loop(name);                                     \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline const char* Enum::_name()                               \
+{                                                                              \
+    return #Enum;                                                              \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_value_iterable Enum::_values()                   \
+{                                                                              \
+    return _value_iterable(_ENUM_NS(Enum)::value_array, _size);                \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_name_iterable Enum::_names()                     \
+{                                                                              \
+    return _name_iterable(_ENUM_NS(Enum)::name_array(), CallInitialize(_size));\
+}                                                                              \
+                                                                               \
+DefineInitialize(Enum)                                                         \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_optional_index                                   \
+Enum::_from_int_loop(Enum::_integral value, size_t index)                      \
+{                                                                              \
+    return                                                                     \
+        index == _size ? _optional_index() :                                   \
+        _ENUM_NS(Enum)::value_array[index]._value == value ?                   \
+            _optional_index(index) :                                           \
+            _from_int_loop(value, index + 1);                                  \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_optional_index                                   \
+Enum::_from_string_loop(const char *name, size_t index)                        \
+{                                                                              \
+    return                                                                     \
+        index == _size ? _optional_index() :                                   \
+        _enum::_namesMatch(_ENUM_NS(Enum)::name_array()[index], name) ?        \
+            _optional_index(index) :                                           \
+        _from_string_loop(name, index + 1);                                    \
+}                                                                              \
+                                                                               \
+_ENUM_CONSTEXPR inline Enum::_optional_index                                   \
+Enum::_from_string_nocase_loop(const char *name, size_t index)                 \
+{                                                                              \
+    return                                                                     \
+        index == _size ? _optional_index() :                                   \
+            _enum::_namesMatchNocase(                                          \
+                _ENUM_NS(Enum)::name_array()[index], name) ?                   \
+                    _optional_index(index) :                                   \
+                    _from_string_nocase_loop(name, index + 1);                 \
+}                                                                              \
                                                                                \
 _ENUM_CONSTEXPR inline bool operator ==(const Enum &a, const Enum &b)          \
     { return a._value == b._value; }                                           \
@@ -605,10 +621,7 @@ _ENUM_CONSTEXPR inline bool operator <=(const Enum &a, const Enum &b)          \
 _ENUM_CONSTEXPR inline bool operator >(const Enum &a, const Enum &b)           \
     { return a._value > b._value; }                                            \
 _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
-    { return a._value >= b._value; }                                           \
-                                                                               \
-}                                                                              \
-}
+    { return a._value >= b._value; }
 
 
 
@@ -621,7 +634,7 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 
 // C++98, C++11
 #define _ENUM_DISABLE_DEFAULT_BY_PRIVATE(Type)                                 \
-    private: Type() : Base((_enumerated)0) { }
+    private: Type() { }
 
 // C++11
 #define _ENUM_DISABLE_DEFAULT_BY_DELETE(Type)                                  \
@@ -642,25 +655,8 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
 #define _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS(Integral, ...)                   \
     enum class EnumClassForSwitchStatements : Integral { __VA_ARGS__ }
 
-// C++98, C++11
-#define _ENUM_SHORT_ITERABLE_DECLARATIONS_NOT_AVAILABLE
-
-// C++11
-#define _ENUM_SHORT_ITERABLE_DECLARATIONS                                      \
-    constexpr const _Iterable<Base>         values{value_array, size};         \
-    constexpr const _Iterable<const char*>  names{name_array(), size};
-
-// C++98, C++11
-#define _ENUM_SHORT_ITERABLE_ALIASES_NOT_AVAILABLE(Enum)
-
-// C++11
-#define _ENUM_SHORT_ITERABLE_ALIASES(Enum)                                     \
-    constexpr static const _value_iterable  &_values = _ENUM_NS(Enum)::values; \
-    constexpr static const _name_iterable   &_names = _ENUM_NS(Enum)::names;   \
-    constexpr static const char             *_name = #Enum;
-
 // C++98
-#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED(...)                \
+#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED(Enum, ...)          \
     inline const char** raw_names()                                            \
     {                                                                          \
         static const char*  value[] = { _ENUM_STRINGIZE(__VA_ARGS__) };        \
@@ -669,7 +665,7 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
                                                                                \
     inline const char** name_array()                                           \
     {                                                                          \
-        static const char*  value[size];                                       \
+        static const char*  value[Enum::_size];                                \
         return value;                                                          \
     }                                                                          \
                                                                                \
@@ -680,13 +676,13 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
     }
 
 // C++11 fast version
-#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_CONSTEXPR(...)              \
+#define _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_CONSTEXPR(Enum, ...)        \
     constexpr const char    *raw_names[] = { _ENUM_STRINGIZE(__VA_ARGS__) };   \
-    const char              *name_array[size];                                 \
+    const char              *name_array[Enum::_size];                          \
     bool                    initialized = false;
 
 // C++11 slow all-constexpr version
-#define _ENUM_GENERATE_STRINGS_COMPILE_TIME(...)                               \
+#define _ENUM_GENERATE_STRINGS_COMPILE_TIME(Enum, ...)                         \
     _ENUM_TRIM_STRINGS(__VA_ARGS__)                                            \
     constexpr const char * const    the_name_array[] =                         \
         { _ENUM_REFER_TO_STRINGS(__VA_ARGS__) };                               \
@@ -696,8 +692,15 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
     }
 
 // C++98, C++11 fast version
+#define _ENUM_DECLARE_INITIALIZE                                               \
+    static int initialize();
+
+// C++11 slow all-constexpr version
+#define _ENUM_INITIALIZE_DECLARATION_NOT_NEEDED
+
+// C++98, C++11 fast version
 #define _ENUM_DEFINE_INITIALIZE(Enum)                                          \
-    static int initialize()                                                    \
+    inline int Enum::initialize()                                              \
     {                                                                          \
         if (_ENUM_NS(Enum)::initialized())                                     \
             return 0;                                                          \
@@ -730,9 +733,8 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
                _ENUM_DISABLE_DEFAULT_BY_DELETE,                                \
                _ENUM_SWITCH_TYPE_IS_ENUM_CLASS,                                \
                _ENUM_GENERATE_SWITCH_TYPE_ENUM_CLASS,                          \
-               _ENUM_SHORT_ITERABLE_DECLARATIONS,                              \
-               _ENUM_SHORT_ITERABLE_ALIASES,                                   \
                _ENUM_GENERATE_STRINGS_COMPILE_TIME,                            \
+               _ENUM_INITIALIZE_DECLARATION_NOT_NEEDED,                        \
                _ENUM_DEFINE_INITIALIZE_NOT_NEEDED,                             \
                _ENUM_CALL_INITIALIZE_IS_NO_OP,                                 \
                Enum, Integral, __VA_ARGS__)
@@ -744,9 +746,8 @@ _ENUM_CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)          \
                _ENUM_DISABLE_DEFAULT_BY_PRIVATE,                               \
                _ENUM_SWITCH_TYPE_IS_REGULAR_ENUM,                              \
                _ENUM_GENERATE_SWITCH_TYPE_REGULAR_ENUM,                        \
-               _ENUM_SHORT_ITERABLE_DECLARATIONS_NOT_AVAILABLE,                \
-               _ENUM_SHORT_ITERABLE_ALIASES_NOT_AVAILABLE,                     \
                _ENUM_GENERATE_STRINGS_PREPARE_FOR_RUNTIME_WRAPPED,             \
+               _ENUM_DECLARE_INITIALIZE,                                       \
                _ENUM_DEFINE_INITIALIZE,                                        \
                _ENUM_CALL_INITIALIZE,                                          \
                Enum, Integral, __VA_ARGS__)

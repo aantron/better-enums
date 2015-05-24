@@ -13,7 +13,7 @@
 template <typename Enum>
 constexpr const Enum default_()
 {
-    return Enum::_values[0];
+    return Enum::_values()[0];
 }
 
 // Make it possible to override the convention for specific enums.

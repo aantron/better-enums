@@ -6,12 +6,12 @@
 
 // Computes the maximum value of an enum at compile time.
 template <typename Enum>
-constexpr Enum maximum(Enum accumulator = Enum::_values[0], size_t index = 1)
+constexpr Enum maximum(Enum accumulator = Enum::_values()[0], size_t index = 1)
 {
     return
         index >= Enum::_size ? accumulator :
-        +Enum::_values[index] > accumulator ?
-            maximum(+Enum::_values[index], index + 1) :
+        Enum::_values()[index] > accumulator ?
+            maximum(Enum::_values()[index], index + 1) :
             maximum(accumulator, index + 1);
 }
 
@@ -29,7 +29,7 @@ int main()
 
     ChannelSet  red_and_blue = red_only | blue_only;
 
-    for (Channel channel : Channel::_values) {
+    for (Channel channel : Channel::_values()) {
         std::cout
             << channel._to_string()
             << " bit is set to "

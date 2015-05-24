@@ -15,9 +15,9 @@ ENUM(Compression, short, None, Huffman, Default = Huffman)
 
 // Type properties.
 static_assert_1(std::is_class<Channel>());
-static_assert_1(!std::is_trivial<Channel>());
+static_assert_1(std::is_trivial<Channel>());
 static_assert_1(std::is_standard_layout<Channel>());
-static_assert_1(!std::is_pod<Channel>());
+static_assert_1(std::is_pod<Channel>());
 static_assert_1(std::is_literal_type<Channel>());
 
 
@@ -69,7 +69,7 @@ static_assert_1(!(std::is_convertible<Channel, Depth>()));
 static_assert_1(!(std::is_convertible<Channel, Channel::_enumerated>()));
 static_assert_1(!(std::is_convertible<decltype(+Channel::Red),
                                       Channel::_integral>()));
-static_assert_1(!(std::is_convertible<decltype(Channel::_values[0]),
+static_assert_1(!(std::is_convertible<decltype(Channel::_values()[0]),
                                       Channel::_integral>()));
 
 
@@ -117,16 +117,16 @@ static_assert_1(!Channel::_is_valid_nocase("greeen"));
 // Iterables.
 static_assert_1(Channel::_size == 3);
 static_assert_1(Depth::_size == 2);
-static_assert_1(Channel::_values.size() == Channel::_size);
-static_assert_1(*Channel::_values.begin() == Channel::Red);
-static_assert_1(*(Channel::_values.begin() + 1) == Channel::Green);
-static_assert_1(*(Channel::_values.begin() + 2) == Channel::Blue);
-static_assert_1(Channel::_values[1] == Channel::Green);
-static_assert_1(Channel::_values[2] == Channel::Blue);
+static_assert_1(Channel::_values().size() == Channel::_size);
+static_assert_1(*Channel::_values().begin() == Channel::Red);
+static_assert_1(*(Channel::_values().begin() + 1) == Channel::Green);
+static_assert_1(*(Channel::_values().begin() + 2) == Channel::Blue);
+static_assert_1(Channel::_values()[1] == Channel::Green);
+static_assert_1(Channel::_values()[2] == Channel::Blue);
 
-static_assert_1(Channel::_names.size() == Channel::_size);
+static_assert_1(Channel::_names().size() == Channel::_size);
 // The next one is a little janky, but actually the pointers should be the same.
-static_assert_1(*Channel::_names.begin() == (+Channel::Red)._to_string());
+static_assert_1(*Channel::_names().begin() == (+Channel::Red)._to_string());
 
 
 
@@ -156,44 +156,44 @@ class EnumTests : public CxxTest::TestSuite {
 
     void test_value_iterable()
     {
-        auto    value_iterator = Channel::_values.begin();
+        auto    value_iterator = Channel::_values().begin();
         TS_ASSERT_EQUALS(*value_iterator, Channel::Red);
-        TS_ASSERT_DIFFERS(value_iterator, Channel::_values.end());
+        TS_ASSERT_DIFFERS(value_iterator, Channel::_values().end());
 
         ++value_iterator;
         TS_ASSERT_EQUALS(*value_iterator, Channel::Green);
-        TS_ASSERT_DIFFERS(value_iterator, Channel::_values.end());
+        TS_ASSERT_DIFFERS(value_iterator, Channel::_values().end());
 
         ++value_iterator;
         TS_ASSERT_EQUALS(*value_iterator, Channel::Blue);
-        TS_ASSERT_DIFFERS(value_iterator, Channel::_values.end());
+        TS_ASSERT_DIFFERS(value_iterator, Channel::_values().end());
 
         ++value_iterator;
-        TS_ASSERT_EQUALS(value_iterator, Channel::_values.end());
+        TS_ASSERT_EQUALS(value_iterator, Channel::_values().end());
     }
 
     void test_name_iterable()
     {
-        auto    name_iterator = Channel::_names.begin();
+        auto    name_iterator = Channel::_names().begin();
         TS_ASSERT_EQUALS(strcmp(*name_iterator, "Red"), 0);
-        TS_ASSERT_DIFFERS(name_iterator, Channel::_names.end());
+        TS_ASSERT_DIFFERS(name_iterator, Channel::_names().end());
 
         ++name_iterator;
         TS_ASSERT_EQUALS(strcmp(*name_iterator, "Green"), 0);
-        TS_ASSERT_DIFFERS(name_iterator, Channel::_names.end());
+        TS_ASSERT_DIFFERS(name_iterator, Channel::_names().end());
 
         ++name_iterator;
         TS_ASSERT_EQUALS(strcmp(*name_iterator, "Blue"), 0);
-        TS_ASSERT_DIFFERS(name_iterator, Channel::_names.end());
+        TS_ASSERT_DIFFERS(name_iterator, Channel::_names().end());
 
         ++name_iterator;
-        TS_ASSERT_EQUALS(name_iterator, Channel::_names.end());
+        TS_ASSERT_EQUALS(name_iterator, Channel::_names().end());
     }
 
     void test_type_name()
     {
-        TS_ASSERT_EQUALS(strcmp(Channel::_name, "Channel"), 0);
-        TS_ASSERT_EQUALS(strcmp(Depth::_name, "Depth"), 0);
-        TS_ASSERT_EQUALS(strcmp(Compression::_name, "Compression"), 0);
+        TS_ASSERT_EQUALS(strcmp(Channel::_name(), "Channel"), 0);
+        TS_ASSERT_EQUALS(strcmp(Depth::_name(), "Depth"), 0);
+        TS_ASSERT_EQUALS(strcmp(Compression::_name(), "Compression"), 0);
     }
 };

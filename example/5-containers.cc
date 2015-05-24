@@ -30,7 +30,7 @@ int main()
     std::map<const char*, Channel>  map = {{"first", Channel::Blue}};
     map.insert({"second", Channel::Green});
 
-    for (Channel channel : Channel::_values)
+    for (Channel channel : Channel::_values())
         map.insert({channel._to_string(), channel});
 
     bool    first = true;

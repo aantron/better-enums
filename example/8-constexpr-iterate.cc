@@ -24,7 +24,7 @@ constexpr size_t total_names_length(size_t accumulator = 0, size_t index = 0)
     return
         index == Enum::_size ? accumulator :
         total_names_length<Enum>
-            (accumulator + string_length(Enum::_names[index]), index + 1);
+            (accumulator + string_length(Enum::_names()[index]), index + 1);
 }
 
 // Computes the total length of an ENUM declaration, assuming the type is int.
@@ -36,7 +36,7 @@ template <typename Enum>
 constexpr size_t declaration_length()
 {
     return
-        4 + 1 + string_length(Enum::_name) + 1 + 1 + 3 + 1 + 1 +
+        4 + 1 + string_length(Enum::_name()) + 1 + 1 + 3 + 1 + 1 +
         total_names_length<Enum>() + (Enum::_size - 1) * 2 + 1 + 1 + 1;
 }
 
@@ -45,16 +45,16 @@ template <typename Enum>
 void format_declaration(char *storage)
 {
     std::strcat(storage, "ENUM(");
-    std::strcat(storage, Enum::_name);
+    std::strcat(storage, Enum::_name());
     std::strcat(storage, ", int, ");
 
-    for (auto name_iterator = Enum::_names.begin();
-         name_iterator < Enum::_names.end() - 1; ++name_iterator) {
+    for (auto name_iterator = Enum::_names().begin();
+         name_iterator < Enum::_names().end() - 1; ++name_iterator) {
 
         std::strcat(storage, *name_iterator);
         std::strcat(storage, ", ");
     }
-    std::strcat(storage, Enum::_names[Enum::_size - 1]);
+    std::strcat(storage, Enum::_names()[Enum::_size - 1]);
 
     std::strcat(storage, ");");
 

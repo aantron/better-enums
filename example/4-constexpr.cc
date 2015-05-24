@@ -31,12 +31,13 @@ constexpr bool          should_be_valid_3 = Channel::_is_valid_nocase("red");
 constexpr bool          should_be_invalid_3 = Channel::_is_valid_nocase("reed");
 
 // _names and _values collections and iterators.
-constexpr Channel       channel_5 = *(Channel::_values.begin() + 1);
-constexpr const char    *name_through_iterator = *(Channel::_names.begin() + 1);
-constexpr const char    *name_through_subscript = Channel::_names[2];
+constexpr Channel       channel_5 = *(Channel::_values().begin() + 1);
+constexpr const char    *name_through_iterator =
+                                            *(Channel::_names().begin() + 1);
+constexpr const char    *name_through_subscript = Channel::_names()[2];
 
 // Type name.
-constexpr auto          name = Channel::_name;
+constexpr auto          name = Channel::_name();
 
 // Explicit promotion.
 constexpr int           converted = (+Channel::Green)._to_integral();
