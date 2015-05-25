@@ -1,9 +1,14 @@
 #include <stdexcept>
-#include <type_traits>
 #include <cxxtest/TestSuite.h>
 #include <enum.h>
 
 #define static_assert_1(e)  static_assert(e, #e)
+
+#ifdef BETTER_ENUMS_FORCE_STRICT_CONVERSION
+#   define STRICT 1
+#else
+#   define STRICT 0
+#endif
 
 
 
@@ -13,11 +18,15 @@ ENUM(Compression, short, None, Huffman, Default = Huffman)
 
 
 
+// Using _ENUM_HAVE_CONSTEXPR as a proxy for C++11 support. This should be
+// changed to be more precise in the future.
+#ifdef _ENUM_HAVE_CONSTEXPR
+
+#include <type_traits>
+
 // Type properties.
 static_assert_1(std::is_class<Channel>());
-static_assert_1(std::is_trivial<Channel>());
 static_assert_1(std::is_standard_layout<Channel>());
-static_assert_1(std::is_pod<Channel>());
 static_assert_1(std::is_literal_type<Channel>());
 
 
@@ -63,81 +72,99 @@ static_assert_1((std::is_convertible<decltype(Channel::Red),
 
 // Disallowed implicit conversions.
 static_assert_1(!(std::is_convertible<Channel::_integral, Channel>()));
-static_assert_1(!(std::is_convertible<Channel, Channel::_integral>()));
 static_assert_1(!(std::is_convertible<Depth, Channel>()));
 static_assert_1(!(std::is_convertible<Channel, Depth>()));
-static_assert_1(!(std::is_convertible<Channel, Channel::_enumerated>()));
-static_assert_1(!(std::is_convertible<decltype(+Channel::Red),
-                                      Channel::_integral>()));
-static_assert_1(!(std::is_convertible<decltype(Channel::_values()[0]),
-                                      Channel::_integral>()));
+
+// Controllable implicit conversions.
+static_assert_1(
+    (std::is_convertible<Channel, Channel::_integral>() != STRICT));
+static_assert_1(
+    (std::is_convertible<Channel, Channel::_enumerated>() != STRICT));
+static_assert_1(
+    (std::is_convertible<decltype(+Channel::Red), Channel::_integral>()
+        != STRICT));
+static_assert_1(
+    (std::is_convertible<decltype(Channel::_values()[0]), Channel::_integral>()
+        != STRICT));
 
 
 
-// Constant values.
-static_assert_1((+Channel::Red)._to_integral() == 0);
-static_assert_1((+Channel::Green)._to_integral() == 1);
-static_assert_1((+Channel::Blue)._to_integral() == 2);
 static_assert_1((+Depth::HighColor)._to_integral() == 40);
-static_assert_1((+Depth::TrueColor)._to_integral() == 20);
+static_assert_1(Depth::_from_integral(40) == +Depth::HighColor);
+static_assert_1(Depth::_from_integral_unchecked(40) == +Depth::HighColor);
+static_assert_1(Depth::_from_integral_nothrow(40));
+static_assert_1(*Depth::_from_integral_nothrow(40) == +Depth::HighColor);
+static_assert_1(Depth::_is_valid(40));
 
-
-
-// Integral conversions.
-static_assert_1(Channel::_from_integral(1) == Channel::Green);
-static_assert_1(Channel::_from_integral(1) != Channel::Blue);
-static_assert_1(Channel::_from_integral_unchecked(1) == Channel::Green);
-static_assert_1(Channel::_from_integral_unchecked(1) != Channel::Blue);
-
-static_assert_1(Channel::_is_valid((Channel::_integral)0));
-static_assert_1(Channel::_is_valid(1));
-static_assert_1(Channel::_is_valid(2));
-static_assert_1(!Channel::_is_valid(3));
-
-
-
-// String conversions.
-static_assert_1(Channel::_from_string("Green") == Channel::Green);
-static_assert_1(Channel::_from_string("Green") != Channel::Blue);
-static_assert_1(Channel::_from_string("Blue") == Channel::Blue);
-static_assert_1(Channel::_from_string("Blue") != Channel::Green);
-
-static_assert_1(Channel::_from_string_nocase("green") == Channel::Green);
-static_assert_1(Channel::_from_string_nocase("green") != Channel::Blue);
-static_assert_1(Channel::_from_string_nocase("blue") == Channel::Blue);
-static_assert_1(Channel::_from_string_nocase("blue") != Channel::Green);
-
+static_assert_1(Channel::_from_string("Green") == +Channel::Green);
+static_assert_1(Channel::_from_string_nocase("green") == +Channel::Green);
+static_assert_1(*Channel::_from_string_nothrow("Green") == +Channel::Green);
+static_assert_1(
+    *Channel::_from_string_nocase_nothrow("green") == +Channel::Green);
 static_assert_1(Channel::_is_valid("Green"));
-static_assert_1(!Channel::_is_valid("green"));
 static_assert_1(Channel::_is_valid_nocase("green"));
-static_assert_1(!Channel::_is_valid_nocase("greeen"));
 
-
-
-// Iterables.
 static_assert_1(Channel::_size == 3);
-static_assert_1(Depth::_size == 2);
-static_assert_1(Channel::_values().size() == Channel::_size);
-static_assert_1(*Channel::_values().begin() == Channel::Red);
-static_assert_1(*(Channel::_values().begin() + 1) == Channel::Green);
-static_assert_1(*(Channel::_values().begin() + 2) == Channel::Blue);
-static_assert_1(Channel::_values()[1] == Channel::Green);
-static_assert_1(Channel::_values()[2] == Channel::Blue);
+static_assert_1(Channel::_values().size() == 3);
+static_assert_1(*Channel::_values().begin() == +Channel::Red);
+static_assert_1(*(Channel::_values().end() - 1) == +Channel::Blue);
+static_assert_1(Channel::_values()[1] == +Channel::Green);
 
+#ifdef BETTER_ENUMS_FORCE_CONSTEXPR_TO_STRING
 
+constexpr bool same_string(const char *r, const char *s, size_t index = 0)
+{
+    return
+        r[index] == '\0' ? s[index] == '\0' :
+        s[index] == '\0' ? false :
+        r[index] != s[index] ? false :
+        same_string(r, s, index + 1);
+}
 
-// Aliases.
-static_assert_1(Compression::Default == Compression::Huffman);
+static_assert_1(same_string((+Depth::HighColor)._to_string(), "HighColor"));
+static_assert_1(Depth::_names().size() == 2);
+static_assert_1(same_string(*Depth::_names().begin(), "HighColor"));
+static_assert_1(same_string(*(Depth::_names().end() - 1), "TrueColor"));
+static_assert_1(same_string(Depth::_names()[0], "HighColor"));
+
+#endif // #ifdef BETTER_ENUMS_FORCE_CONSTEXPR_TO_STRING
+
+#endif // #ifdef _ENUM_HAVE_CONSTEXPR
 
 
 
 // Run-time testing.
 class EnumTests : public CxxTest::TestSuite {
   public:
-    void test_bad_integral_conversions()
+    void test_constant_values()
     {
+        TS_ASSERT_EQUALS((+Channel::Red)._to_integral(), 0);
+        TS_ASSERT_EQUALS((+Channel::Green)._to_integral(), 1);
+        TS_ASSERT_EQUALS((+Channel::Blue)._to_integral(), 2);
+        TS_ASSERT_EQUALS((+Depth::HighColor)._to_integral(), 40);
+        TS_ASSERT_EQUALS((+Depth::TrueColor)._to_integral(), 20);
+    }
+
+    void test_integral_conversions()
+    {
+        TS_ASSERT_EQUALS(Channel::_from_integral(1), +Channel::Green);
+        TS_ASSERT_DIFFERS(Channel::_from_integral(1), +Channel::Blue);
+        TS_ASSERT_EQUALS(Channel::_from_integral_unchecked(1), +Channel::Green);
+        TS_ASSERT_DIFFERS(Channel::_from_integral_unchecked(1), +Channel::Blue);
+
         TS_ASSERT_THROWS(Channel::_from_integral(3), std::runtime_error);
         TS_ASSERT_THROWS_NOTHING(Channel::_from_integral_unchecked(3));
+
+        better_enums::optional<Channel> maybe_channel =
+            Channel::_from_integral_nothrow(2);
+        TS_ASSERT(maybe_channel);
+        TS_ASSERT_EQUALS(*maybe_channel, +Channel::Blue);
+        TS_ASSERT(!Channel::_from_integral_nothrow(3));
+
+        TS_ASSERT(Channel::_is_valid((Channel::_integral)0));
+        TS_ASSERT(Channel::_is_valid(1));
+        TS_ASSERT(Channel::_is_valid(2));
+        TS_ASSERT(!Channel::_is_valid(3));
     }
 
     void test_string_conversions()
@@ -146,22 +173,60 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS(strcmp((+Depth::HighColor)._to_string(),
                          "HighColor"), 0);
 
+        TS_ASSERT_EQUALS(Channel::_from_string("Green"), +Channel::Green);
+        TS_ASSERT_DIFFERS(Channel::_from_string("Green"), +Channel::Blue);
+        TS_ASSERT_EQUALS(Channel::_from_string("Blue"), +Channel::Blue);
+        TS_ASSERT_DIFFERS(Channel::_from_string("Blue"), +Channel::Green);
         TS_ASSERT_THROWS(Channel::_from_string("green"), std::runtime_error);
+
+        better_enums::optional<Channel> maybe_channel =
+            Channel::_from_string_nothrow("Green");
+        TS_ASSERT(maybe_channel);
+        TS_ASSERT_EQUALS(*maybe_channel, +Channel::Green);
+        TS_ASSERT(!Channel::_from_string_nothrow("green"));
+
+        TS_ASSERT_EQUALS(Channel::_from_string_nocase("green"),
+                         +Channel::Green);
+        TS_ASSERT_DIFFERS(Channel::_from_string_nocase("green"),
+                          +Channel::Blue);
+        TS_ASSERT_EQUALS(Channel::_from_string_nocase("blue"),
+                         +Channel::Blue);
+        TS_ASSERT_DIFFERS(Channel::_from_string_nocase("blue"),
+                          +Channel::Green);
         TS_ASSERT_THROWS(Channel::_from_string_nocase("a"), std::runtime_error);
+
+        maybe_channel = Channel::_from_string_nocase_nothrow("green");
+        TS_ASSERT(maybe_channel);
+        TS_ASSERT_EQUALS(*maybe_channel, +Channel::Green);
+        TS_ASSERT(!Channel::_from_string_nocase_nothrow("greeen"));
+
+        TS_ASSERT(Channel::_is_valid("Green"));
+        TS_ASSERT(!Channel::_is_valid("green"));
+        TS_ASSERT(Channel::_is_valid_nocase("green"));
+        TS_ASSERT(!Channel::_is_valid_nocase("greeen"));
     }
 
     void test_value_iterable()
     {
-        auto    value_iterator = Channel::_values().begin();
-        TS_ASSERT_EQUALS(*value_iterator, Channel::Red);
+        TS_ASSERT_EQUALS(Channel::_size, 3);
+        TS_ASSERT_EQUALS(Depth::_size, 2);
+        TS_ASSERT_EQUALS(Channel::_values().size(), Channel::_size);
+        TS_ASSERT_EQUALS(*Channel::_values().begin(), +Channel::Red);
+        TS_ASSERT_EQUALS(*(Channel::_values().begin() + 1), +Channel::Green);
+        TS_ASSERT_EQUALS(*(Channel::_values().begin() + 2), +Channel::Blue);
+        TS_ASSERT_EQUALS(Channel::_values()[1], +Channel::Green);
+        TS_ASSERT_EQUALS(Channel::_values()[2], +Channel::Blue);
+
+        Channel::_value_iterator    value_iterator = Channel::_values().begin();
+        TS_ASSERT_EQUALS(*value_iterator, +Channel::Red);
         TS_ASSERT_DIFFERS(value_iterator, Channel::_values().end());
 
         ++value_iterator;
-        TS_ASSERT_EQUALS(*value_iterator, Channel::Green);
+        TS_ASSERT_EQUALS(*value_iterator, +Channel::Green);
         TS_ASSERT_DIFFERS(value_iterator, Channel::_values().end());
 
         ++value_iterator;
-        TS_ASSERT_EQUALS(*value_iterator, Channel::Blue);
+        TS_ASSERT_EQUALS(*value_iterator, +Channel::Blue);
         TS_ASSERT_DIFFERS(value_iterator, Channel::_values().end());
 
         ++value_iterator;
@@ -170,7 +235,12 @@ class EnumTests : public CxxTest::TestSuite {
 
     void test_name_iterable()
     {
-        auto    name_iterator = Channel::_names().begin();
+        TS_ASSERT_EQUALS(Channel::_names().size(), Channel::_size);
+        TS_ASSERT_EQUALS(strcmp(*Channel::_names().begin(), "Red"), 0);
+        TS_ASSERT_EQUALS(strcmp(Channel::_names()[0], "Red"), 0);
+        TS_ASSERT_EQUALS(strcmp(Depth::_names()[0], "HighColor"), 0);
+
+        Channel::_name_iterator     name_iterator = Channel::_names().begin();
         TS_ASSERT_EQUALS(strcmp(*name_iterator, "Red"), 0);
         TS_ASSERT_DIFFERS(name_iterator, Channel::_names().end());
 
@@ -191,5 +261,10 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS(strcmp(Channel::_name(), "Channel"), 0);
         TS_ASSERT_EQUALS(strcmp(Depth::_name(), "Depth"), 0);
         TS_ASSERT_EQUALS(strcmp(Compression::_name(), "Compression"), 0);
+    }
+
+    void test_alias()
+    {
+        TS_ASSERT_EQUALS(Compression::Default, Compression::Huffman);
     }
 };
