@@ -3,7 +3,7 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, uint16_t, Red, Green = 2, Blue, Alias = Red);
+ENUM(Channel, uint16_t, Red, Green = 2, Blue, Alias = Red)
 
 // Enums should be treated like integers (in memory, Channel is a uint16_t), and
 // should generally be passed by value.

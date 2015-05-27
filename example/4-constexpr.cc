@@ -6,7 +6,7 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, int, Red, Green = 2, Blue);
+ENUM(Channel, int, Red, Green = 2, Blue)
 
 // Initialization.
 constexpr Channel       channel_1 = Channel::Green;

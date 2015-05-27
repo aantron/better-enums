@@ -15,7 +15,7 @@ constexpr Enum maximum(Enum accumulator = Enum::_values[0], size_t index = 1)
             maximum(accumulator, index + 1);
 }
 
-ENUM(Channel, int, Red, Green, Blue);
+ENUM(Channel, int, Red, Green, Blue)
 
 int main()
 {

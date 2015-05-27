@@ -195,7 +195,7 @@ _ENUM_CONSTEXPR size_t _default<size_t>()
 template <typename T>
 struct optional {
     _ENUM_CONSTEXPR optional() : _valid(false), _value(_default<T>()) { }
-    _ENUM_CONSTEXPR optional(T value) : _valid(true), _value(value) { }
+    _ENUM_CONSTEXPR optional(T v) : _valid(true), _value(v) { }
 
     _ENUM_CONSTEXPR const T& operator *() const { return _value; }
     _ENUM_CONSTEXPR const T& operator ->() const { return _value; }
@@ -221,8 +221,8 @@ template <typename EnumType>
 struct _eat_assign {
     explicit _ENUM_CONSTEXPR _eat_assign(EnumType value) : _value(value) { }
     template <typename Any>
-    _ENUM_CONSTEXPR EnumType operator =(Any dummy) const
-        { return _value; }
+    _ENUM_CONSTEXPR const _eat_assign& operator =(Any dummy) const
+        { return *this; }
     _ENUM_CONSTEXPR operator EnumType () const { return _value; }
 
   private:
@@ -239,8 +239,8 @@ struct _Iterable {
     _ENUM_CONSTEXPR const Element& operator [](size_t index) const
         { return _array[index]; }
 
-    _ENUM_CONSTEXPR _Iterable(const Element *array, size_t size) :
-        _array(array), _size(size) { };
+    _ENUM_CONSTEXPR _Iterable(const Element *array, size_t s) :
+        _array(array), _size(s) { };
 
   private:
     const Element * const   _array;
@@ -308,7 +308,7 @@ constexpr char _select(const char *from, size_t from_length, size_t index)
 
 constexpr char _toLowercaseAscii(char c)
 {
-    return c >= 0x41 && c <= 0x5A ? c + 0x20 : c;
+    return c >= 0x41 && c <= 0x5A ? (char) (c + 0x20) : c;
 }
 
 constexpr bool _namesMatch(const char *stringizedName,
@@ -496,7 +496,7 @@ enum class _Case : Integral { __VA_ARGS__ };                                   \
                                                                                \
 static_assert(_size > 0, "no constants defined in enum type");                 \
                                                                                \
-_ENUM_TRIM_STRINGS(__VA_ARGS__);                                               \
+_ENUM_TRIM_STRINGS(__VA_ARGS__)                                                \
                                                                                \
 constexpr const char * const    _name_array[] =                                \
     { _ENUM_REFER_TO_STRINGS(__VA_ARGS__) };                                   \
@@ -901,9 +901,9 @@ _ENUM_CONSTEXPR const EnumType operator +(_ENUM_NS(EnumType)::_Base base)      \
 
 
 #define ENUM(EnumType, Integral, ...)                                          \
-    _ENUM_DATA(EnumType, Integral, __VA_ARGS__);                               \
-    _ENUM_TYPE(EnumType, Integral, __VA_ARGS__);                               \
-    _ENUM_OPERATORS(EnumType);
+    _ENUM_DATA(EnumType, Integral, __VA_ARGS__)                                \
+    _ENUM_TYPE(EnumType, Integral, __VA_ARGS__)                                \
+    _ENUM_OPERATORS(EnumType)
 
 
 

@@ -6,7 +6,7 @@
 
 #include <enum.h>
 
-ENUM(Channel, int, Red, Green, Blue);
+ENUM(Channel, int, Red, Green, Blue)
 
 int main()
 {

@@ -7,9 +7,9 @@
 
 
 
-ENUM(Channel, short, Red, Green, Blue);
-ENUM(Depth, short, HighColor = 40, TrueColor = 20);
-ENUM(Compression, short, None, Huffman, Default = Huffman);
+ENUM(Channel, short, Red, Green, Blue)
+ENUM(Depth, short, HighColor = 40, TrueColor = 20)
+ENUM(Compression, short, None, Huffman, Default = Huffman)
 
 
 

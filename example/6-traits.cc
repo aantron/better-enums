@@ -27,11 +27,11 @@ constexpr const Enum default_()
 
 
 // Default will be Red, because it is first.
-ENUM(Channel, int, Red, Green, Blue);
+ENUM(Channel, int, Red, Green, Blue)
 
 // Default will be TrueColor, even though it is not first.
-ENUM(Depth, int, HighColor, TrueColor);
-ENUM_DEFAULT(Depth, TrueColor);
+ENUM(Depth, int, HighColor, TrueColor)
+ENUM_DEFAULT(Depth, TrueColor)
 
 
 

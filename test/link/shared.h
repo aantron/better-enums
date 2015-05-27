@@ -3,6 +3,6 @@
 
 #include <enum.h>
 
-ENUM(Channel, int, Red, Green, Blue);
+ENUM(Channel, int, Red, Green, Blue)
 
 #endif // #ifndef _SHARED_H_

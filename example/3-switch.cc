@@ -3,7 +3,7 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, int, Red, Green, Blue);
+ENUM(Channel, int, Red, Green, Blue)
 
 void respond_to_channel(Channel channel)
 {

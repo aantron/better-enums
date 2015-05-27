@@ -7,8 +7,8 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, int, Red, Green, Blue);
-ENUM(Depth, int, TrueColor, HighColor);
+ENUM(Channel, int, Red, Green, Blue)
+ENUM(Depth, int, TrueColor, HighColor)
 
 // Computes the length of a string.
 constexpr size_t string_length(const char *s, size_t index = 0)

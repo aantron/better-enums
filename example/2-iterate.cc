@@ -3,7 +3,7 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, int, Red = 3, Green = 4, Blue = 0);
+ENUM(Channel, int, Red = 3, Green = 4, Blue = 0)
 
 int main()
 {
