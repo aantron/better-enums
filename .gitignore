@@ -1,5 +1,7 @@
 *.pyc
 *.exe
 scratch/
+doc/html/
 doc-publish/
 test/cxxtest/*.cc
+test/platform/

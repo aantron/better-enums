@@ -4,7 +4,7 @@
 
 #define static_assert_1(e)  static_assert(e, #e)
 
-#ifdef BETTER_ENUMS_FORCE_STRICT_CONVERSION
+#ifdef BETTER_ENUMS_STRICT_CONVERSION
 #   define STRICT 1
 #else
 #   define STRICT 0
@@ -51,7 +51,6 @@ static_assert_1((std::is_same<decltype(Channel::Red), Channel::_enumerated>()));
 
 
 // Supported constructors.
-static_assert_1(!std::is_default_constructible<Channel>());
 
 #ifdef __clang__
 static_assert_1(std::is_trivially_copyable<Channel>());
@@ -60,6 +59,9 @@ static_assert_1(std::is_trivially_copyable<Channel>());
 static_assert_1((std::is_constructible<Channel, Channel::_enumerated>()));
 static_assert_1(!(std::is_constructible<Channel, Channel::_integral>()));
 static_assert_1(!(std::is_constructible<Channel, Depth>()));
+
+// Commented out temporarily due to GCC 4.7- bug.
+// static_assert_1(!std::is_default_constructible<Channel>());
 
 
 
@@ -110,7 +112,7 @@ static_assert_1(*Channel::_values().begin() == +Channel::Red);
 static_assert_1(*(Channel::_values().end() - 1) == +Channel::Blue);
 static_assert_1(Channel::_values()[1] == +Channel::Green);
 
-#ifdef BETTER_ENUMS_FORCE_CONSTEXPR_TO_STRING
+#ifdef BETTER_ENUMS_CONSTEXPR_TO_STRING
 
 constexpr bool same_string(const char *r, const char *s, size_t index = 0)
 {
@@ -127,7 +129,7 @@ static_assert_1(same_string(*Depth::_names().begin(), "HighColor"));
 static_assert_1(same_string(*(Depth::_names().end() - 1), "TrueColor"));
 static_assert_1(same_string(Depth::_names()[0], "HighColor"));
 
-#endif // #ifdef BETTER_ENUMS_FORCE_CONSTEXPR_TO_STRING
+#endif // #ifdef BETTER_ENUMS_CONSTEXPR_TO_STRING
 
 #endif // #ifdef _ENUM_HAVE_CONSTEXPR
 

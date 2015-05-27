@@ -1,0 +1,23 @@
+// This file was generated automatically
+
+// Hello, World!
+//
+// Download <a $download>enum.h</a>, then build this program with it:
+
+#include <iostream>
+#include "enum.h"
+
+ENUM(Word, int, Hello, World)
+
+int main()
+{
+    std::cout << (+Word::Hello)._to_string() << ", "
+              << (+Word::World)._to_string() << "!"
+              << std::endl;
+
+    return 0;
+}
+
+// Run it, and you should see the output "Hello, World!"
+//
+// Congratulations, you have just created your first Better Enum!

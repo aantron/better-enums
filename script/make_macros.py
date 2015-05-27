@@ -26,8 +26,8 @@
 #    somewhere in your include path.
 # 1. Run python make_macros.py 512 128 > MACRO_FILE
 # 2. Build your code with an additional compiler flag:
-#    - for gcc and clang, -BETTER_ENUMS_MACRO_FILE='<MACRO_FILE>'
-#    - for VC++, /BETTER_ENUMS_MACRO_FILE='<MACRO_FILE>'
+#    - for gcc and clang, -DBETTER_ENUMS_MACRO_FILE='<MACRO_FILE>'
+#    - for VC++, /DBETTER_ENUMS_MACRO_FILE='<MACRO_FILE>'
 #    or use any other method of getting these macros declared.
 # 3. Compile your code. Your macro file should be included, and enum.h should
 #    happily work with whatever limits you chose.
