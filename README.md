@@ -46,9 +46,7 @@ Simply add `enum.h` to your project.
 - Explicit choice of underlying representation type.
 - Header-only.
 - No dependencies besides the standard library.
-- Tested on gcc 4.3+ and clang 3.3+.
-
-Visual C++ support coming in the next few days. I am currently porting.
+- Tested on gcc 4.3 to 5.1, clang 3.3 to 3.6, and VS2013.
 
 ## Contact
 

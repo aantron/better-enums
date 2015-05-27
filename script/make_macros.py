@@ -71,24 +71,27 @@ def generate(stream, constants, length, script):
 
     print >> stream, ''
     print >> stream, '#define _ENUM_PP_MAP(macro, data, ...) \\'
-    print >> stream, '    _ENUM_A(_ENUM_PP_MAP_VAR_COUNT, ' + \
+    print >> stream, '    _ENUM_ID(_ENUM_A(_ENUM_PP_MAP_VAR_COUNT, ' + \
                      '_ENUM_PP_COUNT(__VA_ARGS__)) \\'
-    print >> stream, '        (macro, data, __VA_ARGS__)'
+    print >> stream, '        (macro, data, __VA_ARGS__))'
 
     print >> stream, ''
     print >> stream, '#define _ENUM_PP_MAP_VAR_COUNT(count) ' + \
                      '_ENUM_M ## count'
 
     print >> stream, ''
-    print >> stream, '#define _ENUM_A(macro, ...) macro(__VA_ARGS__)'
+    print >> stream, '#define _ENUM_A(macro, ...) _ENUM_ID(macro(__VA_ARGS__))'
 
     print >> stream, ''
-    print >> stream, '#define _ENUM_M1(m, d, x) _ENUM_A(m, d, 0, x)'
+    print >> stream, '#define _ENUM_ID(x) x'
+
+    print >> stream, ''
+    print >> stream, '#define _ENUM_M1(m, d, x) m(d,0,x)'
     for index in range(2, constants + 1):
         print >> stream, '#define _ENUM_M' + str(index) + \
-                         '(m,d,x,...) _ENUM_A(m,d,' + str(index - 1) + \
-                         ',x) _ENUM_M' + str(index - 1) + \
-                         '(m,d,__VA_ARGS__)'
+                         '(m,d,x,...) m(d,' + str(index - 1) + \
+                         ',x) _ENUM_ID(_ENUM_M' + str(index - 1) + \
+                         '(m,d,__VA_ARGS__))'
 
     print >> stream, ''
     pp_count_impl_prefix = '#define _ENUM_PP_COUNT_IMPL(_1,'
@@ -104,13 +107,13 @@ def generate(stream, constants, length, script):
 
     print >> stream, ''
     pp_count_prefix = \
-        '#define _ENUM_PP_COUNT(...) _ENUM_PP_COUNT_IMPL(__VA_ARGS__,'
+        '#define _ENUM_PP_COUNT(...) _ENUM_ID(_ENUM_PP_COUNT_IMPL(__VA_ARGS__,'
     stream.write(pp_count_prefix)
     pp_count = MultiLine(stream = stream, indent = 4,
                          initial_column = len(pp_count_prefix))
     for index in range(0, constants - 1):
         pp_count.write(' ' + str(constants - index) + ',')
-    pp_count.write(' 1)', last = True)
+    pp_count.write(' 1))', last = True)
     print >> stream, ''
 
     print >> stream, ''

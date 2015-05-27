@@ -1,15 +1,16 @@
 ## Compiler support
 
 Better Enums aims to support as many compilers as is reasonable. It has been
-tested with clang++ and g++, and Visual C++ support is coming in the next few
-days.
+tested with clang++ and g++, and Visual C++:
+
+  - clang++ 3.3 to 3.6
+  - g++ 4.3 to 5.1
+  - Visual C++ 2013
 
 In principle, Better Enums can be used with any compiler that supports either
 
   - $cxx11
   - $cxx98 with the variadic macro (`__VA_ARGS__`) extension
-
-This should make it compatible with Visual C++ 2005 and higher/
 
 To ensure that nothing is broken, every release of Better Enums is tested
 automatically with a large number of combinations of compiler and configuration.
@@ -21,6 +22,7 @@ demos and tutorials, and a multiple translation unit linking test.
 ### Tested configurations
 
 ~~~comment
+vc2013 /EHsc
 clang++36 -std=c++11
 clang++36 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
 clang++36 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING

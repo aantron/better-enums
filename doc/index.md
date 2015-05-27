@@ -107,7 +107,7 @@ the project on [GitHub]($repo) for updates.
         <a href="${prefix}ExtendingMacroLimits.html">Extending macro limits</a>
       </li>
       <li><a href="${prefix}CompilerSupport.html">Compiler support</a></li>
-      <li><a href="${prefix}Performance.html">Performance</a></li>
+      <li><a href="${prefix}performance.html">Performance</a></li>
     </ul>
   </div>
 </div>
