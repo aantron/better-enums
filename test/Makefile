@@ -5,7 +5,7 @@ platform :
 
 .PHONY : clean
 clean :
-	rm -rf platform
+	rm -rf platform *.obj
 
 .PHONY : default
 default : run

@@ -290,7 +290,7 @@ _ENUM_CONSTEXPR inline char _select(const char *from, std::size_t from_length,
 
 _ENUM_CONSTEXPR inline char _toLowercaseAscii(char c)
 {
-    return c >= 0x41 && c <= 0x5A ? (char) (c + 0x20) : c;
+    return c >= 0x41 && c <= 0x5A ? (char)(c + 0x20) : c;
 }
 
 _ENUM_CONSTEXPR inline bool _namesMatch(const char *stringizedName,

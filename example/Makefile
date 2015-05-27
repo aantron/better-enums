@@ -21,7 +21,7 @@ all : $(BINARIES)
 
 .PHONY : clean
 clean :
-	rm -rf *.exe
+	rm -rf *.exe *.obj
 
 .PHONY : run
 run : all

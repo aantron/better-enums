@@ -3,6 +3,7 @@
 import glob
 import os
 import os.path
+import platform
 import re
 import shutil
 import subprocess
@@ -15,6 +16,7 @@ CXXTEST_SOURCE = "cxxtest/tests.h"
 CXXTEST_GENERATED = "cxxtest/tests.cc"
 
 quiet = True
+windows = False
 
 
 
@@ -68,10 +70,12 @@ class Configuration(object):
 
     def elaborate(self, include, output, source):
         command = self._command
-        if command.startswith("clang") or command.startswith("g++"):
+        if re.match("clang|[gc]\+\+", command) != None:
             return "%s -I%s -Wall -o %s %s" % (command, include, output, source)
+        elif re.match("vc|cl", command) != None:
+            return "%s /I%s /Fe%s %s" % (command, include, output, source)
         else:
-            raise Error("unrecognized compiler in '%s'" % command)
+            raise Exception("unrecognized compiler in '%s'" % command)
 
     def make_directories(self):
         base = self.directory()
@@ -111,15 +115,23 @@ class Configuration(object):
             run(command, True)
 
             output = run(binary)
+            output = re.sub("\r\n", "\n", output)
             if output != expected_example_outputs[title]:
                 print output
                 print "output does not match expected output"
                 sys.exit(1)
 
-        cxxtest_binary = os.path.join(base, "cxxtest", "tests.exe")
-        command = self.elaborate("..", cxxtest_binary, CXXTEST_GENERATED)
-        run(command, True)
-        run(cxxtest_binary)
+        # This is currently not done on because on Cygwin, cxxtest tries to use
+        # a Cygwin path to include tests.h. That path is in Unix format, which
+        # does not resolve to a valid path when handled by VC++. A workaround is
+        # to detect Cygwin and rewrite the path, but I am saving that for an
+        # improved version of test.py, since there are many things that need to
+        # be rewritten for this script to stay maintainable.
+        if not windows:
+            cxxtest_binary = os.path.join(base, "cxxtest", "tests.exe")
+            command = self.elaborate("..", cxxtest_binary, CXXTEST_GENERATED)
+            run(command, True)
+            run(cxxtest_binary)
 
         link_sources = glob.glob("link/*.cc")
         link_binary = os.path.join(base, "link", "link.exe")
@@ -199,7 +211,15 @@ def gnu_pre_enum_class(command):
         Configuration(command + "-c++98", command + " -std=c++98", skip_cxx98)
     ]
 
-CONFIGURATIONS = \
+def vc(command):
+    return [
+        Configuration(command, command + " /EHsc", skip_cxx98),
+        Configuration(command + "-strict-conversion",
+                      command + " /EHsc /DBETTER_ENUMS_STRICT_CONVERSION",
+                      skip_cxx98)
+    ]
+
+unix_configurations = \
     modern_gnu("clang++36") + \
     modern_gnu("clang++35") + \
     modern_gnu("clang++34") + \
@@ -213,15 +233,39 @@ CONFIGURATIONS = \
     gnu_pre_constexpr("g++44") + \
     gnu_pre_enum_class("g++43")
 
+windows_configurations = vc("vc2015") + vc("vc2013")
+
+unix_default = Configuration("default", "c++ --std=c++11")
+
+windows_default = Configuration("default", "cl /EHsc")
+
 
 
 def main():
+    global quiet
+    global windows
+
     load_expected_outputs()
 
     run("cxxtestgen --error-printer -o %s %s" %
         (CXXTEST_GENERATED, CXXTEST_SOURCE))
 
-    for configuration in CONFIGURATIONS:
+    if re.search("Windows|CYGWIN", platform.system()) != None:
+        full = windows_configurations
+        default = windows_default
+        windows = True
+    else:
+        full = unix_configurations
+        default = unix_default
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--all":
+        configurations = full
+        quiet = True
+    else:
+        configurations = [default]
+        quiet = False
+
+    for configuration in configurations:
         configuration.make_all()
 
 if __name__ == "__main__":

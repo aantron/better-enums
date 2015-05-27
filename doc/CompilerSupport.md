@@ -5,7 +5,7 @@ tested with clang++ and g++, and Visual C++:
 
   - clang++ 3.3 to 3.6
   - g++ 4.3 to 5.1
-  - Visual C++ 2013
+  - Visual C++ 2013 Update 4, Visual C++ 2015 RC
 
 In principle, Better Enums can be used with any compiler that supports either
 
@@ -22,7 +22,10 @@ demos and tutorials, and a multiple translation unit linking test.
 ### Tested configurations
 
 ~~~comment
+vc2015 /EHsc
+vc2015 /EHsc /DBETTER_ENUMS_STRICT_CONVERSION
 vc2013 /EHsc
+vc2013 /EHsc /DBETTER_ENUMS_STRICT_CONVERSION
 clang++36 -std=c++11
 clang++36 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
 clang++36 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
