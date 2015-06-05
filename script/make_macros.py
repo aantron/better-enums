@@ -3,18 +3,20 @@
 # This file is part of Better Enums, released under the BSD 2-clause license.
 # See LICENSE for details, or visit http://github.com/aantron/better-enums.
 
-# This script generates the macros _ENUM_PP_MAP and _ENUM_ITERATE, used
-# internally by enum.h. These are already inlined into enum.h. You only need
-# this script if you are developing enum.h, or run into a limit.
+# You only need this script if you are developing enum.h, or run into a limit.
 #
-# _ENUM_PP_MAP has a limit, which determines the maximum number of constants an
-# enum can have. By default, this limit is 64 constants.
+# This script generates the macros BETTER_ENUMS__PP_MAP and
+# BETTER_ENUMS__ITERATE, used internally by enum.h. These are already inlined
+# into enum.h.
 #
-# _ENUM_ITERATE also has a limit. This one determines the maximum length of the
-# name of a constant that is followed by an initializer (" = 2") when compiling
-# an enum with constexpr to_string function (i.e. usually, this limit does not
-# apply). By default, the limit is 23 characters (24 with the obligatory null
-# terminator).
+# BETTER_ENUMS__PP_MAP has a limit, which determines the maximum number of
+# constants an enum can have. By default, this limit is 64 constants.
+#
+# BETTER_ENUMS__ITERATE also has a limit. This one determines the maximum length
+# of the name of a constant that is followed by an initializer (" = 2") when
+# compiling an enum with constexpr _to_string function (i.e. usually, this limit
+# does not apply). By default, the limit is 23 characters (24 with the
+# obligatory null terminator).
 #
 # If either of these limits is inadequate, you can still compile your code
 # without changing enum.h. You need to generate an external macro file with
@@ -28,7 +30,7 @@
 # 2. Build your code with an additional compiler flag:
 #    - for gcc and clang, -DBETTER_ENUMS_MACRO_FILE='<MACRO_FILE>'
 #    - for VC++, /DBETTER_ENUMS_MACRO_FILE='<MACRO_FILE>'
-#    or use any other method of getting these macros declared.
+#    or use any other method of getting these macros defined.
 # 3. Compile your code. Your macro file should be included, and enum.h should
 #    happily work with whatever limits you chose.
 
@@ -66,35 +68,38 @@ def generate(stream, constants, length, script):
     print >> stream, ''
     print >> stream, '#pragma once'
     print >> stream, ''
-    print >> stream, '#ifndef _BETTER_ENUM_MACRO_FILE_H_'
-    print >> stream, '#define _BETTER_ENUM_MACRO_FILE_H_'
+    print >> stream, '#ifndef BETTER_ENUMS__MACRO_FILE_H'
+    print >> stream, '#define BETTER_ENUMS__MACRO_FILE_H'
 
     print >> stream, ''
-    print >> stream, '#define _ENUM_PP_MAP(macro, data, ...) \\'
-    print >> stream, '    _ENUM_ID(_ENUM_A(_ENUM_PP_MAP_VAR_COUNT, ' + \
-                     '_ENUM_PP_COUNT(__VA_ARGS__)) \\'
+    print >> stream, '#define BETTER_ENUMS__PP_MAP(macro, data, ...) \\'
+    print >> stream, '    BETTER_ENUMS__ID( \\'
+    print >> stream, '        BETTER_ENUMS__APPLY( \\'
+    print >> stream, '            BETTER_ENUMS__PP_MAP_VAR_COUNT, \\'
+    print >> stream, '            BETTER_ENUMS__PP_COUNT(__VA_ARGS__)) \\'
     print >> stream, '        (macro, data, __VA_ARGS__))'
 
     print >> stream, ''
-    print >> stream, '#define _ENUM_PP_MAP_VAR_COUNT(count) ' + \
-                     '_ENUM_M ## count'
+    print >> stream, '#define BETTER_ENUMS__PP_MAP_VAR_COUNT(count) ' + \
+                     'BETTER_ENUMS__M ## count'
 
     print >> stream, ''
-    print >> stream, '#define _ENUM_A(macro, ...) _ENUM_ID(macro(__VA_ARGS__))'
+    print >> stream, '#define BETTER_ENUMS__APPLY(macro, ...) ' + \
+                      'BETTER_ENUMS__ID(macro(__VA_ARGS__))'
 
     print >> stream, ''
-    print >> stream, '#define _ENUM_ID(x) x'
+    print >> stream, '#define BETTER_ENUMS__ID(x) x'
 
     print >> stream, ''
-    print >> stream, '#define _ENUM_M1(m, d, x) m(d,0,x)'
+    print >> stream, '#define BETTER_ENUMS__M1(m, d, x) m(d,0,x)'
     for index in range(2, constants + 1):
-        print >> stream, '#define _ENUM_M' + str(index) + \
-                         '(m,d,x,...) m(d,' + str(index - 1) + \
-                         ',x) _ENUM_ID(_ENUM_M' + str(index - 1) + \
-                         '(m,d,__VA_ARGS__))'
+        print >> stream, '#define BETTER_ENUMS__M' + str(index) + \
+                         '(m,d,x,...) m(d,' + str(index - 1) + ',x) \\'
+        print >> stream, '    BETTER_ENUMS__ID(BETTER_ENUMS__M' + \
+                         str(index - 1) + '(m,d,__VA_ARGS__))'
 
     print >> stream, ''
-    pp_count_impl_prefix = '#define _ENUM_PP_COUNT_IMPL(_1,'
+    pp_count_impl_prefix = '#define BETTER_ENUMS__PP_COUNT_IMPL(_1,'
     stream.write(pp_count_impl_prefix)
     pp_count_impl = MultiLine(stream = stream, indent = 4,
                               initial_column = len(pp_count_impl_prefix))
@@ -106,10 +111,11 @@ def generate(stream, constants, length, script):
     print >> stream, ''
 
     print >> stream, ''
+    print >> stream, '#define BETTER_ENUMS__PP_COUNT(...) \\'
     pp_count_prefix = \
-        '#define _ENUM_PP_COUNT(...) _ENUM_ID(_ENUM_PP_COUNT_IMPL(__VA_ARGS__,'
+        '    BETTER_ENUMS__ID(BETTER_ENUMS__PP_COUNT_IMPL(__VA_ARGS__,'
     stream.write(pp_count_prefix)
-    pp_count = MultiLine(stream = stream, indent = 4,
+    pp_count = MultiLine(stream = stream, indent = 8,
                          initial_column = len(pp_count_prefix))
     for index in range(0, constants - 1):
         pp_count.write(' ' + str(constants - index) + ',')
@@ -117,7 +123,7 @@ def generate(stream, constants, length, script):
     print >> stream, ''
 
     print >> stream, ''
-    iterate_prefix = '#define _ENUM_ITERATE(X, f, l)'
+    iterate_prefix = '#define BETTER_ENUMS__ITERATE(X, f, l)'
     stream.write(iterate_prefix)
     iterate = MultiLine(stream = stream, indent = 4,
                         initial_column = len(iterate_prefix))
@@ -126,7 +132,7 @@ def generate(stream, constants, length, script):
     print >> stream, ''
 
     print >> stream, ''
-    print >> stream, '#endif // #ifndef _BETTER_ENUM_MACRO_FILE_H_'
+    print >> stream, '#endif // #ifndef BETTER_ENUMS__MACRO_FILE_H'
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:

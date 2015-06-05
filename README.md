@@ -68,6 +68,21 @@ enums that are missing from standard C++.
 
 [performance]: http://aantron.github.io/better-enums/Performance.html
 
+## Limitations
+
+The biggest current limitation is that the `ENUM` macro can't be used inside a
+class or namespace. This seems difficult to remove, but I am looking into it. In
+the meantime, there is a workaround with a `typedef` (or `using`):
+
+```cpp
+ENUM(UniquePrefix_Color, uint8_t, Red, Green, Blue)
+
+struct triplet {
+    typedef UniquePrefix_Color      Color;
+    Color                           r, g, b;
+};
+```
+
 ## Contact
 
 Don't hesitate to contact me about features or bugs:
