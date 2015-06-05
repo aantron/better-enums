@@ -1,7 +1,9 @@
 # Better Enums
 
-Reflective compile-time C++ enum library with clean syntax. For example:
+Reflective compile-time C++ enum library with clean syntax, in a single header
+file. For example:
 
+    #include <enum.h>
     ENUM(Channel, int, Red = 1, Green, Blue)
 
 defines a type `Channel`. You can then do natural things such as:
@@ -10,55 +12,72 @@ defines a type `Channel`. You can then do natural things such as:
 Channel channel = Channel::Green;
 
 channel._to_string();           // Results in the string "Green"
-channel._to_integral();         // Results in the int 2
-
 Channel::_from_string("Red");   // Results in Channel::Red
-Channel::_from_integral(3);     // Results in Channel::Blue
 
-constexpr auto channel = Channel::_from_integral(3);
-                                // Do it at compile time (C++11 only)
+Channel::_from_integral(3);     // Checked cast, Channel::Blue
+
+Channel::_size;                 // Number of channels (3)
+Channel::_values()[0];          // Get the first channel
 
 for (Channel channel : Channel::_values()) {
-    // Iterate over all channels
+    process(channel);           // Iterate over all channels
+}
+
+// Natural switch, compiler checks the cases
+switch (channel) {
+    case Channel::Red:   break;
+    case Channel::Green: break;
+    case Channel::Blue:  break;
 }
 ```
 
-...and more. See the [project page](http://aantron.github.io/better-enums).
+...and more.
+
+In C++11, *everything* is available at compile time. You can convert your enums,
+loop over them, [find their max][max],
+[statically enforce conventions][enforce], and pass along the results as
+template arguments or to `constexpr` functions. All the reflection is available
+for your metaprogramming needs.
+
+The interface is the same for C++98 &mdash; you just have to use most of it at
+run time only. This library does provide scoped and sized enums, something not
+built into C++98.
+
+See the [project page][project] for full documentation.
+
+[max]:     http://aantron.github.io/better-enums/demo/BitSets.html
+[enforce]: http://aantron.github.io/better-enums/demo/SpecialValues.html
+[project]: http://aantron.github.io/better-enums
 
 ## Installation
 
-Simply add `enum.h` to your project.
+Simply add `enum.h` to your project &mdash; that's it.
 
-## Features
+Then, include it and use the `ENUM` macro. Your compiler will generate the rich
+enums that are missing from standard C++.
 
-- Requires no external utility.
-- Safe conversions to/from integers and strings.
-- Iteration over declared values.
-- Switch case checking.
-- All operations are `constexpr` and can be used at compile time in your own
-  `constexpr` code. See demos on the
-  [project page](http://aantron.github.io/better-enums) for how to define
-  default values, for example.
-- Constant values can be initialized with expressions (`Red = 1`) and aliased
-  (`Favorite = Green`), just like with built-in enums.
-- Generating a large number of enums is about as fast as including a typical
-  standard header like `iostream` – performance test included.
-- Explicit choice of underlying representation type.
-- Header-only.
-- No dependencies besides the standard library.
-- Tested on gcc 4.3 to 5.1, clang 3.3 to 3.6, and VS2013, VS2015.
+## Additional features
+
+- No dependencies and no external build tools. Uses only standard C++, though,
+  for C++98, variadic macro support is required.
+- Supported and tested on clang, gcc, and msvc.
+- Fast compilation. You have to declare a few dozen enums to slow down your
+  compiler as much as [just including `iostream` does][performance].
+- Use any initializers, just like with a built-in enum.
+- Guaranteed size and alignment &mdash; you choose the representation type.
+
+[performance]: http://aantron.github.io/better-enums/Performance.html
 
 ## Contact
 
-Don't hesitate to contact me about features (or bugs!):
-<a href="mailto:antonbachin@yahoo.com">antonbachin@yahoo.com</a>
+Don't hesitate to contact me about features or bugs:
+[antonbachin@yahoo.com](mailto:antonbachin@yahoo.com), or open an issue on
+GitHub.
 
-## License
+## License and history
 
 Better Enums is released under the BSD 2-clause license. See
 [LICENSE](https://github.com/aantron/better-enums/blob/master/LICENSE).
-
-## History
 
 The library was originally developed by the author in the winter of 2012-2013 at
 Hudson River Trading, as a replacement for an older generator called

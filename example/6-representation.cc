@@ -1,6 +1,6 @@
-// This file was generated automatically
+// This file was generated automatically.
 
-// Representation and alignment
+// Representation
 //
 // Let's go over some of the low-level properties of a Better Enum. This time,
 // we will declare a more unusual enum than the ones we have seen.
@@ -21,24 +21,25 @@ struct Header {
     int             offset;
 };
 
+
 // Here is what we have.
 
 int main()
 {
     assert(sizeof(ContentType) == 2);
 
-// As you can see, ContentType behaves just like a short, in fact it simply
-// wraps one. This makes it possible to lay out structures in a predictable
-// fashion:
+// ContentType behaves just like a short, in fact it simply wraps one. This
+// makes it possible to lay out structures in a predictable fashion:
 
     Header      header = {ContentType::PCM, 0, 0};
 
     assert(sizeof(header) == 8);
     assert((size_t)&header.flags - (size_t)&header.type == 2);
 
-// uint16_t is called ContentType's <em>underlying</em> or
-// <em>representation</em> type. If you want to know the representation type of
-// any enum you have declared, it is available as ::_integral:
+
+// uint16_t is called ContentType's underlying or representation type. If you
+// want to know the representation type of any enum you have declared, it is
+// available as the member type ::_integral:
 
     ContentType::_integral  untrusted_value = 44;
 
@@ -51,17 +52,20 @@ int main()
         ContentType::_from_integral(untrusted_value);
     std::cout << type._to_string() << std::endl;
 
+
 // You have probably noticed the initializers on each of the constants in
 // ContentType. This allows you to declare sparse enums for compatibility with
 // external protocols or previous versions of your software. The initializers
-// don't need to be literal integers &mdash; they can be anything that the
-// compiler would accept in a normal enum declaration. If there was a macro
-// called BIG_FAT_MACRO declared above, we could have written Subtitles =
+// don't need to be literal integers - they can be anything that the compiler
+// would accept in a normal enum declaration. If there was a macro called
+// BIG_FAT_MACRO declared above, we could have written Subtitles =
 // BIG_FAT_MACRO. We could also have written Subtitles = CompressedVideo.
+
 // The in-memory representation of an enum value is simply the number it has
 // been assigned by the compiler. You should be safe passing enums to functions
 // like fread and fwrite, and casting memory blocks known to be safe to struct
 // types containg enums. The enums will behave as expected.
+
 
     return 0;
 }

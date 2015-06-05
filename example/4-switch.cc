@@ -1,4 +1,4 @@
-// This file was generated automatically
+// This file was generated automatically.
 
 // Safe switch
 //
@@ -21,7 +21,8 @@ int main()
     }
 
 // If you miss a case or add a redundant one, your compiler should be able to
-// give you a warning &mdash; try it!
+// give you a warning - try it!
+
 
     std::cout << n << std::endl;
     return 0;

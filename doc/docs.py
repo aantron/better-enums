@@ -16,6 +16,8 @@ CXX_EXTENSION = "cc"
 
 templates = {}
 
+generated = []
+
 def load_templates():
     listing = os.listdir(TEMPLATE_DIRECTORY)
 
@@ -45,7 +47,7 @@ def path_to_md(relative_path):
     return os.path.splitext(relative_path)[0] + ".md"
 
 def path_to_output(relative_path):
-    path = os.path.join(OUTPUT_DIRECTORY, templates["version"], relative_path)
+    path = os.path.join(OUTPUT_DIRECTORY, relative_path)
 
     directory = os.path.dirname(path)
     if not os.path.lexists(directory):
@@ -54,7 +56,7 @@ def path_to_output(relative_path):
     return path
 
 def remove_output_directory():
-    path = os.path.join(OUTPUT_DIRECTORY, templates["version"])
+    path = OUTPUT_DIRECTORY
     if os.path.lexists(path):
         shutil.rmtree(path)
 
@@ -66,9 +68,13 @@ def compose_page(relative_path, definitions):
     if html_file == "index.html":
         canonical = templates["location"]
         definitions["title"] = \
-          definitions["project"] + " - " + definitions["title"]
+            definitions["project"] + " - " + definitions["title"]
     else:
-        canonical = os.path.join(templates["location"], "current", html_file)
+        canonical = os.path.join(templates["location"], html_file)
+        definitions["title"] = \
+            definitions["title"] + " - " + definitions["project"]
+
+    generated.append(canonical)
 
     prefix = re.sub("[^/]+", r"..", os.path.split(relative_path)[0])
     if len(prefix) > 0:
@@ -77,6 +83,9 @@ def compose_page(relative_path, definitions):
     definitions["canonical"] = canonical
     definitions["prefix"] = prefix
 
+    if "class" not in definitions:
+        definitions["class"] = ""
+
     text = templates["page"]
     text = scrub_comments(text)
 
@@ -84,19 +93,21 @@ def compose_page(relative_path, definitions):
         text = apply_template(text, definitions)
         text = scrub_comments(text)
 
-    text = "<!-- Automatically generated - edit the templates! -->\n\n" + text
+    text = "<!-- Generated automatically - edit the templates! -->\n\n" + text
 
     return text
 
-def write_page(relative_path, text):
-    html_file = path_to_html(relative_path)
-    path = path_to_output(html_file)
+def write_file(relative_path, text):
+    path = path_to_output(relative_path)
 
     stream = open(path, "w")
     try:
         stream.write(text)
     finally:
         stream.close()
+
+def write_page(relative_path, text):
+    write_file(path_to_html(relative_path), text)
 
 def copy_static_file(relative_path):
     output_path = path_to_output(relative_path)
@@ -127,11 +138,8 @@ def process_threaded(directory):
     for file in sources:
         definitions = read_extended_markdown(file)
 
-        title_components = re.split("[ -]+", definitions["title"])
-        title_components = map(lambda s: s.capitalize(), title_components)
-        html_title = "".join(title_components)
-        html_title = filter(lambda c: c not in ",!:-", html_title)
-        html_file = os.path.join(directory, html_title + ".html")
+        transformed_title = transform.camel_case(definitions["title"])
+        html_file = os.path.join(directory, transformed_title + ".html")
 
         source_file = \
           os.path.splitext(os.path.basename(file))[0] + "." + CXX_EXTENSION
@@ -166,6 +174,21 @@ def process_threaded(directory):
 
     templates[directory + "_toc"] = text
 
+def generate_sitemap():
+    text = ""
+
+    text += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+    text += "<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n"
+
+    for url in generated:
+        text += "  <url>\n"
+        text += "    <loc>%s</loc>\n" % url
+        text += "  </url>\n"
+
+    text += "</urlset>\n"
+
+    write_file("sitemap.xml", text)
+
 def main():
     load_templates()
 
@@ -179,6 +202,8 @@ def main():
         compose_general_page(page)
 
     copy_static_file("better-enums.css")
+
+    generate_sitemap()
 
 if __name__ == "__main__":
     main()

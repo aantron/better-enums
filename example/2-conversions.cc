@@ -1,4 +1,4 @@
-// This file was generated automatically
+// This file was generated automatically.
 
 // Conversions
 //
@@ -32,14 +32,16 @@ int main()
 
 // As you'd expect, the code above prints "Cyan".
 //
-// If channel is invalid &mdash; for example, if you simply cast the number "42"
-// to Channel &mdash; then the result of to_string is undefined.
+// If channel is invalid - for example, if you simply cast the number "42" to
+// Channel - then the result of to_string is undefined.
+
 
     channel = Channel::_from_string("Magenta");
     std::cout << channel._to_string() << " ";
 
 // This is also straightforward. If you pass a string which is not the name of a
 // declared value, _from_string throws std::runtime_error.
+
 // If you don't want an exception, there is _from_string_nothrow:
 
     better_enums::optional<Channel> maybe_channel =
@@ -50,10 +52,8 @@ int main()
     else
         std::cout << maybe_channel->_to_string() << " ";
 
-// This returns an <em>optional value</em>, in the style of <a
-// href="http://www.boost.org/doc/libs/1_58_0/libs/optional/doc/html/index.html">boost::optional</a>
-// or the proposed <a
-// href="http://en.cppreference.com/w/cpp/experimental/optional">std::optional</a>.
+// This returns an optional value, in the style of boost::optional or the
+// proposed std::optional.
 //
 // What that means for the above code is:
 //
@@ -61,7 +61,7 @@ int main()
 //      *maybe_channel is the converted value of type Channel,
 //   2. if the conversion fails, maybe_channel converts to false.
 //
-// In $cxx11, you can use auto to avoid writing out the optional type:
+// In C++11, you can use auto to avoid writing out the optional type:
 //
 //     auto        maybe_channel = Channel::_from_string_nothrow("Yellow");
 //     if (!maybe_channel)
@@ -85,7 +85,7 @@ int main()
 
 // Integers
 //
-// And, it is similar with the <em>representation type</em> int:
+// And, it is similar with the representation type int:
 //
 //   1. ._to_integral
 //   2. ::_from_integral
@@ -109,21 +109,16 @@ int main()
     channel = Channel::_from_integral_unchecked(0);
     // Invalid - better not to try converting it to string!
 
-// Aside
-//
-// You have certainly noticed that all the method names begin with underscores.
-// This is because they share scope with the enum constants that you declare.
-// Better Enums is trying to stay out of your way by using a prefix.
-//
 // Validity checking
 //
 // For completeness, Better Enums also provides three validity checking
-// functions, one for each of the groups of conversions &mdash; string,
+// functions, one for each of the groups of conversions - string,
 // case-insensitive string, and integer:
 
     assert(Channel::_is_valid(3));
     assert(Channel::_is_valid("Magenta"));
     assert(Channel::_is_valid_nocase("cYaN"));
+
 
 // Almost done.
 //
@@ -134,8 +129,8 @@ int main()
     std::cout << (+Channel::Cyan)._to_string();
 
 // This is due to some type gymnastics in the implementation of Better Enums.
-// The <a>Reference</a> section has a full explanation.
-// This concludes the first tutorial!
+// The reference has a full explanation.
+
 
     std::cout << std::endl;
     return 0;

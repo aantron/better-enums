@@ -1,11 +1,11 @@
 ## Hello, World!
 
-Download <a $download>enum.h</a>, then build this program with it:
+Download <a $download><code>enum.h</code></a>, then build this program with it:
 
     #include <iostream>
     <em>#include "enum.h"</em>
 
-    <em>ENUM(Word, int, Hello, World)</em>
+    <em>ENUM</em>(<em>Word</em>, <em>int</em>, <em>Hello</em>, <em>World</em>)
 
     int main()
     {
@@ -19,3 +19,5 @@ Download <a $download>enum.h</a>, then build this program with it:
 Run it, and you should see the output "Hello, World!"
 
 Congratulations, you have just created your first Better Enum!
+
+%% description = Introductory Better Enums tutorial.

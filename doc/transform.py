@@ -9,7 +9,7 @@ import mistune
 import re
 import sys
 
-parser = argparse.ArgumentParser(description = "Translate markdown tutorials.",
+parser = argparse.ArgumentParser(description = "Translate markdown pages.",
                         epilog = "At least one output file must be specified")
 parser.add_argument("--o-html", metavar = "HTML", dest = "html_file",
                     help = "HTML output file name")
@@ -46,17 +46,44 @@ def pretty_print(text, prefix, start_with_prefix = True):
 
     return result
 
+def camel_case(text):
+    components = re.split("[ -]+", text)
+    components = map(lambda s: s.capitalize(), components)
+    result = "".join(components)
+    result = filter(lambda c: c not in ",!:-$()", result)
+    return result
+
 class HtmlRenderer(mistune.Renderer):
     def __init__(self):
         super(HtmlRenderer, self).__init__()
         self._definitions = {}
+        self._table_of_contents = []
+        self._second_level = None
 
     def header(self, text, level, raw = None):
         if level == 2:
             if "title" not in self._definitions:
                 self._definitions["title"] = text
 
-        return super(HtmlRenderer, self).header(text, level, raw)
+        if level == 3:
+            anchor_name = camel_case(text)
+            prefix = "<a id=\"%s\"></a>" % anchor_name
+
+            self._second_level = []
+            self._table_of_contents.append(
+                                        (anchor_name, text, self._second_level))
+
+        elif level == 4:
+            anchor_text = re.search("<em>(.+)</em>", text).group(1)
+            anchor_name = camel_case(anchor_text)
+            prefix = "<a id=\"%s\"></a>" % anchor_name
+
+            self._second_level.append((anchor_name, anchor_text))
+
+        else:
+            prefix = ""
+
+        return prefix + super(HtmlRenderer, self).header(text, level, raw)
 
     def paragraph(self, text):
         if text.startswith("%%"):
@@ -76,7 +103,6 @@ class HtmlRenderer(mistune.Renderer):
         escaped = mistune.escape(re.sub("\n*$", "", code))
         replaced = re.sub("&lt;em&gt;", "<em>", escaped)
         replaced = re.sub("&lt;/em&gt;", "</em>", replaced)
-        replaced = re.sub("#(ifn?def|endif).*\n?", "", replaced)
 
         if lang == "comment":
             start_tag = "<pre class=\"comment\">"
@@ -86,6 +112,26 @@ class HtmlRenderer(mistune.Renderer):
         return start_tag + replaced + "</pre>"
 
     def definitions(self):
+        toc_text = "<a id=\"contents\"></a>"
+        toc_text += "<h3 class=\"contents\">Contents</h3>"
+        toc_text += "<ul class=\"contents\">"
+
+        for entry in self._table_of_contents:
+            anchor, title, second_level = entry
+            toc_text += "<li><a href=\"#%s\">%s</a>" % (anchor, title)
+
+            if len(second_level) > 0:
+                toc_text += "<ul>"
+                for entry in second_level:
+                    toc_text += "<li><a href=\"#%s\">%s</a></li>" % entry
+                toc_text += "</ul>"
+
+            toc_text += "</li>"
+
+        toc_text += "</ul>"
+
+        self._definitions["internal_toc"] = toc_text
+
         return self._definitions
 
 def to_html(text):
@@ -94,6 +140,13 @@ def to_html(text):
     definitions = renderer.definitions()
     definitions["body"] = html
     return definitions
+
+def clean_text(text):
+    text = re.sub("<(?P<tag>[^> ]+)[^>]*>(.*?)</(?P=tag)>", "\g<2>", text)
+    text = re.sub("<(?P<tag>[^> ]+)[^>]*>(.*?)</(?P=tag)>", "\g<2>", text)
+    text = re.sub("&mdash;", "-", text)
+    text = re.sub("\$cxx", "C++", text)
+    return text
 
 class CxxRenderer(mistune.Renderer):
     def __init__(self):
@@ -109,18 +162,25 @@ class CxxRenderer(mistune.Renderer):
         if text.startswith("%%"):
             return ""
 
+        if text == "$internal_toc":
+            return ""
+
         self._not_in_list()
+        text = clean_text(text)
         return self._join_paragraph() + pretty_print(text, "// ")
 
     def codespan(self, text):
         return text
+
+    def link(self, link, title, content):
+        return content
 
     def list(self, body, ordered = True):
         return self._join_paragraph() + body
 
     def list_item(self, text):
         return ("//   %i. " % self._number_list_item()) + \
-               pretty_print(text, "//      ", False)
+               pretty_print(clean_text(text), "//      ", False)
 
     def block_code(self, code, lang):
         self._not_in_list()
@@ -138,7 +198,7 @@ class CxxRenderer(mistune.Renderer):
     def hrule(self):
         self._not_in_list()
         self._not_paragraph()
-        return ""
+        return "\n"
 
     def footnote_ref(self, key, index):
         return ""
@@ -185,7 +245,7 @@ def main(md_file, html_file, cxx_file):
         renderer = CxxRenderer()
         source = mistune.Markdown(renderer = renderer).render(markdown)
         source = re.sub(r"\n*$", "\n", source)
-        source = "// This file was generated automatically\n\n" + source
+        source = "// This file was generated automatically.\n\n" + source
         open(cxx_file, "w").write(source)
 
 if __name__ == "__main__":

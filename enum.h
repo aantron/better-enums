@@ -1,8 +1,6 @@
 // This file is part of Better Enums, released under the BSD 2-clause license.
 // See LICENSE for details, or visit http://github.com/aantron/better-enums.
 
-// Version 0.9.0
-
 #pragma once
 
 #ifndef _BETTER_ENUMS_ENUM_H_

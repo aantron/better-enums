@@ -6,7 +6,7 @@ body {
     font-weight: 300;
 }
 
-pre, code, samp {
+pre, code, samp, h4, .contents ul {
     font-family:
         Consolas, "Liberation Mono", Menlo, "Courier New", Courier, monospace;
 }
@@ -17,7 +17,7 @@ pre {
     border-radius: 5px;
     overflow: scroll;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
+    font-size: 78%;
 }
 
 pre em {
@@ -41,38 +41,25 @@ code, samp {
     background-color: #EEF4F9;
     padding: 1px 3px;
     border-radius: 3px;
-    font-size: 14px;
+    font-size: 78%;
 }
 
-nav > *, header > *, main, footer {
+.container {
     max-width: 760px;
-    padding-left: 230px;
+    margin-left: 230px;
 }
 
-@media(max-width: 1240px) {
-    nav > *, header > *, main > *, footer {
-        padding-left: 150px;
+@media (max-width: 1220px) {
+    .container {
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
-@media(max-width: 1060px) {
-    nav > *, header > *, main > *, footer {
-        padding-left: 100px;
-        padding-right: 100px;
-    }
-}
-
-@media(max-width: 900px) {
-    nav > *, header > *, main > *, footer {
-        padding-left: 50px;
-        padding-right: 50px;
-    }
-}
-
-@media(max-width: 680px) {
-    nav > *, header > *, main > *, footer {
-        padding-left: 20px;
-        padding-right: 20px;
+@media (max-width: 780px) {
+    .container {
+        margin-left: 10px;
+        margin-right: 10px;
     }
 }
 
@@ -93,13 +80,22 @@ nav, .spacer {
 }
 
 nav a {
-    margin-left: 2em;
+    margin-right: 2em;
 }
 
 nav a.first {
-    margin-left: 0;
     font-weight: 600;
     font-size: 16px;
+}
+
+@media (max-width: 560px) {
+    nav {
+        position: initial;
+    }
+
+    .spacer {
+        display: none;
+    }
 }
 
 header {
@@ -116,7 +112,7 @@ h1 {
     font-weight: 100;
 }
 
-header > h2 {
+header h2 {
     margin: 0;
     font-size: 24px;
     font-weight: 100;
@@ -124,7 +120,7 @@ header > h2 {
     left: 3px;
 }
 
-header > h3 {
+header h3 {
     margin: 0;
     font-size: 14px;
     font-weight: 300;
@@ -170,7 +166,7 @@ header a:hover {
     text-decoration: none;
 }
 
-main a[href], footer a[href] {
+.main a[href], footer a[href] {
     background-color: #edd;
     color: #844;
     letter-spacing: -0.5px;
@@ -217,7 +213,7 @@ span#note:target {
     margin-left: 10px;
 }
 
-main > h3 {
+.main h3 {
     font-size: 30px;
     font-weight: 100;
     margin-top: 2em;
@@ -230,6 +226,10 @@ h3 {
     font-weight: inherit;
 }
 
+h3.contents {
+    font-size: 22px;
+}
+
 .pane pre {
     font-size: 14px;
     padding-top: 20px;
@@ -238,13 +238,16 @@ h3 {
 }
 
 header {
-    position: relative;
     overflow: hidden;
+}
+
+header .container {
+    position: relative;
 }
 
 div.back {
     position: absolute;
-    bottom: -0.2em;
+    bottom: -0.35em;
     left: -40px;
     font-size: 288px;
     font-weight: bold;
@@ -265,15 +268,160 @@ div.back {
     margin-top: 4em;
 }
 
-.tutorial-footer.next {
+.tutorial-footer .next {
     font-weight: 100;
     font-size: 24px;
 }
 
-.tutorial-footer.next a[href] {
+.tutorial-footer .next a[href] {
     font-weight: 300;
 }
 
 li {
     margin-top: 5px;
+}
+
+.blurbs {
+    padding-left: 0;
+    list-style-type: none;
+    margin-top: 30px;
+}
+
+.blurbs > li {
+    width: 45%;
+    float: left;
+    min-height: 5em;
+}
+
+.blurbs > li.even {
+    clear: both;
+    margin-left: 3%;
+    margin-right: 6%;
+}
+
+.blurbs strong {
+    font-weight: inherit;
+    font-size: 110%;
+}
+
+.blurbs em {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 80%;
+    font-style: normal;
+}
+
+@media (max-width: 620px) {
+    .blurbs > li {
+        float: none;
+        width: 100%;
+        min-height: 3em;
+    }
+
+    .blurbs > li.even {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+.act strong {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.act strong code {
+    font-size: 110%;
+}
+
+.resources > li {
+    margin-bottom: 3.5em;
+}
+
+.resources li ul, .resources li ol {
+    margin-top: 1.5em;
+    padding-left: 25px;
+}
+
+.splash {
+    text-align: center;
+    margin-left: -10%;
+    white-space: nowrap;
+}
+
+.splash pre {
+    display: inline-block;
+}
+
+.splash pre.left {
+    text-align: right;
+    color: inherit;
+    background-color: transparent;
+}
+
+.splash pre.right {
+    text-align: left;
+}
+
+@media (max-width: 700px) {
+    .splash {
+        margin-left: 0;
+    }
+
+    .splash pre.left {
+        display: none;
+    }
+}
+
+a[id] {
+    display: block;
+    position: relative;
+    top: -25px;
+}
+
+h4 {
+    font-weight: normal;
+    margin-top: 3em;
+    letter-spacing: -1px;
+    color: #888;
+    padding-top: 1em;
+    white-space: nowrap;
+}
+
+h4 em {
+    color: #555;
+    font-style: normal;
+    font-weight: bold;
+}
+
+.api ul.contents {
+    -webkit-columns: 300px 2;
+    -moz-columns: 300px 2;
+    columns: 300px 2;
+}
+
+.api ul.contents > li {
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.main h3 {
+    margin-top: 4em;
+}
+
+h3.contents {
+    margin-top: 2em;
+}
+
+.index .main h3 {
+    margin-top: 2em;
+}
+
+.api .contents ul {
+    font-size: 75%;
+}
+
+.api .contents > li {
+    margin-top: 0;
+    padding-bottom: 1em;
 }

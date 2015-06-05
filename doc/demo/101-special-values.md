@@ -1,122 +1,165 @@
 ## Special values
 
 Suppose your project has a convention where each enum has special *invalid* and
-*default* values. With Better Enums, you can encode that directly at compile
-time, and then access each enum's special values using syntax like
-`Channel c = default_` and `Channel c = invalid`. This can make your code adapt
-automatically to changes in enum definitions, as well as make it easier to read
-and understand its intent.
+*default* values &mdash; for example, `Enum::Invalid` is *invalid*, and the
+first valid constant is *default*. With Better Enums, you can get the compiler
+to enforce the convention. At the end of this demo, we will have defined
+functions and templates that allow us to write:
 
----
+~~~comment
+<em>Channel     channel</em> = <em>default_</em>;
+<em>Channel     channel</em> = <em>invalid</em>;
+
+void do_something(<em>Channel channel</em>);
+
+do_something(<em>default_</em>);
+do_something(<em>invalid</em>);
+~~~
+
+The compiler will compute default and invalid values automatically, but the
+programmer will also be able to override the choice. Obviously, the syntax above
+is very legible and maintainable &mdash; the intent is clear and your code base
+will respond automatically to changes in enum definitions.
+
+$internal_toc
+
+### Invalid values
+
+Let's start by defining the invalid values.
 
     #include <iostream>
     #include <stdexcept>
     <em>#include <enum.h></em>
 
-### Invalid
-
-Perhaps the invalid value is usually called `Invalid`, but not in all enums. You
-can encode that using a function template for the common case, and a macro that
-creates specializations:
+Perhaps the convention is that the invalid value is usually called `Invalid`,
+but not for all enums. We will encode that using a template function. The
+unspecialized version will encode the default policy:
 
     <em>template</em> <<em>typename Enum</em>>
-    constexpr Enum find_invalid() { return Enum::Invalid; }
+    constexpr <em>Enum invalid_impl</em>() { return <em>Enum::Invalid</em>; }
+
+A macro allows us to override the invalid value by specializing the template:
 
     <em>#define OVERRIDE_INVALID</em>(<em>Enum</em>, <em>Value</em>)                 \
     template<>                                            \
-    constexpr Enum <em>find_invalid<Enum></em>() { return <em>Enum::Value</em>; }
+    constexpr <em>Enum invalid_impl</em><<em>Enum</em>>() { return <em>Enum::Value</em>; }
 
-Now, you can declare enums like these:
+Now, we can declare enums like these:
 
     ENUM(<em>Channel</em>, int, Red, Green, Blue, <em>Invalid</em>)
+    // Invalid is the invalid value by default
 
     ENUM(<em>Compression</em>, int, <em>Undefined</em>, None, Huffman)
-    <em>OVERRIDE_INVALID</em>(<em>Compression</em>, <em>Undefined</em>)
+    OVERRIDE_INVALID(<em>Compression</em>, <em>Undefined</em>)
 
 and use them:
 
-    static_assert(<em>find_invalid</em><<em>Channel</em>>() == <em>+Channel::Invalid</em>, "");
-    static_assert(<em>find_invalid</em><<em>Compression</em>>() == <em>+Compression::Undefined</em>, "");
+    static_assert(<em>invalid_impl</em><<em>Channel</em>>() == +<em>Channel::Invalid</em>, "");
+    static_assert(<em>invalid_impl</em><<em>Compression</em>>() == +<em>Compression::Undefined</em>, "");
 
 This even supports enums that don't have an invalid value at all. As long as
 they don't have a constant called `Invalid`, you will get a compile-time error
-if you try to call `invalid()` on them &mdash; as you probably should!
+if you try to call `invalid_impl<>()` on them &mdash; as you probably should!
 
-### Default
+### Default values
 
-To encode the policy on default values, we need to do a compile-time check that
-the first value is not invalid. Otherwise, the technique is the same.
+Perhaps here the convention is the first value that is not invalid is default,
+unless, again, overridden by the programmer. This can be encoded using only a
+slightly more complex template function for the general case:
 
-    template <typename Enum>
-    constexpr Enum find_default()
+    <em>template</em> <<em>typename Enum</em>>
+    constexpr <em>Enum default_imp</em>l()
     {
         return
-            Enum::_size < 2 ?
+            <em>Enum::_size < 2 ?
                 throw std::logic_error("enum has no valid constants") :
-            Enum::_values()[0] == find_invalid<Enum>() ?
+            Enum::_values()[0] == invalid_impl<Enum>() ?
                 Enum::_values()[1] :
-                Enum::_values()[0];
+                Enum::_values()[0]</em>;
     }
 
-    #define OVERRIDE_DEFAULT(Enum, Value)                  \
-    static_assert(Enum::Value != Enum::Invalid,            \
-                  #Enum ": default cannot equal invalid"); \
+The above code gives us the first value if it is not invalid, otherwise the
+second value.
+
+The companion macro for overriding the choice of default value is almost the
+same as it was for invalid. The difference is that we do an extra sanity check
+to make sure the programmer doesn't declare the invalid value to be the default.
+If the sanity check fails, we produce a nice error message. Again, we are
+assuming that this is dictated by policy.
+
+    <em>#define OVERRIDE_DEFAULT</em>(<em>Enum</em>, <em>Value</em>)                  \
+    static_assert(<em>Enum::Value</em> != <em>Enum::Invalid</em>,            \
+                  <em>#Enum ": default cannot equal invalid"</em>); \
     template<>                                             \
-    constexpr Enum find_default<Enum>() { return Enum::Value; }
+    constexpr <em>Enum default_impl</em><<em>Enum</em>>() { return <em>Enum::Value</em>; }
 
-Usage:
+And, as before, the usage:
 
-    static_assert(find_default<Channel>() == +Channel::Red, "");
-    static_assert(find_default<Compression>() == +Compression::None, "");
+    static_assert(<em>default_impl</em><<em>Channel</em>>() == +<em>Channel::Red</em>, "");
+    static_assert(<em>default_impl</em><<em>Compression</em>>() == +<em>Compression::None</em>, "");
 
 And, if you do
 
-    ENUM(Answer, int, Yes, No, Invalid)
-    // OVERRIDE_DEFAULT(Answer, Invalid)
+    ENUM(<em>Answer</em>, int, Yes, No, <em>Invalid</em>)
+    // OVERRIDE_DEFAULT(<em>Answer</em>, <em>Invalid</em>)
 
 you will get a helpful compile-time error saying
 `Answer: default cannot equal invalid`.
 
 ### Making the syntax nicer
 
-For the final touch, we will make the syntax better by introducing new
-"keywords" called `default_` and `invalid` in such a way that we cause the
-compiler to do type inference:
+At this point, our policy is encoded by the ugly-looking functions
+`invalid_impl` and `default_impl`. We want a nicer syntax. The main reason we
+don't just use these functions directly is that the compiler wouldn't infer
+their template arguments from the context. For example, we would have to write
+things like
 
-    template <typename Enum>
-    struct assert_enum {
-        using check = typename Enum::_enumerated;
-        using type = Enum;
+~~~comment
+Channel     channel = invalid_impl<Channel>();
+~~~
+
+which is unfortunate, because it results in repetition.
+
+In this section, we introduce two global objects called `invalid` and `default_`
+that will implicitly convert to any Better Enum type, and provide the invalid
+or default value, respectively, when they do so. They will act as new
+"keywords".
+
+    <em>struct invalid_t</em> {
+        template <<em>typename To</em>>
+        constexpr <em>operator To</em>() const { return <em>invalid_impl<To>()</em>; }
     };
 
-    struct invalid_t {
-        template <typename To>
-        constexpr operator To() const { return find_invalid<To>(); }
-
-        template <typename To>
-        constexpr To convert() const { return find_invalid<To>(); }
+    <em>struct default_t</em> {
+        template <<em>typename To</em>>
+        constexpr <em>operator To</em>() const { return <em>default_impl<To>()</em>; }
     };
 
-    struct default_t {
-        template <typename To>
-        constexpr operator To() const { return find_default<To>(); }
-    };
+    constexpr <em>invalid_t     invalid</em>{};
+    constexpr <em>default_t     default_</em>{};
 
-    constexpr invalid_t     invalid{};
-    constexpr default_t     default_{};
+As you can see, both of these provide the families of implicit conversions that
+we need. Now, we can test:
 
-    static_assert(+Channel::Invalid == invalid, "");
-    static_assert(+Compression::Undefined == invalid, "");
+    static_assert(+<em>Channel::Invalid</em> == <em>invalid</em>, "");
+    static_assert(+<em>Compression::Undefined</em> == <em>invalid</em>, "");
 
-    static_assert(+Channel::Red == default_, "");
-    static_assert(+Compression::None == default_, "");
+    static_assert(+<em>Channel::Red</em> == <em>default_</em>, "");
+    static_assert(+<em>Compression::None</em> == <em>default_</em>, "");
 
-We can now have nice code such as this:
+Finally, we can have nice code such as this:
+
+    void dump(<em>Channel channel</em>)
+    {
+        std::cout << channel._to_string() << std::endl;
+    }
 
     int main()
     {
-        Channel     channel = default_;
-        std::cout << channel._to_string() << std::endl;
+        dump(<em>invalid</em>);
+
+        <em>Channel     channel</em> = <em>default_</em>;
+        dump(channel);
 
         return 0;
     }
@@ -126,3 +169,6 @@ We can now have nice code such as this:
 There are many possible variations of these policies, but I think most of them
 can be encoded in a reasonable fashion using the tools Better Enums provides.
 Enjoy!
+
+%% description = Encoding project policies for static enforcement using Better
+Enums.

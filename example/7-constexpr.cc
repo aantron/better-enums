@@ -1,15 +1,16 @@
-// This file was generated automatically
+// This file was generated automatically.
 
 // Compile-time usage
 //
-// When used with $cxx11, Better Enums are generated entirely during
-// compilation. All the data is available for use by your own constexpr
-// functions. The examples in <em>this</em> tutorial aren't very useful, but
-// read the following tutorials to get an idea of what can be done. Here, you
-// will see the basics.
+// When used with C++11, Better Enums are generated entirely during compilation.
+// All the data is available for use by your own constexpr functions. The
+// examples in this tutorial aren't very useful, but look at the demos at the
+// bottom of the main page to get an idea of what can be done. Here, you will
+// see the basics.
 
 #include <iostream>
 
+// The reason for this is explained below.
 #ifndef BETTER_ENUMS_CONSTEXPR_TO_STRING
 #define BETTER_ENUMS_CONSTEXPR_TO_STRING
 #endif
@@ -18,14 +19,17 @@
 
 ENUM(Channel, int, Red = 1, Green = 2, Blue = 3)
 
-constexpr Channel      channel = Channel::Green;
+constexpr Channel      channel = Channel::_from_integral(2);
 constexpr int          value = channel._to_integral();
 
 constexpr const char   *name = channel._to_string();
 constexpr Channel      parsed = Channel::_from_string("Red");
 
-// All of the above are computed during compilation. You can do apparently
-// useless things such as:
+// All of the above are computed during compilation. The reason for the macro
+// definition at the top of the file is explained on the opt-in features page.
+// Basically, it makes _to_string constexpr, but slows down compilation.
+//
+// You can also do things such as:
 
 constexpr size_t length(const char *s, size_t index = 0)
 {

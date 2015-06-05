@@ -6,7 +6,7 @@
 <title>$title</title>
 
 <link rel="canonical" href="$canonical" />
-<!-- <meta name="description" content="$description" /> -->
+<meta name="description" content="$description" />
 <meta name="author" content="Anton Bachin" />
 
 <meta name="viewport" content="width=device-width" />
@@ -14,30 +14,30 @@
 <link rel="stylesheet" href="${prefix}better-enums.css" />
 
 </head>
-<body>
+<body class="$class">
 
 <nav>
-  <div>
+  <div class="container">
     <a class="first" $download>Download</a>
     <a href="$repo">GitHub</a>
     <a href="${prefix}index.html">Home</a>
     <a href="${prefix}tutorial/HelloWorld.html">Tutorial</a>
-    <!-- <a href="https://github.com/aantron/better-enums/tree/master/example">
-      Samples
-    </a> -->
-    <!-- <a href="${prefix}api.html">Reference</a> -->
-    <!-- <a href="mailto:antonbachin@yahoo.com">Contact</a> -->
+    <a href="${prefix}ApiReference.html">Reference</a>
+    <a href="${prefix}Contact.html">Contact</a>
   </div>
 </nav>
 
 <div class="spacer">&nbsp;</div>
 
 <header>
-  <div class="back">{}</div>
+  <div class="container">
+    <div class="back">{}</div>
 
-  <h1><a href="${prefix}index.html">Better Enums</a></h1>
-  <h2>Fast, intuitive enums for $cxx</h2>
-  <h3>Open-source under the BSD license</h3>
+    <h1><a href="${prefix}index.html">Better Enums</a></h1>
+    <h2>Reflective compile-time enums for $cxx</h2>
+    <h3>Open-source under the BSD license</h3>
+  </div>
 </header>
 
-<main>
+<div class="main">
+  <div class="container">

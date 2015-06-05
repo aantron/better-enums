@@ -27,23 +27,13 @@ ENUM(APIMethod, int,
      WriteOwner, PollOwner, ReadProposal, WriteProposal, PollProposal,
      ReadHistory, WriteHistory, PollHistory)
 
-ENUM(Region, int,
-     EasterEurope, CentralEurope, WesternEurope, Mediterranean, NorthAfrica,
-     MiddleEast, MiddleEastNorthAfrica, GreaterPersia, Balkans, Scandinavia,
-     NorhernEurope, BritishIsles, LatinEurope, Iberia, LowCountries, Baltics,
-     Yugoslavia, Caucasus, VolgaBasin, Urals, CentralAsia, Siberia,
-     RussianFarEast, EastAsia, SoutheastAsia, Indochina, SouthAsia,
-     IndianSubcontinent, Desi = IndianSubcontinent, Asia, Australasia, Oceania,
-     Micronesia, Polynesia, JapaneseIslands, Tibet, ArabianPeninsula,
-     HornOfAfrica, NearEast, AlSham, EastAfrica, NileBasin, Palestine, Levant,
-     Anatolia, AegeanSea, GreatSteppe, CongoBasin, SouthAfrica, WestAfrica,
-     Sahara, WestSahara, NorthwestTerritory, YukonAlaska, Quebec, NewEngland,
-     DeepSouth)
-
-int main()
-{
-    return 0;
-}
+ENUM(Lipsum, int,
+     Lorem, ipsum, dolor, sit, amet, consectetur, adipiscing, elit, Vivamus,
+     libero, massa, tincidunt, at, ex, nec, porta, malesuada, arcu, Nullam,
+     lectus, nibh, dictum, eget, convallis, ac, feugiat, felis, Suspendisse,
+     quis, purus, vel, lacus, cursus, tristique, Donec, augue, tortor, luctus,
+     a, sed, mattis, in, quam, Cras, vitae, euismod, Cum, sociis, natoque,
+     penatibus, et, magnis, dis, parturient)
 
 ENUM(ASTNode0, int,
      IntegerLiteral, StringLiteral, CharacterLiteral, Variable, UnaryOperation,
@@ -224,3 +214,8 @@ ENUM(ASTNode29, int,
      BinaryOperation, ApplicationExpression, Abstraction, LetBinding,
      CaseExpression, Pattern, Signature, Module, Functor, TypeVariable,
      BasicType, ArrowType, VariantTypeConstant)
+
+int main()
+{
+    return 0;
+}

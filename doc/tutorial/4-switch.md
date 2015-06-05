@@ -26,3 +26,5 @@ you a warning &mdash; try it!
         std::cout << n << std::endl;
         return 0;
     }
+
+%% description = Usage in switch statements.

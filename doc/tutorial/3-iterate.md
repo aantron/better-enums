@@ -32,16 +32,18 @@ will print "Red Green Blue".
 If you are using $cxx11, you can have much nicer syntax:
 
 ~~~comment
-        <em>for (Channel channel : Channel::_values())</em>
-            std::cout << <em>channel._to_integral()</em> << " ";
-        std::cout << std::endl;
+    <em>for (Channel channel : Channel::_values())</em>
+        std::cout << <em>channel._to_integral()</em> << " ";
+    std::cout << std::endl;
 
-        <em>for (const char *name : Channel::_names())</em>
-            std::cout << <em>name</em> << " ";
-        std::cout << std::endl;
+    <em>for (const char *name : Channel::_names())</em>
+        std::cout << <em>name</em> << " ";
+    std::cout << std::endl;
 ~~~
 
 ---
 
         return 0;
     }
+
+%% description = Iterating over all Better Enums constants.

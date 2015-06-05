@@ -1,4 +1,4 @@
-// This file was generated automatically
+// This file was generated automatically.
 
 // Iteration
 //
@@ -28,15 +28,17 @@ int main()
     std::cout << std::endl;
 
 // will print "Red Green Blue".
-// If you are using $cxx11, you can have much nicer syntax:
+
+// If you are using C++11, you can have much nicer syntax:
 //
-//         for (Channel channel : Channel::_values())
-//             std::cout << channel._to_integral() << " ";
-//         std::cout << std::endl;
+//     for (Channel channel : Channel::_values())
+//         std::cout << channel._to_integral() << " ";
+//     std::cout << std::endl;
 //
-//         for (const char *name : Channel::_names())
-//             std::cout << name << " ";
-//         std::cout << std::endl;
+//     for (const char *name : Channel::_names())
+//         std::cout << name << " ";
+//     std::cout << std::endl;
+
 
     return 0;
 }

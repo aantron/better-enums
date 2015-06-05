@@ -3,6 +3,8 @@
 This tutorial shows some of the safety features of Better Enums: scope, how to
 control conversions, and the lack of a default constructor.
 
+$internal_toc
+
 ### Scope
 
 You have probably noticed by now that Better Enums are scoped: when you declare
@@ -10,7 +12,7 @@ You have probably noticed by now that Better Enums are scoped: when you declare
     #include <cassert>
     <em>#include <enum.h></em>
 
-    <em>ENUM(Channel, int, Red = 1, Green, Blue)</em>
+    <em>ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Red</em> = <em>1</em>, <em>Green</em>, <em>Blue</em>)
 
 you don't get names such as `Red` in the global namespace. Instead, you get
 `Channel`, and `Red` is accessible as `Channel::Red`. This is no big deal in
@@ -18,7 +20,7 @@ $cxx11, which has `enum class`. In $cxx98, however, this typically requires
 effort. Better Enums brings scope uniformly to both variants. So, despite the
 above declaration, you can safely declare
 
-    <em>ENUM(Node, char, Red, Black)</em>
+    <em>ENUM</em>(<em>Node</em>, <em>char</em>, <em>Red</em>, <em>Black</em>)
 
 and everything will work as expected.
 
@@ -42,22 +44,8 @@ will not compile:
     int         n = channel;
 ~~~
 
-The reason you have to opt into this feature with a macro is because it breaks
-compatibility with the $cxx98 version of Better Enums. Specifically, when
-writing a switch statement, you now have to do
-
-~~~comment
-    switch (channel) {
-        case <em>+</em>Channel::Red:   return 13;
-        case <em>+</em>Channel::Green: return 37;
-        case <em>+</em>Channel::Blue:  return 42;
-    }
-~~~
-
-The difference is the explicit promotion with `+`. And, of course, if you had a
-bunch of code that relies on implicitly converting $cxx98 Better Enums to
-integers, it would break when switching to $cxx11 if strict conversions were the
-default.
+The reason this is not enabled by default is explained in the reference page on
+[strict conversions](${prefix}OptInFeatures.html#StrictConversions).
 
 ### Default constructor
 
@@ -73,29 +61,19 @@ Better Enums don't have a default constructor, for three reasons.
 
 So, if you uncomment this code, the file won't compile:
 
-        // Channel      channel;
+~~~comment
+    Channel      channel;
+~~~
 
-This may seem very strict, and I may relax it in the future. However, my guess
-is that there are few places where a default constructor is truly needed.
-
-  - If you want to opt in to a notion of default values, you can encode your
-    project's policy into $cxx templates with ease, using building blocks Better
-    Enums provides. The solution sketched
-    [here](${prefix}demo/SpecialValues.html) is arguably more flexible than any
-    fixed choice Better Enums could impose on you.
-  - If a Better Enum value is the result of a large sequence of statements,
-    you may be able to move those statements into a separate function that
-    returns the value, and call it to initialize the Better Enum.
-  - If you need to reserve memory for a Better Enum before it is created, you
-    can do so by declaring a value of type `Enum::_integral`, as described in
-    the [next tutorial](${prefix}tutorial/RepresentationAndAlignment.html).
-  - I may add an ability to extend Better Enums, in which case you could add a
-    default constructor on a per-type or global basis and have it do anything
-    you want. I'd be glad to hear any feedback about your actual usage and
-    needs.
-  - Finally, Better Enums is under the BSD license so you can fork it and change
-    it directly, though of course this can have some administration overhead.
+This may be too strict, and I may relax it in the future. In the meantime, the
+solution sketched in the [special values demo](${prefix}demo/SpecialValues.html)
+can replace default constructors for some purposes, and in a more flexible way.
+I may eventually have the default constructor calling a template function like
+the one in that demo.
 
 ---
 
+        return 0;
     }
+
+%% description = Type safety features and limitations.

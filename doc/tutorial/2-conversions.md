@@ -7,13 +7,15 @@ Let's begin by including `enum.h` and declaring our enum:
 
     <em>#include <enum.h></em>
 
-    <em>ENUM(Channel, int, Cyan = 1, Magenta, Yellow, Black)</em>
+    <em>ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Cyan</em> = <em>1</em>, <em>Magenta</em>, <em>Yellow</em>, <em>Black</em>)
 
 We now have an `int`-sized enum with four constants.
 
 There are three groups of conversion functions: for strings, case-insensitive
 strings, and integers. They all follow the same pattern, so I'll explain the
 string functions in detail, and the rest can be understood by analogy.
+
+$internal_toc
 
 ### Strings
 
@@ -117,12 +119,6 @@ use it carefully.
         channel = <em>Channel::_from_integral_unchecked(0)</em>;
         // <em>Invalid</em> - better not to try converting it to string!
 
-### Aside
-
-You have certainly noticed that all the method names begin with underscores.
-This is because they share scope with the enum constants that you declare.
-Better Enums is trying to stay out of your way by using a prefix.
-
 ### Validity checking
 
 For completeness, Better Enums also provides three validity checking functions,
@@ -144,14 +140,13 @@ There is one unfortunate wrinkle. You cannot convert a literal constant such as
         std::cout << (<em>+Channel::Cyan</em>)._to_string();
 
 This is due to some type gymnastics in the implementation of Better Enums. The
-<a>Reference</a> section has a full explanation.
-
----
-
-This concludes the first tutorial!
+reference has a
+[full explanation](${prefix}ApiReference.html#HelperFunctionsAndTypes).
 
 ---
 
         std::cout << std::endl;
         return 0;
     }
+
+%% description = Walkthrough of Better Enums conversion functions.

@@ -1,8 +1,8 @@
-// This file was generated automatically
+// This file was generated automatically.
 
 // Hello, World!
 //
-// Download <a $download>enum.h</a>, then build this program with it:
+// Download enum.h, then build this program with it:
 
 #include <iostream>
 #include "enum.h"
