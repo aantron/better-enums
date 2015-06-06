@@ -88,8 +88,11 @@ struct triplet {
 ## Contact
 
 Don't hesitate to contact me about features or bugs:
-[antonbachin@yahoo.com](mailto:antonbachin@yahoo.com), or open an issue on
-GitHub.
+[antonbachin@yahoo.com][email], Twitter [@better_enums][twitter], or open an
+issue on GitHub.
+
+[email]:   mailto:antonbachin@yahoo.com
+[twitter]: https://twitter.com/better_enums
 
 ## License and history
 

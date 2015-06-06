@@ -1,6 +1,7 @@
 ## Contact
 
 - Send me an email: [antonbachin@yahoo.com](mailto:antonbachin@yahoo.com).
+- Twitter: [@better_enums](https://twitter.com/better_enums).
 - Visit the [GitHub]($repo) project to open an issue or get a development
   version.
 

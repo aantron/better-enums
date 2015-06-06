@@ -57,6 +57,9 @@ Channel     c = <em>Channel::_from_integral(3)</em>;
 <em>constexpr</em> Channel c = <em>Channel::_from_string("Blue")</em>;</pre>
 </div>
 
+Jump to the [tutorial](${prefix}tutorial/HelloWorld.html) to see a complete
+working example.
+
 ### What do you get?
 
 <ul class="blurbs">
