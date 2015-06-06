@@ -4,7 +4,7 @@ Reflective compile-time C++ enum library with clean syntax, in a single header
 file. For example:
 
     #include <enum.h>
-    ENUM(Channel, int, Red = 1, Green, Blue)
+    ENUM(Channel, uint8_t, Red = 1, Green, Blue)
 
 defines a type `Channel`. You can then do natural things such as:
 
@@ -43,11 +43,13 @@ The interface is the same for C++98 &mdash; you just have to use most of it at
 run time only. This library does provide scoped and sized enums, something not
 built into C++98.
 
-See the [project page][project] for full documentation.
+See the [project page][project] for full documentation and [here][tutorial] for
+a simple working program.
 
-[max]:     http://aantron.github.io/better-enums/demo/BitSets.html
-[enforce]: http://aantron.github.io/better-enums/demo/SpecialValues.html
-[project]: http://aantron.github.io/better-enums
+[max]:      http://aantron.github.io/better-enums/demo/BitSets.html
+[enforce]:  http://aantron.github.io/better-enums/demo/SpecialValues.html
+[project]:  http://aantron.github.io/better-enums
+[tutorial]: http://aantron.github.io/better-enums/tutorial/HelloWorld.html
 
 ## Installation
 

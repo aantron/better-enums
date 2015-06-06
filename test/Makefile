@@ -1,12 +1,14 @@
 .PHONY : default
 default :
-	make -C ../doc examples
 	python test.py
 
 .PHONY : platform
-platform :
-	make -C ../doc examples
+platform : examples
 	python test.py --all
+
+.PHONY : examples
+examples :
+	make -C ../doc examples
 
 .PHONY : clean
 clean :
