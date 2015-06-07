@@ -18,6 +18,14 @@ ENUM(Compression, short, None, Huffman, Default = Huffman)
 
 
 
+namespace test {
+
+ENUM(Namespaced, short, One, Two)
+
+}
+
+
+
 // Using _ENUM_HAVE_CONSTEXPR as a proxy for C++11 support. This should be
 // changed to be more precise in the future.
 #ifdef _ENUM_HAVE_CONSTEXPR
@@ -268,5 +276,24 @@ class EnumTests : public CxxTest::TestSuite {
     void test_alias()
     {
         TS_ASSERT_EQUALS(Compression::Default, Compression::Huffman);
+    }
+
+    void test_namespaced()
+    {
+        TS_ASSERT_EQUALS((+test::Namespaced::One)._to_integral(), 0);
+        TS_ASSERT_EQUALS(test::Namespaced::_from_integral(0),
+                         +test::Namespaced::One);
+        TS_ASSERT_EQUALS(strcmp((+test::Namespaced::One)._to_string(), "One"),
+                         0);
+        TS_ASSERT_EQUALS(test::Namespaced::_from_string("Two"),
+                         +test::Namespaced::Two);
+
+        TS_ASSERT_EQUALS(test::Namespaced::_values()[0],
+                         +test::Namespaced::One);
+        TS_ASSERT_EQUALS(strcmp(test::Namespaced::_names()[0], "One"), 0);
+
+        TS_ASSERT_EQUALS(*test::Namespaced::_values().begin(),
+                         +test::Namespaced::One);
+        TS_ASSERT_EQUALS(strcmp(*test::Namespaced::_names().begin(), "One"), 0);
     }
 };

@@ -65,7 +65,7 @@ enums that are missing from standard C++.
 - Supported and tested on clang, gcc, and msvc.
 - Fast compilation. You have to declare a few dozen enums to slow down your
   compiler as much as [just including `iostream` does][performance].
-- Use any initializers, just like with a built-in enum.
+- Use any initializers and sparse ranges, just like with a built-in enum.
 - Guaranteed size and alignment &mdash; you choose the representation type.
 
 [performance]: http://aantron.github.io/better-enums/Performance.html
@@ -73,8 +73,8 @@ enums that are missing from standard C++.
 ## Limitations
 
 The biggest current limitation is that the `ENUM` macro can't be used inside a
-class or namespace. This seems difficult to remove, but I am looking into it. In
-the meantime, there is a workaround with a `typedef` (or `using`):
+class. This seems difficult to remove, but I am looking into it. In the
+meantime, there is a workaround with a `typedef` (or `using`):
 
 ```cpp
 ENUM(UniquePrefix_Color, uint8_t, Red, Green, Blue)
@@ -83,7 +83,11 @@ struct triplet {
     typedef UniquePrefix_Color      Color;
     Color                           r, g, b;
 };
+
+triplet::Color  color;
 ```
+
+You can, however, use `ENUM` inside a namespace.
 
 ## Contact
 
