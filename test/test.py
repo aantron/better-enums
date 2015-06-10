@@ -12,7 +12,6 @@ import sys
 
 
 BASE_DIRECTORY = "platform"
-CXXTEST_SOURCE = "cxxtest/tests.h"
 CXXTEST_GENERATED = "cxxtest/tests.cc"
 
 quiet = True
@@ -121,17 +120,10 @@ class Configuration(object):
                 print "output does not match expected output"
                 sys.exit(1)
 
-        # This is currently not done on because on Cygwin, cxxtest tries to use
-        # a Cygwin path to include tests.h. That path is in Unix format, which
-        # does not resolve to a valid path when handled by VC++. A workaround is
-        # to detect Cygwin and rewrite the path, but I am saving that for an
-        # improved version of test.py, since there are many things that need to
-        # be rewritten for this script to stay maintainable.
-        if not windows:
-            cxxtest_binary = os.path.join(base, "cxxtest", "tests.exe")
-            command = self.elaborate("..", cxxtest_binary, CXXTEST_GENERATED)
-            run(command, True)
-            run(cxxtest_binary)
+        cxxtest_binary = os.path.join(base, "cxxtest", "tests.exe")
+        command = self.elaborate("..", cxxtest_binary, CXXTEST_GENERATED)
+        run(command, True)
+        run(cxxtest_binary)
 
         link_sources = glob.glob("link/*.cc")
         link_binary = os.path.join(base, "link", "link.exe")
@@ -247,8 +239,13 @@ def main():
 
     load_expected_outputs()
 
+    cxxtest_headers = " ".join(glob.glob(os.path.join("cxxtest", "*.h")))
     run("cxxtestgen --error-printer -o %s %s" %
-        (CXXTEST_GENERATED, CXXTEST_SOURCE))
+        (CXXTEST_GENERATED, cxxtest_headers))
+    cygwin_fix_command = \
+        ("sed 's#\"/home#\"C:/cygwin/home#g' %s > $$$$ ; " + \
+        "mv $$$$ %s") % (CXXTEST_GENERATED, CXXTEST_GENERATED)
+    os.system(cygwin_fix_command)
 
     if re.search("Windows|CYGWIN", platform.system()) != None:
         full = windows_configurations

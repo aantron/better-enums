@@ -12,4 +12,4 @@ examples :
 
 .PHONY : clean
 clean :
-	rm -rf platform *.obj
+	rm -rf platform *.obj cxxtest/*.cc cxxtest/*.exe
