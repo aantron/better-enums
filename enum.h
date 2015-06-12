@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <cstring>
+#include <iosfwd>
 #include <stdexcept>
 
 
@@ -1035,6 +1036,57 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
         Enum, Underlying, __VA_ARGS__))
 
 #endif
+
+
+
+namespace better_enums {
+
+// This template is used both as a sort of enable_if for SFINAE, and to delay
+// the compiler from type-checking certain expressions. enum.h does not include
+// <iostream> or <string>, because those headers parse very slowly. Therefore,
+// it is necessary to prevent the compiler from trying to do anything with types
+// from those headers unless the operators <<, >> are actually used, by which
+// point the user is expected to have included <iostream> and/or <string>. The
+// alternative is to simply move the operator definitions into a separate add-on
+// header file.
+//
+// It should be possible to use std::enable_if, however <type_traits> is not
+// available in C++98.
+template <typename T, typename Enum>
+struct hide { typedef T type; };
+
+}
+
+template <typename Enum>
+inline typename better_enums::hide<std::ostream,
+                                   typename Enum::_enumerated>::type&
+operator <<(std::ostream& stream, const Enum& value)
+{
+    return stream << value._to_string();
+}
+
+template <typename Enum>
+inline typename better_enums::hide<std::istream,
+                                   typename Enum::_enumerated>::type&
+operator >>(typename better_enums::hide<std::istream, Enum>::type& stream,
+            Enum& value)
+{
+    typedef typename better_enums::hide<std::ios_base, Enum>::type  ios_base;
+    typedef typename better_enums::hide<std::string,   Enum>::type  string;
+
+    string      buffer;
+
+    stream >> buffer;
+    better_enums::optional<Enum>  converted =
+        Enum::_from_string_nothrow(buffer.c_str());
+
+    if (converted)
+        value = *converted;
+    else
+        stream.setstate(ios_base::failbit);
+
+    return stream;
+}
 
 
 
