@@ -668,8 +668,9 @@ BETTER_ENUMS__CONSTEXPR inline Enum                                            \
 Enum::_from_underlying(const _underlying &value)                               \
 {                                                                              \
     return                                                                     \
-        ::better_enums::_or_throw(_from_underlying_nothrow(value),             \
-                                  "Enum::_from_underlying: invalid argument"); \
+        ::better_enums::_or_throw(                                             \
+            _from_underlying_nothrow(value),                                   \
+            #Enum "::_from_underlying: invalid argument");                     \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum                                            \
@@ -701,7 +702,7 @@ BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_integral(_integral value)      \
 {                                                                              \
     return                                                                     \
         ::better_enums::_or_throw(_from_integral_nothrow(value),               \
-                                  "Enum::_from_integral: invalid argument");   \
+                                  #Enum "::_from_integral: invalid argument"); \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
@@ -717,14 +718,14 @@ ToStringConstexpr inline const char* Enum::_to_string() const                  \
             ::better_enums::_map_index<const char*>(                           \
                 BETTER_ENUMS__NS(Enum)::name_array(),                          \
                 _from_value_loop(CallInitialize(_value))),                     \
-            "Enum::to_string: invalid enum value");                            \
+            #Enum "::to_string: invalid enum value");                          \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_string(const char *name)       \
 {                                                                              \
     return                                                                     \
         ::better_enums::_or_throw(_from_string_nothrow(name),                  \
-                                  "Enum::_from_string: invalid argument");     \
+                                  #Enum "::_from_string: invalid argument");   \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
@@ -740,7 +741,7 @@ BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_string_nocase(const char *name)\
     return                                                                     \
         ::better_enums::_or_throw(                                             \
             _from_string_nocase_nothrow(name),                                 \
-            "Enum::_from_string_nocase: invalid argument");                    \
+            #Enum "::_from_string_nocase: invalid argument");                  \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
