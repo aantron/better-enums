@@ -20,6 +20,9 @@
 #       if __has_feature(cxx_constexpr)
 #           define BETTER_ENUMS__HAVE_CONSTEXPR
 #       endif
+#       if !defined(__EXCEPTIONS) || !__has_feature(cxx_exceptions)
+#           define BETTER_ENUMS__NO_EXCEPTIONS
+#       endif
 #       if (__clang_major__ > 2) || \
            (__clang_major__ == 2) && (__clang_minor__ >= 9)
 #           define BETTER_ENUMS__HAVE_LONG_LONG
@@ -37,12 +40,18 @@
 #               define BETTER_ENUMS__HAVE_NEW_CHAR_TYPES
 #           endif
 #       endif
+#       ifndef __EXCEPTIONS
+#           define BETTER_ENUMS__NO_EXCEPTIONS
+#       endif
 #   endif
 #endif
 
 #ifdef _MSC_VER
 #   if _MSC_VER >= 1600
 #       define BETTER_ENUMS__HAVE_LONG_LONG
+#   endif
+#   ifndef _CPPUNWIND
+#       define BETTER_ENUMS__NO_EXCEPTIONS
 #   endif
 #endif
 
@@ -70,6 +79,12 @@
 #else
 #   define BETTER_ENUMS__CONSTEXPR
 #   define BETTER_ENUMS__NULLPTR        NULL
+#endif
+
+#ifndef BETTER_ENUMS__NO_EXCEPTIONS
+#   define BETTER_ENUMS__IF_EXCEPTIONS(x) x
+#else
+#   define BETTER_ENUMS__IF_EXCEPTIONS(x)
 #endif
 
 
@@ -303,11 +318,19 @@ _map_index(const Element *array, optional<std::size_t> index)
     return index ? (CastTo)array[*index] : optional<CastTo>();
 }
 
+BETTER_ENUMS__IF_EXCEPTIONS(
 template <typename T>
 BETTER_ENUMS__CONSTEXPR static T _or_throw(optional<T> maybe,
                                            const char *message)
 {
     return maybe ? *maybe : throw std::runtime_error(message);
+}
+)
+
+template <typename T>
+BETTER_ENUMS__CONSTEXPR static T* _or_null(optional<T*> maybe)
+{
+    return maybe ? *maybe : BETTER_ENUMS__NULLPTR;
 }
 
 
@@ -587,26 +610,34 @@ class Enum {                                                                   \
     BETTER_ENUMS__CONSTEXPR const _underlying& _to_underlying() const          \
         { return _value; }                                                     \
                                                                                \
+    BETTER_ENUMS__IF_EXCEPTIONS(                                               \
     BETTER_ENUMS__CONSTEXPR static Enum                                        \
     _from_underlying(const _underlying &value);                                \
+    )                                                                          \
     BETTER_ENUMS__CONSTEXPR static Enum                                        \
     _from_underlying_unchecked(const _underlying &value);                      \
     BETTER_ENUMS__CONSTEXPR static _optional                                   \
     _from_underlying_nothrow(const _underlying &value);                        \
                                                                                \
     BETTER_ENUMS__CONSTEXPR _integral _to_integral() const;                    \
+    BETTER_ENUMS__IF_EXCEPTIONS(                                               \
     BETTER_ENUMS__CONSTEXPR static Enum _from_integral(_integral value);       \
+    )                                                                          \
     BETTER_ENUMS__CONSTEXPR static Enum                                        \
     _from_integral_unchecked(_integral value);                                 \
     BETTER_ENUMS__CONSTEXPR static _optional                                   \
     _from_integral_nothrow(_integral value);                                   \
                                                                                \
     ToStringConstexpr const char* _to_string() const;                          \
+    BETTER_ENUMS__IF_EXCEPTIONS(                                               \
     BETTER_ENUMS__CONSTEXPR static Enum _from_string(const char *name);        \
+    )                                                                          \
     BETTER_ENUMS__CONSTEXPR static _optional                                   \
     _from_string_nothrow(const char *name);                                    \
                                                                                \
+    BETTER_ENUMS__IF_EXCEPTIONS(                                               \
     BETTER_ENUMS__CONSTEXPR static Enum _from_string_nocase(const char *name); \
+    )                                                                          \
     BETTER_ENUMS__CONSTEXPR static _optional                                   \
     _from_string_nocase_nothrow(const char *name);                             \
                                                                                \
@@ -664,6 +695,7 @@ operator +(Enum::_enumerated enumerated)                                       \
     return (Enum)enumerated;                                                   \
 }                                                                              \
                                                                                \
+BETTER_ENUMS__IF_EXCEPTIONS(                                                   \
 BETTER_ENUMS__CONSTEXPR inline Enum                                            \
 Enum::_from_underlying(const _underlying &value)                               \
 {                                                                              \
@@ -672,6 +704,7 @@ Enum::_from_underlying(const _underlying &value)                               \
             _from_underlying_nothrow(value),                                   \
             #Enum "::_from_underlying: invalid argument");                     \
 }                                                                              \
+)                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum                                            \
 Enum::_from_underlying_unchecked(const _underlying &value)                     \
@@ -698,12 +731,14 @@ Enum::_from_integral_unchecked(_integral value)                                \
     return (_enumerated)value;                                                 \
 }                                                                              \
                                                                                \
+BETTER_ENUMS__IF_EXCEPTIONS(                                                   \
 BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_integral(_integral value)      \
 {                                                                              \
     return                                                                     \
         ::better_enums::_or_throw(_from_integral_nothrow(value),               \
                                   #Enum "::_from_integral: invalid argument"); \
 }                                                                              \
+)                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
 Enum::_from_integral_nothrow(_integral value)                                  \
@@ -714,19 +749,20 @@ Enum::_from_integral_nothrow(_integral value)                                  \
 ToStringConstexpr inline const char* Enum::_to_string() const                  \
 {                                                                              \
     return                                                                     \
-        ::better_enums::_or_throw(                                             \
+        ::better_enums::_or_null(                                              \
             ::better_enums::_map_index<const char*>(                           \
                 BETTER_ENUMS__NS(Enum)::name_array(),                          \
-                _from_value_loop(CallInitialize(_value))),                     \
-            #Enum "::to_string: invalid enum value");                          \
+                _from_value_loop(CallInitialize(_value))));                    \
 }                                                                              \
                                                                                \
+BETTER_ENUMS__IF_EXCEPTIONS(                                                   \
 BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_string(const char *name)       \
 {                                                                              \
     return                                                                     \
         ::better_enums::_or_throw(_from_string_nothrow(name),                  \
                                   #Enum "::_from_string: invalid argument");   \
 }                                                                              \
+)                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
 Enum::_from_string_nothrow(const char *name)                                   \
@@ -736,6 +772,7 @@ Enum::_from_string_nothrow(const char *name)                                   \
             BETTER_ENUMS__NS(Enum)::value_array, _from_string_loop(name));     \
 }                                                                              \
                                                                                \
+BETTER_ENUMS__IF_EXCEPTIONS(                                                   \
 BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_string_nocase(const char *name)\
 {                                                                              \
     return                                                                     \
@@ -743,6 +780,7 @@ BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_string_nocase(const char *name)\
             _from_string_nocase_nothrow(name),                                 \
             #Enum "::_from_string_nocase: invalid argument");                  \
 }                                                                              \
+)                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
 Enum::_from_string_nocase_nothrow(const char *name)                            \
