@@ -436,17 +436,20 @@ _namesMatchNocase(const char *stringizedName, const char *referenceName,
 }
 
 inline void _trim_names(const char * const *raw_names,
-                        const char **trimmed_names, std::size_t count)
+                        const char **trimmed_names,
+                        char *storage, std::size_t count)
 {
+    std::size_t     offset = 0;
+
     for (std::size_t index = 0; index < count; ++index) {
-        std::size_t length =
+        trimmed_names[index] = storage + offset;
+
+        std::size_t trimmed_length =
             std::strcspn(raw_names[index], BETTER_ENUMS__NAME_ENDERS);
-        char        *trimmed = new char[length + 1];
+        storage[offset + trimmed_length] = '\0';
 
-        std::strncpy(trimmed, raw_names[index], length);
-        trimmed[length] = '\0';
-
-        trimmed_names[index] = trimmed;
+        std::size_t raw_length = std::strlen(raw_names[index]);
+        offset += raw_length + 1;
     }
 }
 
@@ -553,6 +556,14 @@ constexpr const char    *_final_ ## index =                                    \
     BETTER_ENUMS__ID(                                                          \
         BETTER_ENUMS__PP_MAP(                                                  \
             BETTER_ENUMS__STRINGIZE_SINGLE, ignored, __VA_ARGS__))
+
+#define BETTER_ENUMS__RESERVE_STORAGE_SINGLE(ignored, index, expression)       \
+    #expression ","
+
+#define BETTER_ENUMS__RESERVE_STORAGE(...)                                     \
+    BETTER_ENUMS__ID(                                                          \
+        BETTER_ENUMS__PP_MAP(                                                  \
+            BETTER_ENUMS__RESERVE_STORAGE_SINGLE, ignored, __VA_ARGS__))
 
 
 
@@ -902,6 +913,13 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
         return value;                                                          \
     }                                                                          \
                                                                                \
+    inline char* name_storage()                                                \
+    {                                                                          \
+        static char         storage[] =                                        \
+            BETTER_ENUMS__ID(BETTER_ENUMS__RESERVE_STORAGE(__VA_ARGS__));      \
+        return storage;                                                        \
+    }                                                                          \
+                                                                               \
     inline const char** name_array()                                           \
     {                                                                          \
         static const char   *value[Enum::_size];                               \
@@ -922,6 +940,13 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
     constexpr const char * const * raw_names()                                 \
     {                                                                          \
         return the_raw_names;                                                  \
+    }                                                                          \
+                                                                               \
+    inline char* name_storage()                                                \
+    {                                                                          \
+        static char         storage[] =                                        \
+            BETTER_ENUMS__ID(BETTER_ENUMS__RESERVE_STORAGE(__VA_ARGS__));      \
+        return storage;                                                        \
     }                                                                          \
                                                                                \
     inline const char** name_array()                                           \
@@ -976,6 +1001,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
                                                                                \
         ::better_enums::_trim_names(BETTER_ENUMS__NS(Enum)::raw_names(),       \
                                     BETTER_ENUMS__NS(Enum)::name_array(),      \
+                                    BETTER_ENUMS__NS(Enum)::name_storage(),    \
                                     _size);                                    \
                                                                                \
         BETTER_ENUMS__NS(Enum)::initialized() = true;                          \
