@@ -510,6 +510,14 @@ struct underlying_traits {
     are_equal(const T& u, const T& v) { return u == v; }
 };
 
+
+
+// Eager initialization.
+template <typename Enum>
+struct _initialize_at_program_start {
+    _initialize_at_program_start() { Enum::initialize(); }
+};
+
 } // namespace better_enums
 
 
@@ -708,10 +716,15 @@ class Enum {                                                                   \
     _from_string_loop(const char *name, std::size_t index = 0);                \
     BETTER_ENUMS__CONSTEXPR static _optional_index                             \
     _from_string_nocase_loop(const char *name, std::size_t index = 0);         \
+                                                                               \
+    friend struct ::better_enums::_initialize_at_program_start<Enum>;          \
 };                                                                             \
                                                                                \
 namespace better_enums {                                                       \
 namespace _data_ ## Enum {                                                     \
+                                                                               \
+static ::better_enums::_initialize_at_program_start<Enum>                      \
+                                                force_initialization;          \
                                                                                \
 enum PutNamesInThisScopeAlso { __VA_ARGS__ };                                  \
                                                                                \
@@ -1015,7 +1028,8 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
     static int initialize();
 
 // C++11 slow all-constexpr version
-#define BETTER_ENUMS__DO_NOT_DECLARE_INITIALIZE
+#define BETTER_ENUMS__DECLARE_EMPTY_INITIALIZE                                 \
+    static int initialize() { return 0; }
 
 // C++98, C++11 fast version
 #define BETTER_ENUMS__DO_DEFINE_INITIALIZE(Enum)                               \
@@ -1071,7 +1085,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
 #   define BETTER_ENUMS__DEFAULT_TO_STRING_KEYWORD                             \
         BETTER_ENUMS__CONSTEXPR_TO_STRING_KEYWORD
 #   define BETTER_ENUMS__DEFAULT_DECLARE_INITIALIZE                            \
-        BETTER_ENUMS__DO_NOT_DECLARE_INITIALIZE
+        BETTER_ENUMS__DECLARE_EMPTY_INITIALIZE
 #   define BETTER_ENUMS__DEFAULT_DEFINE_INITIALIZE                             \
         BETTER_ENUMS__DO_NOT_DEFINE_INITIALIZE
 #   define BETTER_ENUMS__DEFAULT_CALL_INITIALIZE                               \
@@ -1112,7 +1126,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
         BETTER_ENUMS__DEFAULT_SWITCH_TYPE_GENERATE,                            \
         BETTER_ENUMS__CXX11_FULL_CONSTEXPR_TRIM_STRINGS_ARRAYS,                \
         BETTER_ENUMS__CONSTEXPR_TO_STRING_KEYWORD,                             \
-        BETTER_ENUMS__DO_NOT_DECLARE_INITIALIZE,                               \
+        BETTER_ENUMS__DECLARE_EMPTY_INITIALIZE,                                \
         BETTER_ENUMS__DO_NOT_DEFINE_INITIALIZE,                                \
         BETTER_ENUMS__DO_NOT_CALL_INITIALIZE,                                  \
         Enum, Underlying, __VA_ARGS__))
