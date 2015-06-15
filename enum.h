@@ -15,6 +15,8 @@
 
 
 
+// Feature detection.
+
 #ifdef __GNUC__
 #   ifdef __clang__
 #       if __has_feature(cxx_constexpr)
@@ -88,6 +90,8 @@
 #endif
 
 
+
+// Higher-order preprocessor macros.
 
 #ifdef BETTER_ENUMS_MACRO_FILE
 #   include BETTER_ENUMS_MACRO_FILE
@@ -257,22 +261,10 @@
 
 
 
-#define BETTER_ENUMS__EAT_ASSIGN_SINGLE(EnumType, index, expression)           \
-    ((::better_enums::_eat_assign<EnumType>)EnumType::expression),
-
-#define BETTER_ENUMS__EAT_ASSIGN(EnumType, ...)                                \
-    BETTER_ENUMS__ID(                                                          \
-        BETTER_ENUMS__PP_MAP(                                                  \
-            BETTER_ENUMS__EAT_ASSIGN_SINGLE, EnumType, __VA_ARGS__))
-
-
-
-#define BETTER_ENUMS__NS(EnumType)  better_enums::_data_ ## EnumType
-#define BETTER_ENUMS__NAME_ENDERS   "= \t\n"
-
-
-
 namespace better_enums {
+
+
+// Optional type.
 
 template <typename T>
 BETTER_ENUMS__CONSTEXPR inline T _default()
@@ -335,10 +327,17 @@ BETTER_ENUMS__CONSTEXPR static T* _or_null(optional<T*> maybe)
 
 
 
+// Functional sequencing. This is essentially a comma operator wrapped in a
+// constexpr function. g++ 4.7 doesn't "accept" integral constants in the second
+// position for the comma operator, and emits an external symbol, which then
+// causes a linking error.
+
 template <typename T, typename U>
 BETTER_ENUMS__CONSTEXPR U continue_with(T ignored, U value) { return value; }
 
 
+
+// Values array declaration helper.
 
 template <typename EnumType>
 struct _eat_assign {
@@ -356,6 +355,8 @@ struct _eat_assign {
 };
 
 
+
+// Iterables.
 
 template <typename Element>
 struct _Iterable {
@@ -378,27 +379,31 @@ struct _Iterable {
 
 
 
-BETTER_ENUMS__CONSTEXPR inline bool _endsName(char c, std::size_t index = 0)
+// String routines.
+
+BETTER_ENUMS__CONSTEXPR static const char       *_name_enders = "= \t\n";
+
+BETTER_ENUMS__CONSTEXPR inline bool _ends_name(char c, std::size_t index = 0)
 {
     return
-        c == BETTER_ENUMS__NAME_ENDERS[index] ? true  :
-        BETTER_ENUMS__NAME_ENDERS[index] == '\0' ? false :
-        _endsName(c, index + 1);
+        c == _name_enders[index] ? true  :
+        _name_enders[index] == '\0' ? false :
+        _ends_name(c, index + 1);
 }
 
-BETTER_ENUMS__CONSTEXPR inline bool _hasExplicitValue(const char *s,
-                                                      std::size_t index = 0)
+BETTER_ENUMS__CONSTEXPR inline bool _has_initializer(const char *s,
+                                                     std::size_t index = 0)
 {
     return
         s[index] == '\0' ? false :
         s[index] == '=' ? true :
-        _hasExplicitValue(s, index + 1);
+        _has_initializer(s, index + 1);
 }
 
 BETTER_ENUMS__CONSTEXPR inline std::size_t
-_constantLength(const char *s, std::size_t index = 0)
+_constant_length(const char *s, std::size_t index = 0)
 {
-    return _endsName(s[index]) ? index : _constantLength(s, index + 1);
+    return _ends_name(s[index]) ? index : _constant_length(s, index + 1);
 }
 
 BETTER_ENUMS__CONSTEXPR inline char
@@ -407,32 +412,32 @@ _select(const char *from, std::size_t from_length, std::size_t index)
     return index >= from_length ? '\0' : from[index];
 }
 
-BETTER_ENUMS__CONSTEXPR inline char _toLowercaseAscii(char c)
+BETTER_ENUMS__CONSTEXPR inline char _to_lower_ascii(char c)
 {
     return c >= 0x41 && c <= 0x5A ? (char)(c + 0x20) : c;
 }
 
-BETTER_ENUMS__CONSTEXPR inline bool _namesMatch(const char *stringizedName,
-                                                const char *referenceName,
-                                                std::size_t index = 0)
+BETTER_ENUMS__CONSTEXPR inline bool _names_match(const char *stringizedName,
+                                                 const char *referenceName,
+                                                 std::size_t index = 0)
 {
     return
-        _endsName(stringizedName[index]) ? referenceName[index] == '\0' :
+        _ends_name(stringizedName[index]) ? referenceName[index] == '\0' :
         referenceName[index] == '\0' ? false :
         stringizedName[index] != referenceName[index] ? false :
-        _namesMatch(stringizedName, referenceName, index + 1);
+        _names_match(stringizedName, referenceName, index + 1);
 }
 
 BETTER_ENUMS__CONSTEXPR inline bool
-_namesMatchNocase(const char *stringizedName, const char *referenceName,
-                  std::size_t index = 0)
+_names_match_nocase(const char *stringizedName, const char *referenceName,
+                    std::size_t index = 0)
 {
     return
-        _endsName(stringizedName[index]) ? referenceName[index] == '\0' :
+        _ends_name(stringizedName[index]) ? referenceName[index] == '\0' :
         referenceName[index] == '\0' ? false :
-        _toLowercaseAscii(stringizedName[index]) !=
-            _toLowercaseAscii(referenceName[index]) ? false :
-        _namesMatchNocase(stringizedName, referenceName, index + 1);
+        _to_lower_ascii(stringizedName[index]) !=
+            _to_lower_ascii(referenceName[index]) ? false :
+        _names_match_nocase(stringizedName, referenceName, index + 1);
 }
 
 inline void _trim_names(const char * const *raw_names,
@@ -445,7 +450,7 @@ inline void _trim_names(const char * const *raw_names,
         trimmed_names[index] = storage + offset;
 
         std::size_t trimmed_length =
-            std::strcspn(raw_names[index], BETTER_ENUMS__NAME_ENDERS);
+            std::strcspn(raw_names[index], _name_enders);
         storage[offset + trimmed_length] = '\0';
 
         std::size_t raw_length = std::strlen(raw_names[index]);
@@ -455,45 +460,47 @@ inline void _trim_names(const char * const *raw_names,
 
 
 
+// General underlying types.
+
 // This template is unfortunately necessary (?) due to the lack of <type_traits>
 // in C++98. <With type_traits>, this template could be replaced with a
 // combination of std::conditional and std::is_integral.
 template <typename T>
-struct representation { typedef typename T::integral_representation type; };
+struct _representation { typedef typename T::integral_representation type; };
 
-template <> struct representation<bool>         { typedef bool         type; };
-template <> struct representation<char>         { typedef char         type; };
-template <> struct representation<wchar_t>      { typedef wchar_t      type; };
-template <> struct representation<signed char>  { typedef signed char  type; };
-template <> struct representation<unsigned char>
+template <> struct _representation<bool>         { typedef bool         type; };
+template <> struct _representation<char>         { typedef char         type; };
+template <> struct _representation<wchar_t>      { typedef wchar_t      type; };
+template <> struct _representation<signed char>  { typedef signed char  type; };
+template <> struct _representation<unsigned char>
     { typedef unsigned char      type; };
-template <> struct representation<short>        { typedef short        type; };
-template <> struct representation<unsigned short>
+template <> struct _representation<short>        { typedef short        type; };
+template <> struct _representation<unsigned short>
     { typedef unsigned short     type; };
-template <> struct representation<int>          { typedef int          type; };
-template <> struct representation<unsigned int> { typedef unsigned int type; };
-template <> struct representation<long>         { typedef long         type; };
-template <> struct representation<unsigned long>
+template <> struct _representation<int>          { typedef int          type; };
+template <> struct _representation<unsigned int> { typedef unsigned int type; };
+template <> struct _representation<long>         { typedef long         type; };
+template <> struct _representation<unsigned long>
     { typedef unsigned long      type; };
 
 #ifdef BETTER_ENUMS__HAVE_LONG_LONG
 
-template <> struct representation<long long>    { typedef long long    type; };
-template <> struct representation<unsigned long long>
+template <> struct _representation<long long>    { typedef long long    type; };
+template <> struct _representation<unsigned long long>
     { typedef unsigned long long type; };
 
 #endif
 
 #ifdef BETTER_ENUMS__HAVE_NEW_CHAR_TYPES
 
-template <> struct representation<char16_t>     { typedef char16_t     type; };
-template <> struct representation<char32_t>     { typedef char32_t     type; };
+template <> struct _representation<char16_t>     { typedef char16_t     type; };
+template <> struct _representation<char32_t>     { typedef char32_t     type; };
 
 #endif
 
 template <typename T>
 struct underlying_traits {
-    typedef typename representation<T>::type  integral_representation;
+    typedef typename _representation<T>::type   integral_representation;
 
     BETTER_ENUMS__CONSTEXPR static integral_representation
     to_integral(const T &v) { return (integral_representation)v; }
@@ -504,6 +511,18 @@ struct underlying_traits {
 };
 
 } // namespace better_enums
+
+
+
+// Array generation macros.
+
+#define BETTER_ENUMS__EAT_ASSIGN_SINGLE(EnumType, index, expression)           \
+    ((::better_enums::_eat_assign<EnumType>)EnumType::expression),
+
+#define BETTER_ENUMS__EAT_ASSIGN(EnumType, ...)                                \
+    BETTER_ENUMS__ID(                                                          \
+        BETTER_ENUMS__PP_MAP(                                                  \
+            BETTER_ENUMS__EAT_ASSIGN_SINGLE, EnumType, __VA_ARGS__))
 
 
 
@@ -522,11 +541,11 @@ struct underlying_traits {
 
 #define BETTER_ENUMS__TRIM_SINGLE_STRING(ignored, index, expression)           \
 constexpr std::size_t   _length_ ## index =                                    \
-    ::better_enums::_constantLength(#expression);                              \
+    ::better_enums::_constant_length(#expression);                             \
 constexpr const char    _trimmed_ ## index [] =                                \
     { BETTER_ENUMS__SELECT_CHARACTERS(#expression, _length_ ## index) };       \
 constexpr const char    *_final_ ## index =                                    \
-    ::better_enums::_hasExplicitValue(#expression) ?                           \
+    ::better_enums::_has_initializer(#expression) ?                            \
         _trimmed_ ## index : #expression;
 
 #define BETTER_ENUMS__TRIM_STRINGS(...)                                        \
@@ -567,6 +586,8 @@ constexpr const char    *_final_ ## index =                                    \
 
 
 
+// The enums proper.
+
 // TODO Convert integral to underlying only at the last possible moment, if the
 // integral value is valid. This should prevent unexpected behavior. For this to
 // work, the underlying values array must store the integral equivalents. That
@@ -575,6 +596,8 @@ constexpr const char    *_final_ ## index =                                    \
 
 // TODO Choose the right return type semantics once the _values array
 // representation is chosen: values if integral, const references if underlying.
+
+#define BETTER_ENUMS__NS(EnumType)  better_enums::_data_ ## EnumType
 
 #define BETTER_ENUMS__TYPE(SetUnderlyingType, SwitchType, GenerateSwitchType,  \
                            GenerateStrings, ToStringConstexpr,                 \
@@ -851,8 +874,8 @@ Enum::_from_string_loop(const char *name, std::size_t index)                   \
 {                                                                              \
     return                                                                     \
         index == _size ? _optional_index() :                                   \
-        ::better_enums::_namesMatch(BETTER_ENUMS__NS(Enum)::raw_names()[index],\
-                                    name) ?                                    \
+        ::better_enums::_names_match(                                          \
+            BETTER_ENUMS__NS(Enum)::raw_names()[index], name) ?                \
             _optional_index(index) :                                           \
             _from_string_loop(name, index + 1);                                \
 }                                                                              \
@@ -862,7 +885,7 @@ Enum::_from_string_nocase_loop(const char *name, std::size_t index)            \
 {                                                                              \
     return                                                                     \
         index == _size ? _optional_index() :                                   \
-            ::better_enums::_namesMatchNocase(                                 \
+            ::better_enums::_names_match_nocase(                               \
                 BETTER_ENUMS__NS(Enum)::raw_names()[index], name) ?            \
                     _optional_index(index) :                                   \
                     _from_string_nocase_loop(name, index + 1);                 \
@@ -879,6 +902,8 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
     { return !(a == b); }
 
 
+
+// Enum feature options.
 
 // C++98, C++11
 #define BETTER_ENUMS__CXX98_UNDERLYING_TYPE(Underlying)
@@ -1022,6 +1047,8 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
 
 
 
+// User feature selection.
+
 #ifdef BETTER_ENUMS_STRICT_CONVERSION
 #   define BETTER_ENUMS__DEFAULT_SWITCH_TYPE                                   \
         BETTER_ENUMS__ENUM_CLASS_SWITCH_TYPE
@@ -1061,6 +1088,10 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
 #   define BETTER_ENUMS__DEFAULT_CALL_INITIALIZE                               \
         BETTER_ENUMS__DO_CALL_INITIALIZE
 #endif
+
+
+
+// Top-level macros.
 
 #define ENUM(Enum, Underlying, ...)                                            \
     BETTER_ENUMS__ID(BETTER_ENUMS__TYPE(                                       \
@@ -1105,6 +1136,8 @@ BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
 
 
 namespace better_enums {
+
+// Stream I/O operators.
 
 // This template is used as a sort of enable_if for SFINAE. It should be
 // possible to use std::enable_if, however <type_traits> is not available in
