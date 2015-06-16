@@ -31,10 +31,6 @@ struct underlying_traits<html_color_1> {
 
     BETTER_ENUMS__CONSTEXPR static unsigned int to_integral(html_color_1 v)
         { return (unsigned int)v.r << 16 | (unsigned int)v.g << 8 | v.b; }
-
-    BETTER_ENUMS__CONSTEXPR static bool
-    are_equal(const html_color_1 &u, const html_color_1 &v)
-        { return u.r == v.r && u.g == v.g && u.b == v.b; }
 };
 
 }
@@ -150,5 +146,32 @@ class UnderlyingTypeTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS(color_1->r, color_1_underlying.r);
         TS_ASSERT_EQUALS(color_1->g, color_1_underlying.g);
         TS_ASSERT_EQUALS(color_1->b, color_1_underlying.b);
+    }
+
+    void test_switch()
+    {
+#ifndef BETTER_ENUMS_STRICT_CONVERSION
+
+        HtmlColor1      html_color_1 = HtmlColor1::purplemimosa;
+
+        switch (html_color_1) {
+            case HtmlColor1::darksalmon:   TS_ASSERT(false); break;
+            case HtmlColor1::purplemimosa: TS_ASSERT(true); break;
+            case HtmlColor1::slimegreen:   TS_ASSERT(false); break;
+        }
+
+#else
+#   ifdef BETTER_ENUMS__HAVE_CONSTEXPR
+
+        HtmlColor1      html_color_1 = HtmlColor1::purplemimosa;
+
+        switch (html_color_1) {
+            case +HtmlColor1::darksalmon:   TS_ASSERT(false); break;
+            case +HtmlColor1::purplemimosa: TS_ASSERT(true); break;
+            case +HtmlColor1::slimegreen:   TS_ASSERT(false); break;
+        }
+
+#   endif
+#endif
     }
 };

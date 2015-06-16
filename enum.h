@@ -506,8 +506,6 @@ struct underlying_traits {
     to_integral(const T &v) { return (integral_representation)v; }
     BETTER_ENUMS__CONSTEXPR static T
     from_integral(integral_representation n) { return T(n); }
-    BETTER_ENUMS__CONSTEXPR static bool
-    are_equal(const T& u, const T& v) { return u == v; }
 };
 
 
@@ -597,10 +595,8 @@ constexpr const char    *_final_ ## index =                                    \
 // The enums proper.
 
 // TODO Convert integral to underlying only at the last possible moment, if the
-// integral value is valid. This should prevent unexpected behavior. For this to
-// work, the underlying values array must store the integral equivalents. That
-// would also eliminate the need for "are_equal", but would increase overhead
-// during iteration.
+// integral value is valid. This should prevent unexpected behavior (conversions
+// during scans).
 
 // TODO Choose the right return type semantics once the _values array
 // representation is chosen: values if integral, const references if underlying.
@@ -876,10 +872,9 @@ Enum::_from_value_loop(const Enum::_underlying &value, std::size_t index)      \
 {                                                                              \
     return                                                                     \
         index == _size ? _optional_index() :                                   \
-        _traits::are_equal(                                                    \
-            BETTER_ENUMS__NS(Enum)::value_array[index]._value, value) ?        \
-                _optional_index(index) :                                       \
-                _from_value_loop(value, index + 1);                            \
+        _traits::to_integral(BETTER_ENUMS__NS(Enum)::value_array[index]._value)\
+            == _traits::to_integral(value) ? _optional_index(index) :          \
+        _from_value_loop(value, index + 1);                                    \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
@@ -905,14 +900,17 @@ Enum::_from_string_nocase_loop(const char *name, std::size_t index)            \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline bool operator ==(const Enum &a, const Enum &b)  \
-    {                                                                          \
-        return                                                                 \
-            ::better_enums::underlying_traits<Enum::_underlying>               \
-                ::are_equal(a._value, b._value);                               \
-    }                                                                          \
-                                                                               \
+    { return a._to_integral() == b._to_integral(); }                           \
 BETTER_ENUMS__CONSTEXPR inline bool operator !=(const Enum &a, const Enum &b)  \
-    { return !(a == b); }
+    { return a._to_integral() != b._to_integral(); }                           \
+BETTER_ENUMS__CONSTEXPR inline bool operator <(const Enum &a, const Enum &b)   \
+    { return a._to_integral() < b._to_integral(); }                            \
+BETTER_ENUMS__CONSTEXPR inline bool operator <=(const Enum &a, const Enum &b)  \
+    { return a._to_integral() <= b._to_integral(); }                           \
+BETTER_ENUMS__CONSTEXPR inline bool operator >(const Enum &a, const Enum &b)   \
+    { return a._to_integral() > b._to_integral(); }                            \
+BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
+    { return a._to_integral() >= b._to_integral(); }
 
 
 
