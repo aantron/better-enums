@@ -71,7 +71,7 @@ slightly more complex template function for the general case:
     constexpr <em>Enum default_imp</em>l()
     {
         return
-            <em>Enum::_size < 2 ?
+            <em>Enum::_size() < 2 ?
                 throw std::logic_error("enum has no valid constants") :
             Enum::_values()[0] == invalid_impl<Enum>() ?
                 Enum::_values()[1] :

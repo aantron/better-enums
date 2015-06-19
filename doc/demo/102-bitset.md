@@ -17,7 +17,7 @@ We simply need to find the maximum value of any given enum type.
     constexpr <em>Enum max_loop</em>(Enum accumulator, size_t index)
     {
         return
-            <em>index >= Enum::_size ? accumulator :
+            <em>index >= Enum::_size() ? accumulator :
             Enum::_values()[index] > accumulator ?
                 max_loop<Enum>(Enum::_values()[index], index + 1) :
                 max_loop<Enum>(accumulator, index + 1)</em>;

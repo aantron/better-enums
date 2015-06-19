@@ -69,7 +69,7 @@ template <typename Enum>
 constexpr Enum default_impl()
 {
     return
-        Enum::_size < 2 ?
+        Enum::_size() < 2 ?
             throw std::logic_error("enum has no valid constants") :
         Enum::_values()[0] == invalid_impl<Enum>() ?
             Enum::_values()[1] :

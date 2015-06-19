@@ -79,7 +79,7 @@ template <typename Enum>
 constexpr size_t constants_length(size_t index = 0, size_t accumulator = 0)
 {
     return
-        index >= Enum::_size ? accumulator :
+        index >= Enum::_size() ? accumulator :
         constants_length<Enum>(
             index + 1, accumulator
                         + string_length(", ")

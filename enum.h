@@ -499,7 +499,7 @@ template <> struct _representation<char32_t>     { typedef char32_t     type; };
 #endif
 
 template <typename T>
-struct underlying_traits {
+struct integral_mapping {
     typedef typename _representation<T>::type   integral_representation;
 
     BETTER_ENUMS__CONSTEXPR static integral_representation
@@ -620,20 +620,20 @@ class Enum {                                                                   \
   private:                                                                     \
     typedef ::better_enums::optional<Enum>                  _optional;         \
     typedef ::better_enums::optional<std::size_t>           _optional_index;   \
-    typedef ::better_enums::underlying_traits<Underlying>   _traits;           \
+    typedef ::better_enums::integral_mapping<Underlying>    _mapping;          \
                                                                                \
   public:                                                                      \
     typedef Underlying                                      _underlying;       \
-    typedef _traits::integral_representation                _integral;         \
+    typedef _mapping::integral_representation               _integral;         \
                                                                                \
     enum _enumerated SetUnderlyingType(Underlying) { __VA_ARGS__ };            \
                                                                                \
     BETTER_ENUMS__CONSTEXPR Enum(_enumerated value) :                          \
-        _value(_traits::from_integral(value)) { }                              \
+        _value(_mapping::from_integral(value)) { }                             \
                                                                                \
     BETTER_ENUMS__CONSTEXPR operator SwitchType(Enum)() const                  \
     {                                                                          \
-        return (SwitchType(Enum))_traits::to_integral(_value);                 \
+        return (SwitchType(Enum))_mapping::to_integral(_value);                \
     }                                                                          \
                                                                                \
     _underlying& operator *() { return _value; }                               \
@@ -689,8 +689,10 @@ class Enum {                                                                   \
     typedef _value_iterable::iterator                   _value_iterator;       \
     typedef _name_iterable::iterator                    _name_iterator;        \
                                                                                \
-    BETTER_ENUMS__CONSTEXPR static const std::size_t _size =                   \
+    BETTER_ENUMS__CONSTEXPR static const std::size_t _size_constant =          \
         BETTER_ENUMS__ID(BETTER_ENUMS__PP_COUNT(__VA_ARGS__));                 \
+    BETTER_ENUMS__CONSTEXPR static std::size_t _size()                         \
+        { return _size_constant; }                                             \
                                                                                \
     BETTER_ENUMS__CONSTEXPR static const char* _name();                        \
     BETTER_ENUMS__CONSTEXPR static _value_iterable _values();                  \
@@ -699,7 +701,7 @@ class Enum {                                                                   \
     _underlying    _value;                                                     \
                                                                                \
   private:                                                                     \
-    Enum() : _value(_traits::from_integral(0)) { }                             \
+    Enum() : _value(_mapping::from_integral(0)) { }                            \
                                                                                \
     explicit BETTER_ENUMS__CONSTEXPR Enum(const _underlying &value) :          \
         _value(value) { }                                                      \
@@ -765,7 +767,7 @@ Enum::_from_underlying_nothrow(const _underlying &value)                       \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_integral Enum::_to_integral() const      \
 {                                                                              \
-    return _traits::to_integral(_value);                                       \
+    return _mapping::to_integral(_value);                                      \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum                                            \
@@ -786,7 +788,7 @@ BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_integral(_integral value)      \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
 Enum::_from_integral_nothrow(_integral value)                                  \
 {                                                                              \
-    return _from_underlying_nothrow(_traits::from_integral(value));            \
+    return _from_underlying_nothrow(_mapping::from_integral(value));           \
 }                                                                              \
                                                                                \
 ToStringConstexpr inline const char* Enum::_to_string() const                  \
@@ -855,14 +857,14 @@ BETTER_ENUMS__CONSTEXPR inline const char* Enum::_name()                       \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_value_iterable Enum::_values()           \
 {                                                                              \
-    return _value_iterable(BETTER_ENUMS__NS(Enum)::value_array, _size);        \
+    return _value_iterable(BETTER_ENUMS__NS(Enum)::value_array, _size());      \
 }                                                                              \
                                                                                \
 ToStringConstexpr inline Enum::_name_iterable Enum::_names()                   \
 {                                                                              \
     return                                                                     \
         _name_iterable(BETTER_ENUMS__NS(Enum)::name_array(),                   \
-                       CallInitialize(_size));                                 \
+                       CallInitialize(_size()));                               \
 }                                                                              \
                                                                                \
 DefineInitialize(Enum)                                                         \
@@ -871,9 +873,10 @@ BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
 Enum::_from_value_loop(const Enum::_underlying &value, std::size_t index)      \
 {                                                                              \
     return                                                                     \
-        index == _size ? _optional_index() :                                   \
-        _traits::to_integral(BETTER_ENUMS__NS(Enum)::value_array[index]._value)\
-            == _traits::to_integral(value) ? _optional_index(index) :          \
+        index == _size() ? _optional_index() :                                 \
+        _mapping::to_integral(                                                 \
+            BETTER_ENUMS__NS(Enum)::value_array[index]._value)                 \
+            == _mapping::to_integral(value) ? _optional_index(index) :         \
         _from_value_loop(value, index + 1);                                    \
 }                                                                              \
                                                                                \
@@ -881,7 +884,7 @@ BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
 Enum::_from_string_loop(const char *name, std::size_t index)                   \
 {                                                                              \
     return                                                                     \
-        index == _size ? _optional_index() :                                   \
+        index == _size() ? _optional_index() :                                 \
         ::better_enums::_names_match(                                          \
             BETTER_ENUMS__NS(Enum)::raw_names()[index], name) ?                \
             _optional_index(index) :                                           \
@@ -892,7 +895,7 @@ BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
 Enum::_from_string_nocase_loop(const char *name, std::size_t index)            \
 {                                                                              \
     return                                                                     \
-        index == _size ? _optional_index() :                                   \
+        index == _size() ? _optional_index() :                                 \
             ::better_enums::_names_match_nocase(                               \
                 BETTER_ENUMS__NS(Enum)::raw_names()[index], name) ?            \
                     _optional_index(index) :                                   \
@@ -921,7 +924,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
 
 // C++11
 #define BETTER_ENUMS__CXX11_UNDERLYING_TYPE(Underlying)                        \
-    : ::better_enums::underlying_traits<Underlying>::integral_representation
+    : ::better_enums::integral_mapping<Underlying>::integral_representation
 
 // C++98, C++11
 #define BETTER_ENUMS__REGULAR_ENUM_SWITCH_TYPE(Type)                           \
@@ -937,7 +940,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
 // C++11
 #define BETTER_ENUMS__ENUM_CLASS_SWITCH_TYPE_GENERATE(Underlying, ...)         \
     enum class EnumClassForSwitchStatements :                                  \
-        ::better_enums::underlying_traits<Underlying>::integral_representation \
+        ::better_enums::integral_mapping<Underlying>::integral_representation  \
         { __VA_ARGS__ };
 
 // C++98
@@ -958,7 +961,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
                                                                                \
     inline const char** name_array()                                           \
     {                                                                          \
-        static const char   *value[Enum::_size];                               \
+        static const char   *value[Enum::_size_constant];                      \
         return value;                                                          \
     }                                                                          \
                                                                                \
@@ -987,7 +990,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
                                                                                \
     inline const char** name_array()                                           \
     {                                                                          \
-        static const char   *value[Enum::_size];                               \
+        static const char   *value[Enum::_size_constant];                      \
         return value;                                                          \
     }                                                                          \
                                                                                \
@@ -1039,7 +1042,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
         ::better_enums::_trim_names(BETTER_ENUMS__NS(Enum)::raw_names(),       \
                                     BETTER_ENUMS__NS(Enum)::name_array(),      \
                                     BETTER_ENUMS__NS(Enum)::name_storage(),    \
-                                    _size);                                    \
+                                    _size());                                  \
                                                                                \
         BETTER_ENUMS__NS(Enum)::initialized() = true;                          \
                                                                                \

@@ -17,7 +17,7 @@ template <typename Enum>
 constexpr Enum max_loop(Enum accumulator, size_t index)
 {
     return
-        index >= Enum::_size ? accumulator :
+        index >= Enum::_size() ? accumulator :
         Enum::_values()[index] > accumulator ?
             max_loop<Enum>(Enum::_values()[index], index + 1) :
             max_loop<Enum>(accumulator, index + 1);

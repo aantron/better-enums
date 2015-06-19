@@ -13,7 +13,7 @@ ENUM(Channel, int, Red, Green = 2, Blue)
 int main()
 {
 
-    for (size_t index = 0; index < Channel::_size; ++index) {
+    for (size_t index = 0; index < Channel::_size(); ++index) {
         Channel     channel = Channel::_values()[index];
         std::cout << channel._to_integral() << " ";
     }
@@ -21,7 +21,7 @@ int main()
 
 // will print "0 2 3". And this:
 
-    for (size_t index = 0; index < Channel::_size; ++index) {
+    for (size_t index = 0; index < Channel::_size(); ++index) {
         const char  *name = Channel::_names()[index];
         std::cout << name << " ";
     }

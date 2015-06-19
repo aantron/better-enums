@@ -19,11 +19,12 @@ struct html_color_1 {
         r(_r), g(_g), b(_b) { }
 };
 
-// In C++11, can simply to struct ::better_enums::underlying_traits below.
+// In C++11, can simply use struct ::better_enums::integral_mapping below,
+// instead of having to enclose the specialization in the namespace.
 namespace better_enums {
 
 template <>
-struct underlying_traits<html_color_1> {
+struct integral_mapping<html_color_1> {
     typedef unsigned int    integral_representation;
 
     BETTER_ENUMS__CONSTEXPR static html_color_1 from_integral(unsigned int i)

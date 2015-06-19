@@ -11,7 +11,7 @@ example, this:
     int main()
     {
 
-        <em>for</em> (<em>size_t index = 0</em>; <em>index < Channel::_size</em>; <em>++index</em>) {
+        <em>for</em> (<em>size_t index = 0</em>; <em>index < Channel::_size()</em>; <em>++index</em>) {
             Channel     channel = <em>Channel::_values()[index]</em>;
             std::cout << channel._to_integral() << " ";
         }
@@ -19,7 +19,7 @@ example, this:
 
 will print "0 2 3". And this:
 
-        <em>for</em> (<em>size_t index = 0</em>; <em>index < Channel::_size</em>; <em>++index</em>) {
+        <em>for</em> (<em>size_t index = 0</em>; <em>index < Channel::_size()</em>; <em>++index</em>) {
             const char  *name = <em>Channel::_names()[index]</em>;
             std::cout << name << " ";
         }

@@ -82,7 +82,7 @@ initializers for sequential values, but I won't go through this exercise here.
     constexpr <em>size_t constants_length</em>(size_t index = 0, size_t accumulator = 0)
     {
         return
-            <em>index >= Enum::_size ? accumulator :
+            <em>index >= Enum::_size() ? accumulator :
             constants_length<Enum>(
                 index + 1, accumulator
                             + string_length(", ")
