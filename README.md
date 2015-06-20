@@ -23,7 +23,7 @@ for (Channel channel : Channel::_values()) {
     process(channel);           // Iterate over all channels
 }
 
-// Natural switch, compiler checks the cases
+// Automatic case checking, just as with a built-in enum.
 switch (channel) {
     case Channel::Red:   break;
     case Channel::Green: break;
@@ -31,7 +31,7 @@ switch (channel) {
 }
 ```
 
-...and more.
+...and more. You can try it live [here][wandbox].
 
 In C++11, *everything* is available at compile time. You can convert your enums,
 loop over them, [find their max][max],
@@ -43,8 +43,7 @@ The interface is the same for C++98 &mdash; you just have to use most of it at
 run time only. This library does provide scoped and sized enums, something not
 built into C++98.
 
-See the [project page][project] for full documentation and [here][wandbox] for
-a simple working program.
+See the [project page][project] for full documentation.
 
 [max]:      http://aantron.github.io/better-enums/demo/BitSets.html
 [enforce]:  http://aantron.github.io/better-enums/demo/SpecialValues.html
