@@ -89,6 +89,12 @@
 #   define BETTER_ENUMS__IF_EXCEPTIONS(x)
 #endif
 
+#ifdef __GNUC__
+#   define BETTER_ENUMS__UNUSED(x) x __attribute__((__unused__))
+#else
+#   define BETTER_ENUMS__UNUSED(x) x
+#endif
+
 
 
 // Higher-order preprocessor macros.
@@ -333,7 +339,8 @@ BETTER_ENUMS__CONSTEXPR static T* _or_null(optional<T*> maybe)
 // causes a linking error.
 
 template <typename T, typename U>
-BETTER_ENUMS__CONSTEXPR U continue_with(T ignored, U value) { return value; }
+BETTER_ENUMS__CONSTEXPR U
+continue_with(T BETTER_ENUMS__UNUSED(ignored), U value) { return value; }
 
 
 
@@ -345,8 +352,8 @@ struct _eat_assign {
         { }
 
     template <typename Any>
-    BETTER_ENUMS__CONSTEXPR const _eat_assign& operator =(Any dummy) const
-        { return *this; }
+    BETTER_ENUMS__CONSTEXPR const _eat_assign&
+    operator =(Any BETTER_ENUMS__UNUSED(dummy)) const { return *this; }
 
     BETTER_ENUMS__CONSTEXPR operator EnumType () const { return _value; }
 
