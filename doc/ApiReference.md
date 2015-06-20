@@ -51,6 +51,15 @@ passed by value.
 All names declared in the scope of a Better Enum are prefixed with an underscore
 in order to avoid conflicts with potential constant names.
 
+If you are using [non-integral underlying types][non-integral], you need to be
+aware of section of this reference on underlying types. However, if you are
+using a regular, integral underlying type, the type `Enum::_underlying` is the
+same `Enum::_integral`, and each of the `*_underlying` functions is the same as
+the corresponding `*_integral` function, so you can safely ignore that whole
+section.
+
+[non-integral]: ${prefix}demo/NonIntegralUnderlyingTypes.html
+
 
 
 ### Running example
@@ -150,9 +159,14 @@ using <em>optional</em> = <em>better_enums::optional</em>&lt;<em>Enum</em>&gt;;
 The types and members described here have to do with the sequence of constants
 declared, i.e. `A`, `B`, `C` in the [running example](#RunningExample).
 
-#### static constexpr size_t <em>_size</em>
+#### static constexpr size_t <em>_size</em>()
 
-The number of constants declared. `Enum::_size == 3`.
+The number of constants declared. `Enum::_size() == 3`.
+
+#### static constexpr const size_t <em>_size_constant</em>
+
+Same as [`_size`](#_size), but a constant instead of a function. This is
+provided for use in $cxx98 constant expressions.
 
 #### <em>typedef _value_iterable</em>
 
@@ -255,7 +269,7 @@ case as in [`_from_string_nocase`](#_from_string_nocase).
 Evaluates to the name of the Better Enum type. `Enum::_name()` is the same
 string as `"Enum"`.
 
-#### typedef <em>_name_iterable</em>
+#### <em>typedef _name_iterable</em>
 
 Type of object that permits iteration over names of declared constants. Has at
 least `constexpr` `begin()`, `end()`, and `size()` methods. `operator[]` is also
@@ -263,7 +277,7 @@ available, but is `constexpr` if and only if [`_to_string`](#_to_string) is
 `constexpr`. Iteration visits constants in order of declaration. See usage
 example under [`_names`](#_names).
 
-#### typedef <em>_name_iterator</em>
+#### <em>typedef _name_iterator</em>
 
 Random-access iterator type for `_name_iterable`. Most operations are
 `constexpr`, but dereferencing is `constexpr` if and only if
@@ -322,7 +336,7 @@ example,
     (+<em>Enum::C</em>)<em>._to_integral</em>() == <em>2</em>
 
 Note that Better Enums are already implicitly convertible to their underlying
-integral types [by default](${prefix}OptInFeatures.html#StrictConversion).
+integral types [by default](${prefix}OptInFeatures.html#StrictConversions).
 You may still want to use this function, however, for clarity, and to ensure
 that your code remains compatible if the strict conversions feature is enabled
 later.
@@ -362,6 +376,151 @@ You should not use this function on untrusted input, however.
 Evaluates to `true` if and only if the given integer is the numeric value of one
 of the declared constants. Running time is linear in the number of declared
 constants.
+
+
+
+### Stream operators
+
+#### non-member std::ostream& <em>operator <<</em>(std::ostream&, const Enum&)
+
+Formats the given enum to the given stream in the same way as
+[`_to_string`](#_to_string).
+
+#### non-member std::istream& <em>operator >></em>(std::istream&, Enum&)
+
+Reads from the given stream and attempts to parse an enum value in the same way
+as [`_from_string`](#_from_string). In case of failure, sets the stream's
+`failbit`.
+
+
+
+### Non-integral underlying type
+
+This section is relevant only if you are using an underlying type that is not
+an integral type &mdash; otherwise, `Enum::_underlying` is the same as
+`Enum::_integral`, and all the functions described here are redundant with their
+corresponding functions in the [section on integer conversions][integral].
+
+That section is written for the simple, but common case where the underlying
+type is an integral type, in order to avoid overloading users not using the
+feature described here with unnecessary generality. The information in that
+section is fully accurate for integral underlying types, but for non-integral
+underlying types this section corrects it.
+
+[integral]: #IntegerConversion
+
+The rest of this section will assume that your non-integral underlying type is
+called `Underlying`.
+
+In this case, the memory representation of your Better Enum type is the same as
+for `Underlying`. In fact, this is always true &mdash; the memory representation
+is always the same as for the underlying type. It is only a matter of whether
+that type is integral or not.
+
+When `Underlying` is not integral, Better Enums still needs an integral
+representation of `Underlying` for use in `switch`. That is the true meaning of
+the member type `_integral`. It's just that when `Underlying` *is* integral to
+begin with, it is its own integral representation, and the two types collapse.
+
+To support non-integral underlying types, Better Enums requires a two-way
+mapping between `Underlying` and some type `_integral`. In case `Underlying`
+*is* integral, however, that mapping is simply the identity function. Otherwise,
+you have to supply a mapping as shown [here][non-integral].
+
+In short, the underlying type is "first-class," whether it is integral or not,
+and the type `_integral` is a helper type. When `Underlying` *is* integral, the
+various `*_integral` functions just happen to work with the underlying type, as
+a special case. The material in this section is for the general case where
+`Underlying` is not integral.
+
+#### <em>typename _underlying</em>
+
+`Enum::_underlying` is the same type as `Underlying`. It has to satisfy the
+requirements given [here][non-integral].
+
+#### non-member specialization <em>struct better_enums::integral_mapping</em>&lt;Underlying&gt;
+
+You should specialize this template for `Underlying`, as shown in the
+[example][non-integral]. The specialization needs the following members:
+
+- A type `integral_representation`, which gives an integral type that Better
+  Enums will use to make `Underlying` compatible with `switch` statements, and
+  to define an ordering on the generated Better Enums type. This type is *not*
+  the internal representation of the Better Enum &mdash; the Better Enum's
+  memory representation is the same as `Underlying`.
+- A function
+  `constexpr static integral_representation to_integral(const Underlying&)`.
+- A function
+  `constexpr static Underlying from_integral(integral_representation)`.
+
+In $cxx98, the above functions don't have to be `constexpr`.
+
+You can avoid specializing this template, but its default implementation puts
+additional requirements on `Underlying` in order to be able to define default
+versions of `to_integral` and `from_integral`:
+
+- `Underlying` must have a member type `integral_representation`, with the same
+  meaning as above.
+- `Underlying` must have a conversion
+  `constexpr operator integral_representation() const`.
+- `Underlying` must have a constructor
+  `constexpr Underlying(integral_representation)`. This constructor can be
+  explicit.
+
+Again, in $cxx98, these members don't have to be `constexpr`.
+
+#### member constexpr _underlying <em>_to_underlying</em>() const
+
+No-op conversion of a Better Enum to its underlying type. Behaves as
+[`_to_integral`](#_to_integral), except that the text concerning implicit
+conversions is irrelevant when `_underlying` is not the same as `_integral`.
+Implicit conversions, if not disabled, are always to `_integral`.
+
+#### static constexpr Enum <em>_from_underlying</em>(_underlying)
+
+Same as [`_from_integral`](#_from_integral), but for the underlying type. In
+fact, `from_integral` is a wrapper that first converts the integer to a value of
+the underlying type (a no-op when the types are equal), and then calls
+`_from_underlying`.
+
+#### static constexpr optional<Enum> <em>_from_underlying_nothrow</em>(_underlying)
+
+Same as [`_from_integral_nothrow`](#_from_integral_nothrow), but for the
+underlying type. `_from_integral_nothrow` is a wrapper as described
+[above](#_from_underlying).
+
+#### static constexpr Enum <em>_from_underlying_unchecked</em>(_underlying)
+
+Same as [`_from_integral_unchecked`](#_from_integral), but for the underlying
+type. `_from_integral_unchecked` is a wrapper as described
+[above](#_from_underlying).
+
+#### static constexpr bool <em>_is_valid(_underlying)</em>
+
+Replaces [`_is_valid(_integral)`](#_is_valid_integral). In fact, *this* function
+is the only one defined, but in the case where `_integral` is `_underlying`,
+this function's signature is equivalent to
+[`_is_valid(_integral)`](#_is_valid_integral).
+
+#### static constexpr _value_iterable <em>_values &mdash; _underlying[]</em>()
+
+Collection of declared enum values, stored in memory as instances of the
+underlying type.
+
+Replaces [`_values`](#_values), the collection of integral values of declared
+constants. In fact, this is the only member defined &mdash; in the case where
+`_integral` is the same as `_underlying`, the definition in the section on
+integer conversions is equivalent to this one.
+
+#### member constexpr const _underlying& <em>operator *</em>() const
+
+Returns a reference to the wrapped underlying value. There is also a non-`const`
+version.
+
+#### member constexpr const _underlying* <em>operator -&gt;</em>() const
+
+Returns a pointer to the wrapped underlying value that is suitable for member
+access, if `_underlying` has members.
 
 
 

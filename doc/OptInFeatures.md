@@ -64,5 +64,5 @@ Here they are:
         case <em>+</em>Channel::Blue:  break;
     }
 
-%% description = Opting into features disabled by default for performance or
-compatibility reasons.
+%% description = Optional Better Enums features, disabled by default for
+performance or compatibility reasons.

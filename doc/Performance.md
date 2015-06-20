@@ -7,9 +7,9 @@ to get a rough idea of how long it takes to compile Better Enums.
 
 The files compared in the test are as follows:
 
-  - [One file]($repo/blob/$version/test/performance/4-declare_enums.cc) includes
+  - [One file]($repo/blob/$ref/test/performance/4-declare_enums.cc) includes
     `enum.h` and declares 647 constants across 36 Better Enums.
-  - The [other file]($repo/blob/$version/test/performance/5-iostream.cc) *only*
+  - The [other file]($repo/blob/$ref/test/performance/5-iostream.cc) *only*
     includes `iostream` and does nothing with it.
 
 The argument is that if compiling a bunch of Better Enums is faster, or about as
@@ -29,4 +29,22 @@ compiled faster.
   - gcc 5.1, full `constexpr`: 4.23
   - VC2015RC, $cxx98: 1.18
 
-%% description = Compilation performance testing results.
+The time to merely include `enum.h` vary widely by compiler, with clang being
+by far the fastest. The ratios to `iostream` are given below.
+
+  - clang 3.6: 0.15
+  - gcc 5.1: 0.77
+  - VC2015RC: 0.82
+
+On my test machines, clang processed the file in 40ms, gcc took 230ms, and
+VC2015 took 820ms. The first two are comparable to each other, but VC2015 runs
+on a different machine.
+
+---
+
+In general, I am very sensitive to performance. Better Enums was originally
+developed in the context of a commercial project where slow running times *and*
+slow compilation times were unacceptable. I am continuing to develop it in this
+spirit.
+
+%% description = Better Enums compilation speed and performance testing results.

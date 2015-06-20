@@ -170,5 +170,6 @@ There are many possible variations of these policies, but I think most of them
 can be encoded in a reasonable fashion using the tools Better Enums provides.
 Enjoy!
 
-%% description = Encoding project policies for static enforcement using Better
-Enums.
+%% description = An example that uses Better Enums compile-time reflection to
+create invalid and default values for each enum, enforced statically by the
+compiler, for readability and maintainability.

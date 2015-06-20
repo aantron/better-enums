@@ -87,11 +87,17 @@ def compose_page(relative_path, definitions):
         definitions["class"] = ""
 
     text = templates["page"]
-    text = scrub_comments(text)
 
-    while '$' in text:
-        text = apply_template(text, definitions)
-        text = scrub_comments(text)
+    while True:
+        new_text = scrub_comments(text)
+        new_text = re.sub("\$\$", "$$$$", new_text)
+        new_text = apply_template(new_text, definitions)
+
+        if new_text == text:
+            text = apply_template(new_text, definitions)
+            break
+
+        text = new_text
 
     text = "<!-- Generated automatically - edit the templates! -->\n\n" + text
 
@@ -143,7 +149,7 @@ def process_threaded(directory):
 
         source_file = \
           os.path.splitext(os.path.basename(file))[0] + "." + CXX_EXTENSION
-        source_link = "$repo/blob/$version/example/" + source_file
+        source_link = "$repo/blob/$ref/example/" + source_file
 
         definitions[directory + "_body"] = definitions["body"]
         definitions["body"] = templates[directory]
@@ -183,6 +189,10 @@ def generate_sitemap():
     for url in generated:
         text += "  <url>\n"
         text += "    <loc>%s</loc>\n" % url
+
+        if ".html" not in url:
+            text += "    <priority>1.0</priority>\n"
+
         text += "  </url>\n"
 
     text += "</urlset>\n"

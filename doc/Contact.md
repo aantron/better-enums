@@ -8,9 +8,11 @@
 I also watch the `enums` tag on Stack Overflow.
 
 I'm happy to hear any feedback. If you have any trouble using the library or
-parsing the documentation, please don't hesitate to let me know.
+parsing the documentation, please don't hesitate to let me know. I'd also be
+interested to hear about your use case, if you are willing to share :)
 
 And, if you find this library helpful, give it a star on GitHub to let me know
 you use it. It will help keep me encouraged :)
 
-%% description = Contact information for bugs, issues, support, and feedback.
+%% description =
+Contact information for Better Enums bugs, issues, support, and feedback.

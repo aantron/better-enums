@@ -27,4 +27,6 @@ you a warning &mdash; try it!
         return 0;
     }
 
-%% description = Usage in switch statements.
+%% description = Better Enums can be used directly in switch statements like
+normal enums, making it possible for the compiler to check that all cases are
+listed, increasing the safety of your code.

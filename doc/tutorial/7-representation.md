@@ -80,4 +80,5 @@ types containg enums. The enums will behave as expected.
       compatible with $cxx98, where those names aren't available in a portable
       manner.
 
-%% description = Underlying representation.
+%% description = The underlying memory representation of a Better Enum,
+including size and alignment.

@@ -152,8 +152,11 @@ class Configuration(object):
 
 
 
-skip_cxx98 = ["101-special-values", "102-bitset", "103-quine", "7-constexpr"]
-skip_strict = ["4-switch"]
+skip_cxx98 = [
+    "101-special-values", "102-any-underlying", "103-bitset", "104-quine",
+    "8-constexpr"
+]
+skip_strict = ["4-switch", "102-any-underlying"]
 
 def modern_gnu(command):
     return [

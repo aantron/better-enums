@@ -170,4 +170,6 @@ ENUM(Channel, int, Red = 0, Green = 1, Blue = 2)
 ENUM(Depth, int, TrueColor = 1, HighColor = 0)
 ~~~
 
-%% description = Contrived example that shows static memory allocation.
+%% description = Have a Better Enum print its own definition. Shows how to
+compute the amount of memory necessary from the reflective information provided
+by a Better Enum.

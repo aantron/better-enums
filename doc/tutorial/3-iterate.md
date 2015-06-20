@@ -46,4 +46,5 @@ If you are using $cxx11, you can have much nicer syntax:
         return 0;
     }
 
-%% description = Iterating over all Better Enums constants.
+%% description = Using Better Enums to iterate over all the constants of an
+enum, as well as over its names. Also shows the same with C++11 for-each syntax.

@@ -43,13 +43,13 @@ The interface is the same for C++98 &mdash; you just have to use most of it at
 run time only. This library does provide scoped and sized enums, something not
 built into C++98.
 
-See the [project page][project] for full documentation and [here][tutorial] for
+See the [project page][project] for full documentation and [here][wandbox] for
 a simple working program.
 
 [max]:      http://aantron.github.io/better-enums/demo/BitSets.html
 [enforce]:  http://aantron.github.io/better-enums/demo/SpecialValues.html
 [project]:  http://aantron.github.io/better-enums
-[tutorial]: http://aantron.github.io/better-enums/tutorial/HelloWorld.html
+[wandbox]: http://melpon.org/wandbox/permlink/pdlAAGoxnjqG6FRI
 
 ## Installation
 
@@ -67,14 +67,19 @@ enums that are missing from standard C++.
   compiler as much as [just including `iostream` does][performance].
 - Use any initializers and sparse ranges, just like with a built-in enum.
 - Guaranteed size and alignment &mdash; you choose the representation type.
+- Stream operators supported.
+- Does not use the heap and can be compiled with exceptions disabled, for use in
+  minimal freestanding environments.
+- The underlying type [can be an object type][underlying].
 
 [performance]: http://aantron.github.io/better-enums/Performance.html
+[underlying]: http://aantron.github.io/better-enums/demo/NonIntegralUnderlyingTypes.html
 
 ## Limitations
 
-The biggest current limitation is that the `ENUM` macro can't be used inside a
-class. This seems difficult to remove, but I am looking into it. In the
-meantime, there is a workaround with a `typedef` (or `using`):
+The biggest limitation is that the `ENUM` macro can't be used inside a class.
+This seems [difficult to remove][nested]. There is a workaround with `typedef`
+(or `using`):
 
 ```cpp
 ENUM(UniquePrefix_Color, uint8_t, Red, Green, Blue)
@@ -88,6 +93,8 @@ triplet::Color  color;
 ```
 
 You can, however, use `ENUM` inside a namespace.
+
+[nested]: http://aantron.github.io/better-enums/DesignDecisionsFAQ.html#NoEnumInsideClass
 
 ## Contact
 

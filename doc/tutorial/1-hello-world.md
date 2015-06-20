@@ -1,6 +1,6 @@
 ## Hello, World!
 
-Download <a $download><code>enum.h</code></a>, then build this program with it:
+Download <a $download><code>enum.h</code></a>, then compile this program:
 
     #include <iostream>
     <em>#include "enum.h"</em>
@@ -20,4 +20,5 @@ Run it, and you should see the output "Hello, World!"
 
 Congratulations, you have just created your first Better Enum!
 
-%% description = Introductory Better Enums tutorial.
+%% description = Introductory Better Enums tutorial - a simple, but complete,
+Hello World program.

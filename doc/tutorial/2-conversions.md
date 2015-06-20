@@ -149,4 +149,6 @@ reference has a
         return 0;
     }
 
-%% description = Walkthrough of Better Enums conversion functions.
+%% description = Better Enums conversion functions. Converting to string, from
+string, to int, from int, and validation, both case-sensitive and
+case-insensitive. Exception-throwing and non-throwing variants presented.

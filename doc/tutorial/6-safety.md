@@ -76,4 +76,4 @@ the one in that demo.
         return 0;
     }
 
-%% description = Type safety features and limitations.
+%% description = Better Enums type safety features and limitations.

@@ -48,4 +48,5 @@ You can also do things such as:
 Which prints "5", the length of "Green". That 5 was also computed during
 compilation.
 
-%% description = Introduction to compile-time conversions.
+%% description = Better Enums can be used entirely at compile time in C++11. All
+conversion functions are available for constexpr functions or templates.

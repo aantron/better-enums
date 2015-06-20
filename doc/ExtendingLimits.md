@@ -19,7 +19,7 @@ constants of full-`constexpr` enums. To extend:
      example. Add 1 to the number of characters to account for the null
      terminator &mdash; our numbers are now 512 and 64.
   2. Get `make_macros.py` from your copy of the full Better Enums distribution
-     or from <a href="https://raw.githubusercontent.com/aantron/better-enums/$version/script/make_macros.py" download>GitHub</a>.
+     or from <a href="https://raw.githubusercontent.com/aantron/better-enums/$ref/script/make_macros.py" download>GitHub</a>.
   3. You will run this script to generate a header file containing some
      replacement macros for `enum.h` to use. Pick a name for this file and a
      location somewhere in your include path. I will assume that this file is
@@ -31,10 +31,27 @@ constants of full-`constexpr` enums. To extend:
 
      - For g++ and clang++, `-DBETTER_ENUMS_MACRO_FILE='<common/enum_macros.h>'`
      - For VC++, `\DBETTER_ENUMS_MACRO_FILE='<common/enum_macros.h>'`
+     - With CMake, you may need something like
+       `add_definitions(-DBETTER_ENUMS_MACRO_FILE="$${CMAKE_SOURCE_DIR}/src/enum-macros.h")`
 
   6. Enjoy the looser limits. Just watch out &mdash; increasing the second
      number can really slow down compilation of full-`constexpr` enums.
   7. You don't need `make_macros.py` anymore. It's not part of your build
      process and you can delete it.
 
-%% description = How to extend limits imposed by internal macros.
+---
+
+I am paying attention to feedback, so if more than a few users say that the
+default limit of 64 constants is too low, I will increase it to simplify
+everyone's command line. The current choice of 64 is basically an arbitrary
+guess, loosely informed by the following two facts about macro parameter limits:
+
+- The default limit in Boost.Preprocessor is 64. Though Better Enums does not
+  use Boost, I took this number as a guideline.
+- The next power of two, 128, is more than [the number Visual C++ supports][vc]
+  (127).
+
+[vc]: https://msdn.microsoft.com/en-us/library/ft39hh4x.aspx
+
+%% description =
+How to extend limits imposed by internal macros in Better Enums.

@@ -1,7 +1,6 @@
 ## Compiler support
 
-Better Enums aims to support all major compilers. It is known to definitely work
-on
+Better Enums aims to support all major compilers. It is known to work on:
 
   - clang 3.3 to 3.6
   - gcc 4.3 to 5.1
@@ -121,4 +120,6 @@ g++43 -std=c++0x -DBETTER_ENUMS_NO_CONSTEXPR
 g++43 -std=c++98
 ~~~
 
-%% description = Information about compiler support and feature detection.
+%% description =
+Better Enums compiler support, compatibility, feature detection, and automated
+testing.

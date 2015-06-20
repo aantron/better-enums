@@ -65,5 +65,5 @@ static_assert(max<EFLAGS>()._to_integral() < 32,
               "some bit indices are out of range");
 ~~~
 
-%% description = Finding the maximum value of a Better Enum constant for use in
-declaring bit set types.
+%% description = Finding the maximum value of a Better Enum for use in declaring
+statically-sized bit set types.
