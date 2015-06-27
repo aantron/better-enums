@@ -122,7 +122,6 @@ header {
     background: linear-gradient(#395E7E, #4A79A0);
     color: white;
     padding: 50px 0;
-    margin-bottom: 50px;
 }
 
 h1 {
@@ -226,12 +225,12 @@ footer {
 a {
     text-decoration: none;
     color: white;
-    background-color: red;
+    /*background-color: red;*/
 }
 
 a[href=""] {
     color: white !important;
-    background-color: red !important;
+    /*background-color: red !important;*/
 }
 
 a:hover {
@@ -240,6 +239,10 @@ a:hover {
 
 header a:hover {
     text-decoration: none;
+}
+
+.main {
+    margin-top: 50px;
 }
 
 .main a[href], footer a[href] {
@@ -544,4 +547,33 @@ h3.contents {
 .api .contents > li {
     margin-top: 0;
     padding-bottom: 1em;
+}
+
+.buttons-bar {
+    background-color: #f4f4f4;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    height: 20px;
+}
+
+.buttons-bar a img {
+    margin-right: 25px;
+}
+
+.buttons-bar iframe.gh-button {
+    width: 95px;
+}
+
+.buttons-bar .tweet-share,
+.buttons-bar .gh-button {
+    display: none;
+}
+
+.index .buttons-bar .tweet-share,
+.index .buttons-bar .gh-button {
+    display: initial;
+}
+
+.buttons-bar iframe.gh-watch {
+    width: 103px;
 }

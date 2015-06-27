@@ -52,8 +52,6 @@ interesting option, and it has [its own section][traits]. I have tried it, but
 the verbosity increase is much greater than the benefit of dropping underscores,
 so I chose not to do it.
 
-%% description = Better Enums design decisions and tradeoffs.
-
 ### Why does Better Enums use a macro at all?
 
 Better Enums needs to turn the names of declared constants into strings, and I
@@ -248,3 +246,5 @@ generation.
 [underlying]: ${prefix}demo/NonIntegralUnderlyingTypes.html
 [traits-branch]: $repo/tree/traits
 [traits-samples]: $repo/tree/traits/samples
+
+%% description = Better Enums design decisions and tradeoffs.

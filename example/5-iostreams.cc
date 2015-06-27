@@ -2,8 +2,9 @@
 
 // Stream operators
 //
-// These work almost as you'd expect. Just make sure you include iostream before
-// enum.h in any translation unit in which you intend to use the operators.
+// These work almost as you'd expect. First, make sure you include iostream
+// before enum.h in any translation unit in which you intend to use the
+// operators:
 
 #include <iostream>
 #include <enum.h>
@@ -25,5 +26,5 @@ int main()
 //
 // Channel     channel = Channel::Blue;
 // std::cin >> channel;    // Expects input such as "Green".
-//
+
 // Only char streams are supported for the time being.

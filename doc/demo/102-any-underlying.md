@@ -7,7 +7,15 @@ between `T` and an integral type of your choosing. This also works in $cxx98
 doesn't have to be `constexpr`. In $cxx98, everything involving `T` will simply
 be done by Better Enums at run time.
 
-Here's how to do it.
+This feature is semi-experimental. I am considering relaxing the requirements on
+`T` so that it doesn't have to be literal. I can use a `reinterpret_cast` to
+make a mapping automatically. This will make non-integral underlying types
+easier to use, but will also prevent usage at compile time, which unfortunately
+has structural consequences for the implementation of Better Enums, and
+additional semantic consequences for usage, even at run time.
+
+In the meantime, here's how to have a non-integral underlying type in the
+current version.
 
     #include <iostream>
     #include <enum.h>

@@ -61,23 +61,23 @@ Channel     c = <em>Channel::_from_integral(3)</em>;
   <em>reflective</em> enum types.
 </p>
 
-That means you can easily <u>convert enums to and from strings</u>,
-<u>validate</u> them, and <u>loop</u> over them. In $cxx11, you can do it all at
+That means you can easily convert enums to and from strings,
+validate them, and loop over them. In $cxx11, you can do it all at
 compile time.
 
 It's what built-in enums ought to support. Better Enums simply adds the missing
 features. And, it is based on the best known techniques, thoroughly tested,
 fast, portable, and documented exhaustively.
 
-All you have to do to use it is include <a $download><code>enum.h</code></a>.
+To use it, just include <code>enum.h</code>.
 
 Try it live online in
-[Wandbox](http://melpon.org/wandbox/permlink/pdlAAGoxnjqG6FRI), or begin the
+[Wandbox](http://melpon.org/wandbox/permlink/wICNzu2LW2vEgqzh), or begin the
 [tutorial](${prefix}tutorial/HelloWorld.html)!
 
 <div class="hack"></div>
 
-### Features
+### Highlights
 
 <ul class="blurbs">
   <li class="zero-mod-two zero-mod-three">
@@ -218,9 +218,8 @@ Try it live online in
 
 %% title = Clean reflective enums for C++
 
-%% description = Better Enums is a single header C++ library providing
-reflective enums with clean syntax. Better Enums can be converted to and from
-strings, be iterated, counted, and used at run time or for template and
-constexpr metaprogramming. Free and open source under the BSD license.
+%% description = Reflective enums in a single header file, with clean syntax.
+The enums can be converted to string, iterated, and counted, at run time or
+as part of metaprogramming. Free and open source under the BSD license.
 
 %% class = index

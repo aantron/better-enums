@@ -2,7 +2,7 @@
 
 // Hello, World!
 //
-// Download enum.h, then build this program with it:
+// Download enum.h, then compile this program:
 
 #include <iostream>
 #include "enum.h"

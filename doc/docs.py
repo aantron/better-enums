@@ -7,6 +7,8 @@ import string
 import transform
 import os
 import os.path
+import sys
+import urllib
 
 TEMPLATE_DIRECTORY = "template"
 OUTPUT_DIRECTORY   = "html"
@@ -82,6 +84,9 @@ def compose_page(relative_path, definitions):
 
     definitions["canonical"] = canonical
     definitions["prefix"] = prefix
+
+    definitions["quoted_url"] = urllib.quote(definitions["canonical"], "")
+    definitions["quoted_title"] = urllib.quote(definitions["title"], "")
 
     if "class" not in definitions:
         definitions["class"] = ""
@@ -202,6 +207,9 @@ def generate_sitemap():
 def main():
     load_templates()
 
+    if not (len(sys.argv) >= 2 and sys.argv[1] == "--web"):
+        templates["ga"] = ""
+
     remove_output_directory()
 
     process_threaded(TUTORIAL_DIRECTORY)
@@ -212,6 +220,8 @@ def main():
         compose_general_page(page)
 
     copy_static_file("better-enums.css")
+    copy_static_file("image/twsupport.png")
+    copy_static_file("image/tweet.png")
 
     generate_sitemap()
 

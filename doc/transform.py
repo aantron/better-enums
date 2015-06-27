@@ -50,7 +50,7 @@ def camel_case(text):
     components = re.split("[ -]+", text)
     components = map(lambda s: s.capitalize(), components)
     result = "".join(components)
-    result = filter(lambda c: c not in ",!:-$()", result)
+    result = filter(lambda c: c not in ",!:-$()?", result)
     return result
 
 class HtmlRenderer(mistune.Renderer):
