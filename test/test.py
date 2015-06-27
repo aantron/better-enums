@@ -245,15 +245,15 @@ def main():
     cxxtest_headers = " ".join(glob.glob(os.path.join("cxxtest", "*.h")))
     run("cxxtestgen --error-printer -o %s %s" %
         (CXXTEST_GENERATED, cxxtest_headers))
-    cygwin_fix_command = \
-        ("sed 's#\"/home#\"C:/cygwin/home#g' %s > $$$$ ; " + \
-        "mv $$$$ %s") % (CXXTEST_GENERATED, CXXTEST_GENERATED)
-    os.system(cygwin_fix_command)
 
     if re.search("Windows|CYGWIN", platform.system()) != None:
         full = windows_configurations
         default = windows_default
         windows = True
+        cygwin_fix_command = \
+            ("sed 's#\"/home#\"C:/cygwin/home#g' %s > $$$$ ; " + \
+            "mv $$$$ %s") % (CXXTEST_GENERATED, CXXTEST_GENERATED)
+        os.system(cygwin_fix_command)
     else:
         full = unix_configurations
         default = unix_default
