@@ -25,8 +25,7 @@
 #       if !defined(__EXCEPTIONS) || !__has_feature(cxx_exceptions)
 #           define BETTER_ENUMS__NO_EXCEPTIONS
 #       endif
-#       if (__clang_major__ > 2) || \
-           (__clang_major__ == 2) && (__clang_minor__ >= 9)
+#       if __cplusplus >= 201103L
 #           define BETTER_ENUMS__HAVE_LONG_LONG
 #           define BETTER_ENUMS__HAVE_NEW_CHAR_TYPES
 #       endif
