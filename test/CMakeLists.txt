@@ -1,0 +1,132 @@
+cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
+
+project("Better Enums Testing" CXX)
+
+
+# Detect compiler feature support.
+
+list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_constexpr CONSTEXPR_INDEX)
+if(CONSTEXPR_INDEX EQUAL -1)
+    set(SUPPORTS_CONSTEXPR 0)
+else()
+    set(SUPPORTS_CONSTEXPR 1)
+endif()
+
+list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_strong_enums ENUM_CLASS_INDEX)
+if(ENUM_CLASS_INDEX EQUAL -1)
+    set(SUPPORTS_ENUM_CLASS 0)
+else()
+    set(SUPPORTS_ENUM_CLASS 1)
+endif()
+
+# Not supporting C++11 usage on g++46 due to buggy constexpr.
+
+if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7)
+    set(SUPPORTS_CONSTEXPR 0)
+    set(SUPPORTS_ENUM_CLASS 0)
+endif()
+
+
+# Select standard based on the requested configuration. If the compiler does not
+# support the requested configuration, write a message and generate a no-op
+# build. This condition is not a failure.
+#
+# If no configuration is explicitly requested, default to compiling with no
+# special flags, with the latest standard supported by the compiler.
+
+set(DO_NOT_TEST_FILE "${CMAKE_BINARY_DIR}/do-not-test")
+
+if(CONFIGURATION STREQUAL CONSTEXPR)
+    if(SUPPORTS_CONSTEXPR)
+        set(CMAKE_CXX_STANDARD 11)
+    else()
+        message(WARNING "This compiler does not support constexpr")
+        file(WRITE "${DO_NOT_TEST_FILE}")
+        return()
+    endif()
+elseif(CONFIGURATION STREQUAL FULL_CONSTEXPR)
+    if(SUPPORTS_CONSTEXPR)
+        set(CMAKE_CXX_STANDARD 11)
+        add_definitions(-DBETTER_ENUMS_CONSTEXPR_TO_STRING)
+    else()
+        message(WARNING "This compiler does not support constexpr")
+        file(WRITE "${DO_NOT_TEST_FILE}")
+        return()
+    endif()
+elseif(CONFIGURATION STREQUAL STRICT_CONVERSION)
+    if(SUPPORTS_ENUM_CLASS)
+        set(CMAKE_CXX_STANDARD 11)
+        add_definitions(-DBETTER_ENUMS_STRICT_CONVERSION)
+    else()
+        message(WARNING "This compiler does not support enum class")
+        file(WRITE "${DO_NOT_TEST_FILE}")
+        return()
+    endif()
+elseif(CONFIGURATION STREQUAL CXX98)
+    set(CMAKE_CXX_STANDARD 98)
+else()
+    set(CMAKE_CXX_STANDARD 11)
+endif()
+
+
+# Basic tests.
+
+add_executable(cxxtest cxxtest/tests.cc)
+add_executable(link link/helper.cc link/main.cc)
+
+set(PERFORMANCE_TESTS
+    1-simple 2-include_empty 3-only_include_enum 4-declare_enums 5-iostream)
+
+foreach(TEST ${PERFORMANCE_TESTS})
+    add_executable(performance-${TEST} performance/${TEST}.cc)
+endforeach(TEST)
+
+
+# Select examples to build.
+
+set(EXAMPLES
+    1-hello-world 2-conversions 3-iterate 4-switch 5-iostreams 6-safety
+    7-representation 8-constexpr 101-special-values 102-any-underlying
+    103-bitset 104-quine)
+
+set(SKIPPED_FOR_CXX98
+    8-constexpr 101-special-values 102-any-underlying 103-bitset 104-quine)
+
+set(SKIPPED_FOR_STRICT_CONVERSION 4-switch 102-any-underlying)
+
+if(CONFIGURATION STREQUAL CXX98 OR NOT SUPPORTS_CONSTEXPR)
+    list(REMOVE_ITEM EXAMPLES ${SKIPPED_FOR_CXX98})
+endif()
+
+if(CONFIGURATION STREQUAL STRICT_CONVERSION)
+    list(REMOVE_ITEM EXAMPLES ${SKIPPED_FOR_STRICT_CONVERSION})
+endif()
+
+foreach(EXAMPLE ${EXAMPLES})
+    add_executable(example-${EXAMPLE} ../example/${EXAMPLE}.cc)
+endforeach(EXAMPLE)
+
+
+# Add compiler flags.
+
+include_directories(..)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
+    include(CheckCXXCompilerFlag)
+    macro(add_cxx_flag_if_supported FLAG)
+        string(REPLACE "=" "_equals_" ESCAPED ${FLAG})
+        string(REPLACE "+" "_plus_" ESCAPED ${ESCAPED})
+        check_cxx_compiler_flag("${FLAG}" HAVE_FLAG_${ESCAPED})
+
+        if(HAVE_FLAG_${ESCAPED})
+            add_definitions(${FLAG})
+        endif()
+    endmacro()
+
+    add_cxx_flag_if_supported("-Wpedantic")
+    add_cxx_flag_if_supported("-Wall")
+    add_cxx_flag_if_supported("-Wextra")
+    add_cxx_flag_if_supported("-Wno-variadic-macros")
+
+    add_definitions("-Werror")
+endif()
