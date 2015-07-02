@@ -21,6 +21,7 @@ define PATH_FIX
 @true
 endef
 SUFFIX :=
+CXXTESTGEN := cxxtestgen
 
 else
 
@@ -30,6 +31,7 @@ define PATH_FIX
 sed 's!include "/!include "C:/cygwin/!g' $1 > $$$$ && mv $$$$ $1
 endef
 SUFFIX := .exe
+CXXTESTGEN := python `which cxxtestgen | sed s!/cygdrive/c!c:/!`
 
 endif
 
@@ -149,7 +151,7 @@ all-ms :
 	make TITLE=vc2015 COMPILER="Visual Studio 14 2015" ms
 
 $(CXXTEST_GENERATED) : cxxtest/*.h
-	cxxtestgen --error-printer -o $@ $^
+	$(CXXTESTGEN) --error-printer -o $@ $^
 	$(call PATH_FIX,$@)
 
 .PHONY : clean

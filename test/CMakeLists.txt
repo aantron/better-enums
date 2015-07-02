@@ -72,7 +72,7 @@ endif()
 # Basic tests.
 
 add_executable(cxxtest cxxtest/tests.cc)
-add_executable(link link/helper.cc link/main.cc)
+add_executable(linking linking/helper.cc linking/main.cc)
 
 set(PERFORMANCE_TESTS
     1-simple 2-include_empty 3-only_include_enum 4-declare_enums 5-iostream)
