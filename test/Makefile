@@ -107,7 +107,7 @@ run-tests :
 		EXAMPLE=$$(basename $$FILE | sed s/\.exe$$// | sed s/^example-//) ; \
 		$$FILE | sed 's/\r$$//' | cmp - expect/$$EXAMPLE ; \
 		RESULT=$$? ; \
-		if (( $$RESULT )) ; \
+		if [ $$RESULT -ne 0 ] ; \
 		then \
 			echo \'$$FILE\' produced bad output ; \
 			exit $$RESULT ; \
