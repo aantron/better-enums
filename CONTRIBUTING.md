@@ -20,9 +20,10 @@ command tests it in all configurations that your compiler supports.
 
 Once your pull request is submitted, the [AppVeyor][appveyor] and
 [Travis][travis] web services will automatically test it on many versions of
-GCC, Clang, and Visual C++. This takes about an hour, unfortunately, but if I am
-around, I might download your patch and give you results much sooner. I have
-most of the compilers installed locally on test machines.
+GCC, Clang, and Visual C++. If you have more than one compiler installed
+locally, you can run either the `unix` or `ms` target in `test/Makefile` to test
+on a specific compiler. Open the `Makefile` file and find the targets for
+instructions.
 
 The `make` targets mentioned above depend on the following software:
 

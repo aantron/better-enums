@@ -10,17 +10,6 @@ shallow_clone: true
 
 os: Visual Studio 2015 RC
 
-environment:
-  matrix:
-    - title: vc2015
-      compiler: Visual Studio 14 2015
-    - title: vc2013
-      compiler: Visual Studio 12 2013
-    - title: vc2012
-      compiler: Visual Studio 11 2012
-    - title: vc2010
-      compiler: Visual Studio 10 2010
-
 install:
   - choco -y install cyg-get
   - cyg-get make
@@ -31,4 +20,7 @@ build_script:
   - set PATH=%PATH%;C:\projects\better-enums\cxxtest\bin;C:\tools\cygwin\bin
   - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
   - cd test
-  - make TITLE=%title% COMPILER="%compiler%" ms
+  - make TITLE=vc2015 COMPILER="Visual Studio 14 2015" ms
+  - make TITLE=vc2013 COMPILER="Visual Studio 12 2013" ms
+  - make TITLE=vc2012 COMPILER="Visual Studio 11 2012" ms
+  - make TITLE=vc2010 COMPILER="Visual Studio 10 2010" ms
