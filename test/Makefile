@@ -1,3 +1,8 @@
+# Run "make" for quick builds while developing.
+# Run "make default-all" before submitting a pull request.
+# Run "make clean" to clean up.
+# See CONTRIBUTING.md for full instructions.
+
 CXXTEST_GENERATED := cxxtest/tests.cc
 
 UNIX_MAKE_COMMAND := make

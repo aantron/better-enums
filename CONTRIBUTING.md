@@ -1,78 +1,64 @@
-# Working on Better Enums
+# Contributing to Better Enums
 
-All contributions are welcome &mdash; feedback, documentation review, and, of
-course, pull requests, or patch suggestions. A list of contributors is
-maintained in the CONTRIBUTORS file. I am grateful to everyone mentioned.
+All contributions are welcome: feedback, documentation changes, and, of course,
+pull requests and patch suggestions. A list of contributors is maintained in the
+`CONTRIBUTORS` file. I am grateful to everyone mentioned.
 
-## Working on code
+## Testing
 
-The development environment is in a fairly embryonic state. For example, the
-automatic test suite isn't that easy to set up to work with VC++. If you want to
-develop with VC++, *please* send me an email at
-[antonbachin@yahoo.com](mailto:antonbachin@yahoo.com) and I will get on
-improving it speedily. For now, the easiest way to develop on Windows is to
-install GCC or clang from [Cygwin][cygwin].
+I typically write small programs to play around with `enum.h`. The `scratch/`
+directory is in `.gitignore` for this purpose. Create `scratch/` and feel free
+to do anything you want in it. Once your change is nearly complete, you should
+run the automated test suite.
 
-If your change includes code, you will want to test it. Here is how to do this.
-Basic testing is currently only supported in a reasonable automated fashion on
-GCC-like C++11 compilers, i.e. GCC and clang. First, you will need:
+While still actively developing, run `make -C test` to do quick builds. Before
+submitting your pull request, run `make -C test default-all`. The first command
+tests your code on your system compiler in one configuration, and the second
+command tests it in all configurations that your compiler supports.
+*Configurations* refers to the optional features of Better Enums, such as
+`constexpr` string conversion and using an `enum class` for `switch` statements.
 
-  - A C++ compiler,
-  - Python 2.7,
-  - Make, and
-  - [CxxTest][cxxtest].
+Once your pull request is submitted, the [AppVeyor][appveyor] and
+[Travis][travis] web services will automatically test it on many versions of
+GCC, Clang, and Visual C++. This takes about an hour, unfortunately, but if I am
+around, I might download your patch and give you results much sooner. I have
+most of the compilers installed locally on test machines.
 
-If you also want to edit the documentation and re-generate the examples from the
-tutorial Markdown, you will need the [mistune][mistune] library for Python.
+The `make` targets mentioned above depend on the following software:
 
-Clone the repository and make your changes against `master`. To test, go to the
-`test/` directory and run `./test.py`. This script assumes that your GCC-like
-system compiler is symlinked as `c++` (generally true) and accepts `-std=c++11`.
-The script will build and run the unit test, compare the example programs'
-output against expected output, and do a test that links two translation units
-that declare the same enum. If the exit status is zero, your change probably
-didn't break anything.
+- Make
+- CMake
+- Python 2
+- [CxxTest][cxxtest]
 
-The reason I say *probably* is because the change actually needs to be tested on
-a large number of compilers and in various configurations, but I can't expect
-you to do that. Go ahead and submit your GitHub pull request, and I will do the
-testing myself and let you know if there are any problems, and probably how to
-fix them. If you don't want to go through the tedium of fixing them without
-being able to test yourself, then I hope you will allow me to take your patch,
-apply whatever changes are needed to get it to pass on all compilers, and then
-apply it to `master` and give you credit with `git commit --author`. I will let
-you know exactly what I'm doing to your code before I apply it, and you can, of
-course, request further changes or refuse.
+CxxTest's `bin/` directory has to be in `PATH` and the root `cxxtest/` directory
+has to be in whatever environment variable your system compiler uses to search
+for header files.
 
----
+On Windows, you also need [Cygwin][cygwin]. The directory containing
+`MSBuild.exe` must be in `PATH`.
 
-If you want to run only the samples, go to `example/` and run `make`. This makes
-the same assumptions by default: your system compiler is `c++` and it accepts
-`-std=c++11`.
+The programs in `example/` are generated from the Markdown files in
+`doc/tutorial/` and `doc/demo/`. If you have edited the Markdown files, you
+should run `make -C test examples` to update the example program sources.
 
----
+If you have created a new example program or compilation performance test, add
+it to `test/CMakeLists.txt`. Search for the name of an existing program, such as
+`1-hello-world`, and you should see where to add new ones.
 
-The rest of this file describes the testing process I will do, in case you want
-to try it yourself.
+[cygwin]:   https://www.cygwin.com
+[cxxtest]:  http://cxxtest.com
+[appveyor]: https://ci.appveyor.com/project/aantron/better-enums
+[travis]:   https://travis-ci.org/aantron/better-enums
 
-If you run `./test.py --all` on a Unix-like system, the script will assume that
-you have symlinks `clang33` to `clang36` and `gcc43` to `gcc51`. It will run the
-same tests as mentioned above, but on every one of those compilers.
+## Commits
 
-Similarly, if you run `./test.py --all` on a Windows system, it will assume that
-you have binaries `vc2013` and `vc2015`. These are actually scripts on my
-development machine that pass the right options to the different verisons of
-`cl.exe`. It's pretty crufty at this point.
+Please write descriptive commit messages that follow the 50/72 rule. I am likely
+to edit commit messages when merging into `master`. I will also squash multiple
+commits in most cases. If you prefer I not do either one, let me know, but then
+we will have to go back and forth on the exact contents of the pull request.
 
----
+## Generating the documentation
 
-The reason I am not working on improving this immediately is because I am
-looking into using some kind of third-party service. I really don't expect
-anyone to install multiple GCC-like and Microsoft compilers to work on the code.
-It would be nice if code changes could be submitted over the network by some
-script and tested on a remote machine, or machines, that have all of this
-installed and configured.
-
-[cygwin]:  https://www.cygwin.com
-[cxxtest]: http://cxxtest.com
-[mistune]: https://github.com/lepture/mistune
+To generate an offline copy of the documentation, run `make -C doc`. To view it,
+open `doc/html/index.html`.
