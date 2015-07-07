@@ -54,6 +54,9 @@
 #   ifndef _CPPUNWIND
 #       define BETTER_ENUMS__NO_EXCEPTIONS
 #   endif
+#   if _MSC_VER < 1600
+#       define BETTER_ENUMS__VC2008_WORKAROUNDS
+#   endif
 #endif
 
 #ifdef BETTER_ENUMS_CONSTEXPR
@@ -315,12 +318,27 @@ _map_index(const Element *array, optional<std::size_t> index)
     return index ? (CastTo)array[*index] : optional<CastTo>();
 }
 
+#ifdef BETTER_ENUMS__VC2008_WORKAROUNDS
+
+#define BETTER_ENUMS__OR_THROW                                                 \
+    if (!maybe)                                                                \
+        throw std::runtime_error(message);                                     \
+                                                                               \
+    return *maybe;
+
+#else
+
+#define BETTER_ENUMS__OR_THROW                                                 \
+    return maybe ? *maybe : throw std::runtime_error(message);
+
+#endif
+
 BETTER_ENUMS__IF_EXCEPTIONS(
 template <typename T>
 BETTER_ENUMS__CONSTEXPR static T _or_throw(optional<T> maybe,
                                            const char *message)
 {
-    return maybe ? *maybe : throw std::runtime_error(message);
+    BETTER_ENUMS__OR_THROW
 }
 )
 
@@ -609,6 +627,18 @@ constexpr const char    *_final_ ## index =                                    \
 
 #define BETTER_ENUMS__NS(EnumType)  better_enums::_data_ ## EnumType
 
+#ifdef BETTER_ENUMS__VC2008_WORKAROUNDS
+
+#define BETTER_ENUMS__COPY_CONSTRUCTOR(Enum)                                   \
+        BETTER_ENUMS__CONSTEXPR Enum(const Enum &other) :                      \
+            _value(other._value) { }
+
+#else
+
+#define BETTER_ENUMS__COPY_CONSTRUCTOR(Enum)
+
+#endif
+
 #define BETTER_ENUMS__TYPE(SetUnderlyingType, SwitchType, GenerateSwitchType,  \
                            GenerateStrings, ToStringConstexpr,                 \
                            DeclareInitialize, DefineInitialize, CallInitialize,\
@@ -636,6 +666,8 @@ class Enum {                                                                   \
                                                                                \
     BETTER_ENUMS__CONSTEXPR Enum(_enumerated value) :                          \
         _value(_mapping::from_integral(value)) { }                             \
+                                                                               \
+    BETTER_ENUMS__COPY_CONSTRUCTOR(Enum)                                       \
                                                                                \
     BETTER_ENUMS__CONSTEXPR operator SwitchType(Enum)() const                  \
     {                                                                          \
