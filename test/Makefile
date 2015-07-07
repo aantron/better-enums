@@ -101,8 +101,9 @@ one-configuration : $(CXXTEST_GENERATED)
 	mkdir -p build/$(TITLE)
 	cd build/$(TITLE) && cmake $(CMAKE_OPTIONS) ../.. && $(MAKE_COMMAND)
 	rm -rf build/$(TITLE)/bin
-	ln -s $(OUTPUT_DIRECTORY) build/$(TITLE)/bin
-	[ -f build/$(TITLE)/do-not-test ] || make BIN=build/$(TITLE)/bin run-tests
+	[ -f build/$(TITLE)/do-not-test ] || \
+		( ln -s $(OUTPUT_DIRECTORY) build/$(TITLE)/bin && \
+		make BIN=build/$(TITLE)/bin run-tests )
 
 .PHONY : run-tests
 run-tests :
@@ -138,22 +139,23 @@ all-configurations :
 .PHONY : all-unix
 all-unix :
 	make COMPILER=clang++36 unix
-	make COMPILER=clang++35 unix
-	make COMPILER=clang++34 unix
-	make COMPILER=clang++33 unix
 	make COMPILER=g++51 unix
-	make COMPILER=g++49 unix
-	make COMPILER=g++48 unix
-	make COMPILER=g++47 unix
 	make COMPILER=g++46 unix
-	make COMPILER=g++45 unix
-	make COMPILER=g++44 unix
+	make COMPILER=g++47 unix
 	make COMPILER=g++43 unix
+	make COMPILER=g++48 unix
+	make COMPILER=g++49 unix
+	make COMPILER=g++44 unix
+	make COMPILER=g++45 unix
+	make COMPILER=clang++33 unix
+	make COMPILER=clang++34 unix
+	make COMPILER=clang++35 unix
 
 .PHONY : all-ms
 all-ms :
-	make TITLE=vc2013 COMPILER="Visual Studio 12 2013" ms
 	make TITLE=vc2015 COMPILER="Visual Studio 14 2015" ms
+	make TITLE=vc2008 COMPILER="Visual Studio 9 2008" ms
+	make TITLE=vc2013 COMPILER="Visual Studio 12 2013" ms
 
 $(CXXTEST_GENERATED) : cxxtest/*.h
 	$(CXXTESTGEN) --error-printer -o $@ $^
