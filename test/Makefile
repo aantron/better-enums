@@ -49,20 +49,13 @@ DEFAULTS := \
 # regular C++11 or C++98 build (no constexpr to_string and no strict
 # conversions).
 .PHONY : default
-default :
+default : examples
 	make $(DEFAULTS) one-configuration
 
 # Builds all configurations with the system compiler.
 .PHONY : default-all
-default-all :
+default-all : examples
 	make $(DEFAULTS) all-configurations
-
-# Re-generates the examples from the Markdown, and then builds all
-# configurations with the system compiler. Should be done before a pull request,
-# but not practical for regular use because it touches dependencies and causes
-# full rebuilds.
-.PHONY : default-thorough
-default-thorough : examples default-all
 
 .PHONY : examples
 examples :
@@ -137,7 +130,7 @@ all-configurations :
 		one-configuration
 
 .PHONY : all-unix
-all-unix :
+all-unix : examples
 	make COMPILER=clang++36 unix
 	make COMPILER=g++51 unix
 	make COMPILER=g++46 unix
@@ -152,9 +145,11 @@ all-unix :
 	make COMPILER=clang++35 unix
 
 .PHONY : all-ms
-all-ms :
+all-ms : examples
 	make TITLE=vc2015 COMPILER="Visual Studio 14 2015" ms
 	make TITLE=vc2008 COMPILER="Visual Studio 9 2008" ms
+	make TITLE=vc2010 COMPILER="Visual Studio 10 2010" ms
+	make TITLE=vc2012 COMPILER="Visual Studio 11 2012" ms
 	make TITLE=vc2013 COMPILER="Visual Studio 12 2013" ms
 
 $(CXXTEST_GENERATED) : cxxtest/*.h
