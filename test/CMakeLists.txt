@@ -89,10 +89,11 @@ endforeach(TEST)
 set(EXAMPLES
     1-hello-world 2-conversions 3-iterate 4-switch 5-iostreams 6-safety
     7-representation 8-constexpr 101-special-values 102-any-underlying
-    103-bitset 104-quine)
+    103-bitset 104-quine 105-c++17-reflection)
 
 set(SKIPPED_FOR_CXX98
-    8-constexpr 101-special-values 102-any-underlying 103-bitset 104-quine)
+    8-constexpr 101-special-values 102-any-underlying 103-bitset 104-quine
+    105-c++17-reflection)
 
 set(SKIPPED_FOR_STRICT_CONVERSION 4-switch 102-any-underlying)
 
@@ -112,6 +113,7 @@ endforeach(EXAMPLE)
 # Add compiler flags.
 
 include_directories(..)
+include_directories(../extra)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
     include(CheckCXXCompilerFlag)
