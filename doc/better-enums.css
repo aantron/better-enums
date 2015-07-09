@@ -577,3 +577,7 @@ h3.contents {
 .buttons-bar iframe.gh-watch {
     width: 103px;
 }
+
+.external {
+    font-size: 75%;
+}

@@ -202,6 +202,11 @@ Try it live online in
       <li>
         <a href="${prefix}DesignDecisionsFAQ.html">Design decisions FAQ</a>
       </li>
+      <li>
+        <a href="http://www.codeproject.com/Articles/1002895/Clean-Reflective-Enums-Enum-to-String-with-Nice-Sy">
+          Implementation <span class="external">[CodeProject]</span>
+        </a>
+      </li>
     </ul>
   </li>
 

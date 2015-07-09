@@ -25,6 +25,10 @@ locally, you can run either the `unix` or `ms` target in `test/Makefile` to test
 on a specific compiler. Open the `Makefile` file and find the targets for
 instructions.
 
+If your pull request does not include any changes to the code (for example, you
+have changed only documentation), add the text `[ci skip]` to the commit message
+to prevent AppVeyor and Travis from testing the commit.
+
 The `make` targets mentioned above depend on the following software:
 
 - Make
@@ -58,6 +62,11 @@ Please write descriptive commit messages that follow the 50/72 rule. I am likely
 to edit commit messages when merging into `master`. I will also squash multiple
 commits in most cases. If you prefer I not do either one, let me know, but then
 we will have to go back and forth on the exact contents of the pull request.
+
+I am maintaining the `master` branch in such a way that every commit passes its
+tests, i.e. `master` is always stable. Every commit going into `master` is first
+fully tested in its pull request branch, or in a temporary staging branch, if
+necessary.
 
 ## Generating the documentation
 

@@ -8,9 +8,9 @@ html :
 
 .PHONY : publish
 publish : prepare
-	cp -r html ../doc-publish
-	git commit --amend
-	git push -f
+	cp -r html/* ../doc-publish
+	cd ../doc-publish && git add . && git commit --amend --reset-author && \
+		git push -f
 
 .PHONY : prepare
 prepare : examples web

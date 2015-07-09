@@ -1,7 +1,7 @@
 # Run "make" for quick builds while developing.
 # Run "make default-all" before submitting a pull request.
 # Run "make clean" to clean up.
-# See CONTRIBUTING.md for full instructions.
+# See doc/CONTRIBUTING.md for full instructions.
 
 CXXTEST_GENERATED := cxxtest/tests.cc
 

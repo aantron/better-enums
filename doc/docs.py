@@ -140,7 +140,9 @@ def compose_general_page(relative_path):
     write_page(relative_path, text)
 
 def list_general_pages():
-    return glob.glob("*.md")
+    return filter(
+        lambda s: not os.path.splitext(os.path.basename(s))[0].isupper(),
+        glob.glob("*.md"))
 
 def process_threaded(directory):
     sources = glob.glob(os.path.join(directory, "*.md"))

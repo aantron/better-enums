@@ -196,6 +196,9 @@ However, it also introduces some difficulties.
 - Scoped constants are lost for $cxx98 unless Better Enums again wraps them in a
   generated type, though it will be more lightweight than a full Better Enum of
   the non-traits approach.
+- Traits types must be specialized in either the same namespace scope they are
+  declared in, or in an enclosing scope. This makes it impossible to declare an
+  enum and specialize traits for it in a user's custom namespace.
 - Traits types are not intuitive for some $cxx users, which would present a
   barrier to usage.
 
@@ -238,6 +241,32 @@ however, if I measured a significant improvement in running time from better
 data structures &mdash; something I haven't gotten to yet because there doesn't
 seem to be a data structure to measure that is not disqualified by the speed of
 generation.
+
+### Why not use indices for the representation?
+
+Representing Better Enum values by their indices in the declaration list seems
+like a tempting solution for the problem of having multiple constants with the
+same numeric value. It also speeds up some operations. For example, if a Better
+Enum is simply an index, then getting its string representation is simply
+indexing an array, rather than some kind of data structure lookup.
+
+    // Representations 0, 1, 2, 3 instead of 1, 2, 3, 1.
+    <em>ENUM(Kind, int, A = 1, B, C, D = A)</em>
+
+Choosing this approach has serious drawbacks.
+
+- The data structure lookup has simply been moved to another place. It now takes
+  time to convert from a literal `Kind::D` to a Better Enum.
+- It is still impossible to disambiguate between the literals `Kind::D` and
+  `Kind::A` (1 and 1). Only the Better Enums objects of type `Kind` that
+  represent `D` and `A` are different from each other (0 and 3). This is not
+  only a technical problem, but is also quite unintuitive.
+- Treating a Better Enum represented by an index as untyped memory produces
+  surprising results. This makes Better Enums much less useful with functions
+  such as `fwrite`. Worse, Better Enums become sensitive to declaration order
+  even when initializers are given explicitly. Using indices for the
+  representation makes it difficult to maintain compatibility with external
+  protocols and file formats.
 
 [contact]: ${prefix}Contact.html
 [traits]: #Traits
