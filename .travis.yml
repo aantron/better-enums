@@ -1,6 +1,7 @@
 language: cpp
 
 env:
+  - COMPILER="clang++-3.6"
   - COMPILER="g++-5"
   - COMPILER="g++-4.6"
   - COMPILER="g++-4.7"
@@ -10,6 +11,7 @@ env:
   - COMPILER="g++-4.5"
   - COMPILER="clang++-3.3"
   - COMPILER="clang++-3.4"
+  - COMPILER="clang++-3.5"
 
 before_script:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
