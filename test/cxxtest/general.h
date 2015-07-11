@@ -297,3 +297,10 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS(strcmp(*test::Namespaced::_names().begin(), "One"), 0);
     }
 };
+
+
+
+ENUM(InternalNameCollisions, int,
+     EnumClassForSwitchStatements, PutNamesInThisScopeAlso,
+     force_initialization, value_array, raw_names, name_storage, name_array,
+     initialized, the_raw_names, the_name_array)
