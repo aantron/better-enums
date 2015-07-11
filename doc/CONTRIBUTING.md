@@ -4,6 +4,26 @@ All contributions are welcome: feedback, documentation changes, and, of course,
 pull requests and patch suggestions. A list of contributors is maintained in the
 `CONTRIBUTORS` file. I am grateful to everyone mentioned.
 
+## Some major outstanding issues
+
+- Better Enums currently uses linear scans for lookup, so it could really
+  benefit from a lookup data structure that is really fast to generate at
+  compile time. All the sorts and other approaches I have tried so far,
+  including MPL, Meta, and my own, have been 10-50 times too slow for practical
+  use.
+- Alternatively, if there is a method to detect whether a given function is
+  running at compile or run time, Better Enums could use linear scans during
+  compilation, then do a sort at program initialization, and then use fast
+  lookups.
+- It would be nice if name trimming was always `constexpr`. Right now, this is
+  not the default, because it makes compilation of each Better Enum about four
+  times slower. Better Enums needs a fast way to take a `const char*`, chop off
+  any initializers, and return the new `const char*`.
+- I would like to enable more warning flags besides just
+  `-Wall -Wextra -pedantic`, but CxxTest triggers the extra warnings.
+  `CMakeLists.txt` should probably be modified to add the extra warnings to all
+  targets that are not CxxTest tests.
+
 ## Testing
 
 I typically write small programs to play around with `enum.h`. The `scratch/`

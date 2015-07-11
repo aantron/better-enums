@@ -7,7 +7,8 @@ file.
 
 [sample]: https://raw.githubusercontent.com/aantron/better-enums/0.10.1/doc/image/sample.gif
 
-[![Try online][wandbox-img]][wandbox] [![0.10.1][version]][releases]
+[![Try online][wandbox-img]][wandbox] [![version 0.10.1][version]][releases]
+[![BSD license][license-img]][license]
 
 In C++11, *everything* can be used at compile time. You can convert your enums,
 loop over them, [find their max][max],
@@ -24,13 +25,14 @@ See the [project page][project] for full documentation.
 [max]:      http://aantron.github.io/better-enums/demo/BitSets.html
 [enforce]:  http://aantron.github.io/better-enums/demo/SpecialValues.html
 [project]:  http://aantron.github.io/better-enums
-[wandbox]:  http://melpon.org/wandbox/permlink/pdlAAGoxnjqG6FRI
+[wandbox]:  http://melpon.org/wandbox/permlink/5N9QZYdA5LqWy26R
 [tutorial]: http://aantron.github.io/better-enums#Tutorial
 [api]:      http://aantron.github.io/better-enums/ApiReference.html
 [releases]: https://github.com/aantron/better-enums/releases
 
 [wandbox-img]: https://img.shields.io/badge/try%20it-online-blue.svg
 [version]:     https://img.shields.io/badge/version-0.10.1-lightgrey.svg
+[license-img]: https://img.shields.io/badge/license-BSD-lightgrey.svg
 
 ## Installation
 
@@ -43,7 +45,7 @@ enums that are missing from standard C++.
 
 - No dependencies and no external build tools. Uses only standard C++, though,
   for C++98, variadic macro support is required.
-- Supported and tested on clang, gcc, and msvc.
+- Supported and tested on [clang, gcc, and msvc][testing].
 - Fast compilation. You have to declare a few dozen enums to slow down your
   compiler as much as [just including `iostream` does][performance].
 - Use any initializers and sparse ranges, just like with a built-in enum.
@@ -53,8 +55,9 @@ enums that are missing from standard C++.
   minimal freestanding environments.
 - The underlying type [does not have to be an integral type][underlying].
 
+[testing]:     http://aantron.github.io/better-enums/CompilerSupport.html
 [performance]: http://aantron.github.io/better-enums/Performance.html
-[underlying]: http://aantron.github.io/better-enums/demo/NonIntegralUnderlyingTypes.html
+[underlying]:  http://aantron.github.io/better-enums/demo/NonIntegralUnderlyingTypes.html
 
 ## Limitations
 
