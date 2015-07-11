@@ -1,17 +1,15 @@
 language: cpp
 
 env:
-  - COMPILER="clang++-3.6" PACKAGE="clang-3.6"
-  - COMPILER="g++-5" PACKAGE="g++-5"
-  - COMPILER="g++-4.6" PACKAGE="g++-4.6"
-  - COMPILER="g++-4.7" PACKAGE="g++-4.7"
-  - COMPILER="g++-4.4" PACKAGE="g++-4.4"
-  - COMPILER="g++-4.8" PACKAGE="g++-4.8"
-  - COMPILER="g++-4.9" PACKAGE="g++-4.9"
-  - COMPILER="g++-4.5" PACKAGE="g++-4.5"
-  - COMPILER="clang++-3.3" PACKAGE="clang-3.3"
-  - COMPILER="clang++-3.4" PACKAGE="clang-3.4"
-  - COMPILER="clang++-3.5" PACKAGE="clang-3.5"
+  - COMPILER="g++-5"
+  - COMPILER="g++-4.6"
+  - COMPILER="g++-4.7"
+  - COMPILER="g++-4.4"
+  - COMPILER="g++-4.8"
+  - COMPILER="g++-4.9"
+  - COMPILER="g++-4.5"
+  - COMPILER="clang++-3.3"
+  - COMPILER="clang++-3.4"
 
 before_script:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
