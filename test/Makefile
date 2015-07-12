@@ -125,6 +125,9 @@ all-configurations :
 	make TITLE=$(TITLE)-enum-class \
 		CMAKE_OPTIONS="$(CMAKE_OPTIONS) -DCONFIGURATION=STRICT_CONVERSION" \
 		one-configuration
+	make TITLE=$(TITLE)-c++14 \
+		CMAKE_OPTIONS="$(CMAKE_OPTIONS) -DCONFIGURATION=CXX14" \
+		one-configuration
 	make TITLE=$(TITLE)-c++98 \
 		CMAKE_OPTIONS="$(CMAKE_OPTIONS) -DCONFIGURATION=CXX98" \
 		one-configuration

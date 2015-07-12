@@ -14,6 +14,14 @@ else()
     set(SUPPORTS_CONSTEXPR 1)
 endif()
 
+list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_relaxed_constexpr
+     RELAXED_CONSTEXPR_INDEX)
+if(RELAXED_CONSTEXPR_INDEX EQUAL -1)
+    set(SUPPORTS_RELAXED_CONSTEXPR 0)
+else()
+    set(SUPPORTS_RELAXED_CONSTEXPR 1)
+endif()
+
 list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_strong_enums ENUM_CLASS_INDEX)
 if(ENUM_CLASS_INDEX EQUAL -1)
     set(SUPPORTS_ENUM_CLASS 0)
@@ -26,6 +34,14 @@ endif()
 if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.7)
     set(SUPPORTS_CONSTEXPR 0)
     set(SUPPORTS_ENUM_CLASS 0)
+endif()
+
+# Not supporting C++14 testing on clang++34 due to buggy library installed in
+# Travis Ubuntu image.
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL Clang
+   AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.5)
+    set(SUPPORTS_RELAXED_CONSTEXPR 0)
 endif()
 
 
@@ -66,6 +82,14 @@ elseif(CONFIGURATION STREQUAL STRICT_CONVERSION)
     endif()
 elseif(CONFIGURATION STREQUAL CXX98)
     set(CMAKE_CXX_STANDARD 98)
+elseif(CONFIGURATION STREQUAL CXX14)
+    if(SUPPORTS_RELAXED_CONSTEXPR)
+        set(CMAKE_CXX_STANDARD 14)
+    else()
+        message(WARNING "This compiler does not support relaxed constexpr")
+        file(WRITE "${DO_NOT_TEST_FILE}")
+        return()
+    endif()
 else()
     set(CMAKE_CXX_STANDARD 11)
 endif()
@@ -87,12 +111,12 @@ endforeach(TEST)
 # Select examples to build.
 
 set(EXAMPLES
-    1-hello-world 2-conversions 3-iterate 4-switch 5-iostreams 6-safety
-    7-representation 8-constexpr 101-special-values 102-any-underlying
+    1-hello-world 2-conversions 3-iterate 4-switch 6-iostreams 7-safety
+    8-representation 9-constexpr 101-special-values 102-any-underlying
     103-bitset 104-quine 105-c++17-reflection)
 
 set(SKIPPED_FOR_CXX98
-    8-constexpr 101-special-values 102-any-underlying 103-bitset 104-quine
+    5-map 9-constexpr 101-special-values 102-any-underlying 103-bitset 104-quine
     105-c++17-reflection)
 
 set(SKIPPED_FOR_STRICT_CONVERSION 4-switch 102-any-underlying)
@@ -103,6 +127,10 @@ endif()
 
 if(CONFIGURATION STREQUAL STRICT_CONVERSION)
     list(REMOVE_ITEM EXAMPLES ${SKIPPED_FOR_STRICT_CONVERSION})
+endif()
+
+if(CONFIGURATION STREQUAL CXX14)
+    set(EXAMPLES 5-map)
 endif()
 
 foreach(EXAMPLE ${EXAMPLES})

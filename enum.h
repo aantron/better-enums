@@ -1190,6 +1190,69 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
 
 namespace better_enums {
 
+// Maps.
+
+template <typename T>
+struct map_compare {
+    BETTER_ENUMS__CONSTEXPR static bool less(const T& a, const T& b)
+        { return a < b; }
+};
+
+template <>
+struct map_compare<const char*> {
+    BETTER_ENUMS__CONSTEXPR static bool less(const char *a, const char *b)
+        { return less_loop(a, b); }
+
+  private:
+    BETTER_ENUMS__CONSTEXPR static bool
+    less_loop(const char *a, const char *b, size_t index = 0)
+    {
+        return
+            a[index] != b[index] ? a[index] < b[index] :
+            a[index] == '\0' ? false :
+            less_loop(a, b, index + 1);
+    }
+};
+
+template <typename Enum, typename T, typename Compare = map_compare<T> >
+struct map {
+    typedef T (*function)(Enum);
+
+    BETTER_ENUMS__CONSTEXPR explicit map(function f) : _f(f) { }
+
+    BETTER_ENUMS__CONSTEXPR T from_enum(Enum value) const { return _f(value); }
+    BETTER_ENUMS__CONSTEXPR T operator [](Enum value) const
+        { return _f(value); }
+
+    BETTER_ENUMS__CONSTEXPR Enum to_enum(T value) const
+    {
+        return
+            _or_throw(to_enum_nothrow(value), "map::to_enum: invalid argument");
+    }
+
+    BETTER_ENUMS__CONSTEXPR optional<Enum>
+    to_enum_nothrow(T value, size_t index = 0) const
+    {
+        return
+            index >= Enum::_size() ? optional<Enum>() :
+            Compare::less(_f(Enum::_values()[index]), value) ||
+            Compare::less(value, _f(Enum::_values()[index])) ?
+                to_enum_nothrow(value, index + 1) :
+            Enum::_values()[index];
+    }
+
+  private:
+    const function      _f;
+};
+
+template <typename Enum, typename T>
+BETTER_ENUMS__CONSTEXPR map<Enum, T> make_map(T (*f)(Enum))
+{
+    return map<Enum, T>(f);
+}
+
+
+
 // Stream I/O operators.
 
 // This template is used as a sort of enable_if for SFINAE. It should be
