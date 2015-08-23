@@ -132,7 +132,7 @@ int main()
 // U is for declarations only.
 //
 // Constructors in initializers require C++11. Also, g++ doesn't support this
-// before 5.1.
+// before g++5.
 //
 // Letting the compiler enumerate your type
 //

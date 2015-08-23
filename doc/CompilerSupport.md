@@ -3,7 +3,7 @@
 Better Enums aims to support all major compilers. It is known to work on:
 
   - clang 3.3 to 3.6
-  - gcc 4.3 to 5.1
+  - gcc 4.3 to 5.2
   - Visual C++ 2008 to 2015RC.
 
 The library can be used with any compiler that supports either $cxx11, or $cxx98
@@ -91,10 +91,10 @@ clang++34 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
 clang++34 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
 clang++34 -std=c++98
 clang++33 -std=c++98
-g++51 -std=c++11
-g++51 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
-g++51 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
-g++51 -std=c++98
+g++52 -std=c++11
+g++52 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+g++52 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+g++52 -std=c++98
 g++49 -std=c++11
 g++49 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
 g++49 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING

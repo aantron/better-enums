@@ -40,7 +40,7 @@ constexpr const char* describe(Channel channel)
         case Channel::Blue:  return "the blue channel";
     }
 
-    return "for gcc 5.1";
+    return "needed for gcc 5";
 }
 
 // Here is the map. The actual type is better_enums::map<Channel, const char*>.

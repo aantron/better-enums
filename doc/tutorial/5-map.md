@@ -38,7 +38,7 @@ We will create a map from this function:
             case <em>Channel::Blue</em>:  return <em>"the blue channel"</em>;
         }
 
-        return "needed for gcc 5.1";
+        return "needed for gcc 5";
     }
 
 Here is the map. The actual type is `better_enums::map<Channel, const char*>`.

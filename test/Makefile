@@ -135,7 +135,7 @@ all-configurations :
 .PHONY : all-unix
 all-unix : examples
 	make COMPILER=clang++36 unix
-	make COMPILER=g++51 unix
+	make COMPILER=g++52 unix
 	make COMPILER=g++46 unix
 	make COMPILER=g++47 unix
 	make COMPILER=g++43 unix
