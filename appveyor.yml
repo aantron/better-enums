@@ -8,20 +8,26 @@ branches:
 skip_tags : true
 shallow_clone: true
 
-os: Visual Studio 2015 RC
+os: Visual Studio 2015
+
+environment:
+  matrix:
+    - TITLE: vc2015
+      COMPILER: Visual Studio 14 2015
+    - TITLE: vc2008
+      COMPILER: Visual Studio 9 2008
+    - TITLE: vc2010
+      COMPILER: Visual Studio 10 2010
+    - TITLE: vc2012
+      COMPILER: Visual Studio 11 2012
+    - TITLE: vc2013
+      COMPILER: Visual Studio 12 2013
 
 install:
-  - choco -y install cyg-get
-  - cyg-get make
   - git clone --depth 1 https://github.com/CxxTest/cxxtest.git
 
 build_script:
   - set CL=/I C:\projects\better-enums\cxxtest
-  - set PATH=%PATH%;C:\projects\better-enums\cxxtest\bin;C:\tools\cygwin\bin
-  - set PATH=C:\Program Files (x86)\MSBuild\14.0\Bin;%PATH%
+  - set PATH=%PATH%;C:\projects\better-enums\cxxtest\bin;C:\cygwin\bin
   - cd test
-  - make TITLE=vc2015 COMPILER="Visual Studio 14 2015" ms
-  - make TITLE=vc2008 COMPILER="Visual Studio 9 2008" ms
-  - make TITLE=vc2010 COMPILER="Visual Studio 10 2010" ms
-  - make TITLE=vc2012 COMPILER="Visual Studio 11 2012" ms
-  - make TITLE=vc2013 COMPILER="Visual Studio 12 2013" ms
+  - make ms
