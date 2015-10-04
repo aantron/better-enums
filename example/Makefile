@@ -3,7 +3,7 @@ CXX := c++
 endif
 
 ifndef CXXFLAGS
-CXXFLAGS := -std=c++11 -Wall -I .. -o
+CXXFLAGS := -std=c++11 -Wall -I .. -I../extra -o
 endif
 
 SOURCES := $(wildcard *.cc)
