@@ -12,15 +12,15 @@
 
 
 
-ENUM(Channel, short, Red, Green, Blue)
-ENUM(Depth, short, HighColor = 40, TrueColor = 20)
-ENUM(Compression, short, None, Huffman, Default = Huffman)
+BETTER_ENUM(Channel, short, Red, Green, Blue)
+BETTER_ENUM(Depth, short, HighColor = 40, TrueColor = 20)
+BETTER_ENUM(Compression, short, None, Huffman, Default = Huffman)
 
 
 
 namespace test {
 
-ENUM(Namespaced, short, One, Two)
+BETTER_ENUM(Namespaced, short, One, Two)
 
 }
 
@@ -300,7 +300,7 @@ class EnumTests : public CxxTest::TestSuite {
 
 
 
-ENUM(InternalNameCollisions, int,
-     EnumClassForSwitchStatements, PutNamesInThisScopeAlso,
-     force_initialization, value_array, raw_names, name_storage, name_array,
-     initialized, the_raw_names, the_name_array)
+BETTER_ENUM(InternalNameCollisions, int,
+            EnumClassForSwitchStatements, PutNamesInThisScopeAlso,
+            force_initialization, value_array, raw_names, name_storage,
+            name_array, initialized, the_raw_names, the_name_array)

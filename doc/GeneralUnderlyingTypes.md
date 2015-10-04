@@ -19,8 +19,9 @@ Doing this enables the following usage:
 
 
     // The enum.
-    <em>ENUM(Color, html_color,
-         darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954)</em>
+    <em>BETTER_ENUM(Color, html_color,
+                darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+                slimegreen = 0xbce954)</em>
 
 
 
@@ -72,9 +73,10 @@ chosen integral type:
     };</em>
 
     // The enum.
-    <em>ENUM(Color, html_color,
-         darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954,
-         celeste = html_color(0x50, 0xeb, 0xec))</em>
+    <em>BETTER_ENUM(Color, html_color,
+                darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+                slimegreen = 0xbce954,
+                celeste = html_color(0x50, 0xeb, 0xec))</em>
 
 This is not possible at all in $cxx98, however.
 
@@ -84,7 +86,8 @@ You don't have to use initializers. For example, as long as your example type
 `file_descriptor` knows how to deal with the values, you can have the compiler
 generate them in sequence:
 
-    <em>ENUM(FD, file_descriptor, STDIN, STDOUT, STDERR, SomePipeYourDaemonHas, ...)</em>
+    <em>BETTER_ENUM(FD, file_descriptor,
+                        STDIN, STDOUT, STDERR, SomePipeYourDaemonHas, ...)</em>
 
 SAMPLE
 

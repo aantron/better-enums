@@ -44,10 +44,10 @@ constexpr Enum invalid_impl<Enum>() { return Enum::Value; }
 
 // Now, we can declare enums like these:
 
-ENUM(Channel, int, Red, Green, Blue, Invalid)
+BETTER_ENUM(Channel, int, Red, Green, Blue, Invalid)
 // Invalid is the invalid value by default
 
-ENUM(Compression, int, Undefined, None, Huffman)
+BETTER_ENUM(Compression, int, Undefined, None, Huffman)
 OVERRIDE_INVALID(Compression, Undefined)
 
 // and use them:
@@ -98,7 +98,7 @@ static_assert(default_impl<Compression>() == +Compression::None, "");
 
 // And, if you do
 
-ENUM(Answer, int, Yes, No, Invalid)
+BETTER_ENUM(Answer, int, Yes, No, Invalid)
 // OVERRIDE_DEFAULT(Answer, Invalid)
 
 // you will get a helpful compile-time error saying Answer: default cannot equal

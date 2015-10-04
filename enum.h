@@ -1146,7 +1146,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
 
 // Top-level macros.
 
-#define ENUM(Enum, Underlying, ...)                                            \
+#define BETTER_ENUM(Enum, Underlying, ...)                                     \
     BETTER_ENUMS__ID(BETTER_ENUMS__TYPE(                                       \
         BETTER_ENUMS__CXX11_UNDERLYING_TYPE,                                   \
         BETTER_ENUMS__DEFAULT_SWITCH_TYPE,                                     \
@@ -1172,7 +1172,7 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
 
 #else
 
-#define ENUM(Enum, Underlying, ...)                                            \
+#define BETTER_ENUM(Enum, Underlying, ...)                                     \
     BETTER_ENUMS__ID(BETTER_ENUMS__TYPE(                                       \
         BETTER_ENUMS__CXX98_UNDERLYING_TYPE,                                   \
         BETTER_ENUMS__DEFAULT_SWITCH_TYPE,                                     \

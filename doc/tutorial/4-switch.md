@@ -5,7 +5,7 @@ A Better Enum can be used directly in a `switch` statement:
     #include <iostream>
     <em>#include <enum.h></em>
 
-    <em>ENUM(Channel, int, Red, Green, Blue)</em>
+    <em>BETTER_ENUM(Channel, int, Red, Green, Blue)</em>
 
     int main()
     {

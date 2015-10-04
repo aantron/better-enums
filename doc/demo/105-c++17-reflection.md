@@ -48,8 +48,8 @@ The optional Better Enums header file [`extra/better-enums/n4428.h`][header]
 implements this interface, though with two necessary differences.
 
 1. The interface is only available for Better Enums, i.e. enums declared through
-   the `ENUM` macro. This is because the macro is what generates the information
-   necessary for reflection.
+   the `BETTER_ENUM` macro. This is because the macro is what generates the
+   information necessary for reflection.
 2. The type of `identifier` is `const char*`, not the ${cxx17} proposed
    `string_literal`.
 
@@ -70,7 +70,7 @@ So, with that out of the way, we can do a little test. Let's assume that
 
 Let's declare an enum:
 
-    <em>ENUM</em>(<em>Channel</em>, <em>char</em>, <em>Red</em> = <em>1</em>, <em>Green</em>, <em>Blue</em>)
+    <em>BETTER_ENUM</em>(<em>Channel</em>, <em>char</em>, <em>Red</em> = <em>1</em>, <em>Green</em>, <em>Blue</em>)
 
 ...and try N4428:
 
@@ -120,9 +120,10 @@ The reason for the `#define` in the code above is that there is one quirk:
 the interface above is available only for Better Enums for which
 [compile-time name trimming][slow-enum] is enabled, i.e. those declared when
 `BETTER_ENUMS_CONSTEXPR_TO_STRING` was defined, or declared with the `SLOW_ENUM`
-variant of `ENUM`. As mentioned on the linked page, the reason compile-time name
-trimming is not the default is that, while still pretty fast, it is four times
-slower than program-startup-time name trimming. The latter is the default.
+variant of `BETTER_ENUM`. As mentioned on the linked page, the reason
+compile-time name trimming is not the default is that, while still pretty fast,
+it is four times slower than program-startup-time name trimming. The latter is
+the default.
 
 Despite the above, a variation on the interface is available for enums without
 compile-time name trimming:
@@ -158,7 +159,7 @@ function, and you have to access it through `get_alt<I>`.
 
 ~~~comment
 // Without compile-time name trimming.
-<em>ENUM(Depth, int, HighColor, TrueColor)
+<em>BETTER_ENUM(Depth, int, HighColor, TrueColor)
 
 int main()
 {

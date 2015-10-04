@@ -1,8 +1,8 @@
 ## Extending limits
 
-The `ENUM` macro makes heavy use of the preprocessor, and some of the internal
-macros have size limits. There are two: on the number of constants you can
-declare, and on the maximum length of a constant name under very specific
+The `BETTER_ENUM` macro makes heavy use of the preprocessor, and some of the
+internal macros have size limits. There are two: on the number of constants you
+can declare, and on the maximum length of a constant name under very specific
 conditions. If you run into either one, you can extend the limit by following
 the instructions on this page.
 

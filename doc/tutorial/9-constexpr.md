@@ -15,7 +15,7 @@ get an idea of what can be done. Here, you will see the basics.
 
     <em>#include <enum.h></em>
 
-    <em>ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Red</em> = <em>1</em>, <em>Green</em> = <em>2</em>, <em>Blue</em> = <em>3</em>)
+    <em>BETTER_ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Red</em> = <em>1</em>, <em>Green</em> = <em>2</em>, <em>Blue</em> = <em>3</em>)
 
     <em>constexpr</em> Channel      channel = <em>Channel::_from_integral(2)</em>;
     <em>constexpr</em> int          value = <em>channel._to_integral()</em>;

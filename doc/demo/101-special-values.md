@@ -46,10 +46,10 @@ A macro allows us to override the invalid value by specializing the template:
 
 Now, we can declare enums like these:
 
-    ENUM(<em>Channel</em>, int, Red, Green, Blue, <em>Invalid</em>)
+    BETTER_ENUM(<em>Channel</em>, int, Red, Green, Blue, <em>Invalid</em>)
     // Invalid is the invalid value by default
 
-    ENUM(<em>Compression</em>, int, <em>Undefined</em>, None, Huffman)
+    BETTER_ENUM(<em>Compression</em>, int, <em>Undefined</em>, None, Huffman)
     OVERRIDE_INVALID(<em>Compression</em>, <em>Undefined</em>)
 
 and use them:
@@ -100,7 +100,7 @@ And, as before, the usage:
 
 And, if you do
 
-    ENUM(<em>Answer</em>, int, Yes, No, <em>Invalid</em>)
+    BETTER_ENUM(<em>Answer</em>, int, Yes, No, <em>Invalid</em>)
     // OVERRIDE_DEFAULT(<em>Answer</em>, <em>Invalid</em>)
 
 you will get a helpful compile-time error saying

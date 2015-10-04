@@ -4,7 +4,7 @@
 
 
 
-ENUM(Compiler, int, GCC, Clang, MSVC)
+BETTER_ENUM(Compiler, int, GCC, Clang, MSVC)
 
 
 

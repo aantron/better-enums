@@ -28,7 +28,7 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, int, Red, Green, Blue)
+BETTER_ENUM(Channel, int, Red, Green, Blue)
 
 // We will create a map from this function:
 

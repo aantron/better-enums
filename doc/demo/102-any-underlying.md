@@ -55,8 +55,9 @@ current version.
 
 
     // The enum itself.
-    <em>ENUM(Color, html_color,
-         darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954)</em>
+    <em>BETTER_ENUM(Color, html_color,
+                darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+                slimegreen = 0xbce954)</em>
 
 Now, we can do:
 
@@ -122,9 +123,10 @@ struct integral_mapping<better_html_color> {
 This allows:
 
 ~~~comment
-ENUM(BetterColor, better_html_color,
-     darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954,
-     <em>celeste = better_html_color(0x50, 0xeb, 0xec)</em>)
+BETTER_ENUM(BetterColor, better_html_color,
+            darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+            slimegreen = 0xbce954,
+            <em>celeste = better_html_color(0x50, 0xeb, 0xec)</em>)
 ~~~
 
 If you can't edit your literal type to add this converting operator, or don't
@@ -142,7 +144,8 @@ Of course, as long as the values are valid, you can let the compiler enumerate
 your type as in a regular enum, by omitting initializers:
 
 ~~~comment
-<em>ENUM(FD, file_descriptor, STDIN, STDOUT, STDERR, SomePipeYourDaemonHas, ...)</em>
+<em>BETTER_ENUM(FD, file_descriptor,
+                    STDIN, STDOUT, STDERR, SomePipeYourDaemonHas, ...)</em>
 ~~~
 
 Here, `FD::STDIN` maps to the integral representation 0, `STDOUT` to 1, and so

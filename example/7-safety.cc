@@ -13,7 +13,7 @@
 #include <cassert>
 #include <enum.h>
 
-ENUM(Channel, int, Red = 1, Green, Blue)
+BETTER_ENUM(Channel, int, Red = 1, Green, Blue)
 
 // you don't get names such as Red in the global namespace. Instead, you get
 // Channel, and Red is accessible as Channel::Red. This is no big deal in C++11,
@@ -21,7 +21,7 @@ ENUM(Channel, int, Red = 1, Green, Blue)
 // Better Enums brings scope uniformly to both variants. So, despite the above
 // declaration, you can safely declare
 
-ENUM(Node, char, Red, Black)
+BETTER_ENUM(Node, char, Red, Black)
 
 // and everything will work as expected.
 

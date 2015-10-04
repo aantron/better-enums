@@ -7,7 +7,7 @@ Let's begin by including `enum.h` and declaring our enum:
 
     <em>#include <enum.h></em>
 
-    <em>ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Cyan</em> = <em>1</em>, <em>Magenta</em>, <em>Yellow</em>, <em>Black</em>)
+    <em>BETTER_ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Cyan</em> = <em>1</em>, <em>Magenta</em>, <em>Yellow</em>, <em>Black</em>)
 
 We now have an `int`-sized enum with four constants.
 

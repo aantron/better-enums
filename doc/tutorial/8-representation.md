@@ -7,7 +7,7 @@ will declare a more unusual enum than the ones we have seen.
     #include <iostream>
     <em>#include <enum.h></em>
 
-    <em>ENUM</em>(<em>ContentType</em>, <em>short</em>,
+    <em>BETTER_ENUM</em>(<em>ContentType</em>, <em>short</em>,
          <em>CompressedVideo</em> = <em>5</em>, <em>PCM</em> = <em>8</em>, <em>Subtitles</em> = <em>17</em>, <em>Comment</em> = <em>44</em>)
 
 This is for a hypothetical multimedia container file format. Perhaps the files

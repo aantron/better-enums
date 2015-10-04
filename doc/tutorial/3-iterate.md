@@ -6,7 +6,7 @@ example, this:
     #include <iostream>
     #include <enum.h>
 
-    <em>ENUM(Channel, int, Red, Green = 2, Blue)</em>
+    <em>BETTER_ENUM(Channel, int, Red, Green = 2, Blue)</em>
 
     int main()
     {

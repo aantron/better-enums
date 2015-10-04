@@ -10,7 +10,7 @@
 // Ok, so it's not really a quine, because we won't be writing all the code
 // needed to generate the definition to the buffer as well. And, there are
 // better ways to dump the definition than shown here. You could simply define a
-// macro that expands to an ENUM declaration and also stringizes it.
+// macro that expands to an BETTER_ENUM declaration and also stringizes it.
 //
 // But that's not the point here. The point of this page is to show some of the
 // reflective capabilities of Better Enums, so you can adapt them for cases
@@ -34,8 +34,8 @@
 
 // Now, let's declare some enums to dump later:
 
-ENUM(Channel, int, Red, Green, Blue)
-ENUM(Depth, int, TrueColor = 1, HighColor = 0)
+BETTER_ENUM(Channel, int, Red, Green, Blue)
+BETTER_ENUM(Depth, int, TrueColor = 1, HighColor = 0)
 
 
 
@@ -99,7 +99,7 @@ template <typename Enum>
 constexpr size_t declaration_length()
 {
     return
-        string_length("ENUM(")
+        string_length("BETTER_ENUM(")
         + string_length(Enum::_name())
         + string_length(", int")
         + constants_length<Enum>()
@@ -127,7 +127,7 @@ size_t format(char *buffer)
 {
     size_t  offset = 0;
 
-    offset += std::sprintf(buffer, "ENUM(%s, int", Enum::_name());
+    offset += std::sprintf(buffer, "BETTER_ENUM(%s, int", Enum::_name());
 
     for (Enum value : Enum::_values()) {
         offset +=
@@ -163,5 +163,5 @@ int main()
 
 // It prints:
 //
-// ENUM(Channel, int, Red = 0, Green = 1, Blue = 2)
-// ENUM(Depth, int, TrueColor = 1, HighColor = 0)
+// BETTER_ENUM(Channel, int, Red = 0, Green = 1, Blue = 2)
+// BETTER_ENUM(Depth, int, TrueColor = 1, HighColor = 0)

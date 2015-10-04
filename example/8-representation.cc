@@ -9,7 +9,7 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(ContentType, short,
+BETTER_ENUM(ContentType, short,
      CompressedVideo = 5, PCM = 8, Subtitles = 17, Comment = 44)
 
 // This is for a hypothetical multimedia container file format. Perhaps the

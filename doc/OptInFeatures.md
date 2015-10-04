@@ -22,7 +22,8 @@ slow enums to get the same penalty as including `iostream` &mdash; but it is
 a steep penalty nonetheless. I don't think most people need this feature most of
 the time, so it's too high a price to pay. If I improve compilation times to the
 point where compile-time name trimming can be the default, I will simply
-redefine `SLOW_ENUM` as `ENUM` and deprecate it, so your code will still work.
+redefine `SLOW_ENUM` as `BETTER_ENUM` and deprecate it, so your code will still
+work.
 
 ### Strict conversions
 

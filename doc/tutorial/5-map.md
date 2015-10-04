@@ -26,7 +26,7 @@ practical use.
     #include <iostream>
     <em>#include</em> <<em>enum.h</em>>
 
-    <em>ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Red</em>, <em>Green</em>, <em>Blue</em>)
+    <em>BETTER_ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Red</em>, <em>Green</em>, <em>Blue</em>)
 
 We will create a map from this function:
 

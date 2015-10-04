@@ -2,6 +2,8 @@
 
 // C++17 reflection proposal
 //
+// You can try this demo live online.
+//
 // Better Enums can be used to implement the enums portion of the C++17
 // reflection proposal N4428 in C++11. N4428 proposes the following traits
 // interface:
@@ -42,9 +44,9 @@
 // this interface, though with two necessary differences.
 //
 //   1. The interface is only available for Better Enums, i.e. enums declared
-//      through the ENUM macro. This is because the macro is what generates the
-//      information necessary for reflection.
-//   2. The type of identifier is const char*, not the ${cxx17}-proposed
+//      through the BETTER_ENUM macro. This is because the macro is what
+//      generates the information necessary for reflection.
+//   2. The type of identifier is const char*, not the ${cxx17} proposed
 //      string_literal.
 //
 // Demo
@@ -63,7 +65,7 @@
 
 // Let's declare an enum:
 
-ENUM(Channel, char, Red = 1, Green, Blue)
+BETTER_ENUM(Channel, char, Red = 1, Green, Blue)
 
 // ...and try N4428:
 
@@ -111,10 +113,10 @@ int main()
 // interface above is available only for Better Enums for which compile-time
 // name trimming is enabled, i.e. those declared when
 // BETTER_ENUMS_CONSTEXPR_TO_STRING was defined, or declared with the SLOW_ENUM
-// variant of ENUM. As mentioned on the linked page, the reason compile-time
-// name trimming is not the default is that, while still pretty fast, it is four
-// times slower than program-startup-time name trimming. The latter is the
-// default.
+// variant of BETTER_ENUM. As mentioned on the linked page, the reason
+// compile-time name trimming is not the default is that, while still pretty
+// fast, it is four times slower than program-startup-time name trimming. The
+// latter is the default.
 //
 // Despite the above, a variation on the interface is available for enums
 // without compile-time name trimming:
@@ -147,7 +149,7 @@ int main()
 // function, and you have to access it through get_alt<I>.
 //
 // // Without compile-time name trimming.
-// ENUM(Depth, int, HighColor, TrueColor)
+// BETTER_ENUM(Depth, int, HighColor, TrueColor)
 //
 // int main()
 // {

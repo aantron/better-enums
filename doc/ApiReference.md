@@ -7,7 +7,7 @@ $internal_toc
 The declaration
 
     #include <enum.h>
-    <em>ENUM</em>(<em>Enum</em>, <em>underlying_type</em>, <em>A</em>, <em>B</em>, <em>C</em>, ...)
+    <em>BETTER_ENUM</em>(<em>Enum</em>, <em>underlying_type</em>, <em>A</em>, <em>B</em>, <em>C</em>, ...)
 
 generates a new class type `Enum` which is notionally similar to the type
 created by this $cxx11 declaration:
@@ -20,29 +20,29 @@ That is, `Enum` is a scoped enumerated type with constants `Enum::A`, `Enum::B`,
 `Enum::C`, and so on, with memory representation the same as `underlying_type`.
 It is possible to supply initializers for any of the constants:
 
-    <em>ENUM</em>(Enum, underlying_type, <em>A</em> = <em>1</em>, <em>B</em> = <em>constant_expression</em>, <em>C</em> = <em>A</em>, ...)
+    <em>BETTER_ENUM</em>(Enum, underlying_type, <em>A</em> = <em>1</em>, <em>B</em> = <em>constant_expression</em>, <em>C</em> = <em>A</em>, ...)
 
 The initializers have the same meaning and constraints as in a built-in `enum`
 or `enum class` declaration.
 
 ---
 
-The principal differences between the types declared by the `ENUM` macro and
-`enum class` are:
+The principal differences between the types declared by the `BETTER_ENUM` macro
+and `enum class` are:
 
-  - `ENUM` is available for $cxx98
+  - `BETTER_ENUM` is available for $cxx98
     [compilers](${prefix}CompilerSupport.html) supporting `__VA_ARGS__` &mdash;
     all major compilers &mdash; while `enum class` is restricted to $cxx11,
-  - the `ENUM` type is implicitly convertible to integral types, though this can
-    be [disabled](${prefix}OptInFeatures.html#StrictConversions) when using
-    $cxx11, and
-  - the `ENUM` type supports a set of reflective operations, detailed in the
-    rest of this reference.
+  - the `BETTER_ENUM` type is implicitly convertible to integral types, though
+    this can be [disabled](${prefix}OptInFeatures.html#StrictConversions) when
+    using $cxx11, and
+  - the `BETTER_ENUM` type supports a set of reflective operations, detailed in
+    the rest of this reference.
 
 ---
 
-The types produced by the `ENUM` macro are called *Better Enums* in the rest of
-this reference.
+The types produced by the `BETTER_ENUM` macro are called *Better Enums* in the
+rest of this reference.
 
 Better Enums are similar to their underlying type for the purposes of argument
 passing. This means that they typically fit into a machine word, and should be
@@ -66,7 +66,7 @@ section.
 
 The rest of this reference uses the following declaration as a running example:
 
-    <em>ENUM</em>(<em>Enum</em>, <em>int</em>, <em>A</em>, <em>B</em>, <em>C</em>)
+    <em>BETTER_ENUM</em>(<em>Enum</em>, <em>int</em>, <em>A</em>, <em>B</em>, <em>C</em>)
 
 
 
@@ -78,8 +78,8 @@ rest of the documentation.
 
 #### <em>typedef _enumerated</em>
 
-An internal type used to declare constants. The `ENUM` macro generates something
-similar to
+An internal type used to declare constants. The `BETTER_ENUM` macro generates
+something similar to
 
 ~~~comment
 <em>struct Enum</em> {

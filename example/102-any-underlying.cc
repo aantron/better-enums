@@ -57,8 +57,9 @@ struct integral_mapping<html_color> {
 
 
 // The enum itself.
-ENUM(Color, html_color,
-     darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954)
+BETTER_ENUM(Color, html_color,
+            darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+            slimegreen = 0xbce954)
 
 // Now, we can do:
 
@@ -121,9 +122,10 @@ int main()
 //
 // This allows:
 //
-// ENUM(BetterColor, better_html_color,
-//      darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954,
-//      celeste = better_html_color(0x50, 0xeb, 0xec))
+// BETTER_ENUM(BetterColor, better_html_color,
+//             darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+//             slimegreen = 0xbce954,
+//             celeste = better_html_color(0x50, 0xeb, 0xec))
 //
 // If you can't edit your literal type to add this converting operator, or don't
 // want to for type safety reasons, you can achieve a similar effect by
@@ -132,14 +134,15 @@ int main()
 // U is for declarations only.
 //
 // Constructors in initializers require C++11. Also, g++ doesn't support this
-// before g++5.
+// before 5.1.
 //
 // Letting the compiler enumerate your type
 //
 // Of course, as long as the values are valid, you can let the compiler
 // enumerate your type as in a regular enum, by omitting initializers:
 //
-// ENUM(FD, file_descriptor, STDIN, STDOUT, STDERR, SomePipeYourDaemonHas, ...)
+// BETTER_ENUM(FD, file_descriptor,
+//                     STDIN, STDOUT, STDERR, SomePipeYourDaemonHas, ...)
 //
 // Here, FD::STDIN maps to the integral representation 0, STDOUT to 1, and so
 // on.

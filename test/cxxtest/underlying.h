@@ -36,8 +36,9 @@ struct integral_mapping<html_color_1> {
 
 }
 
-ENUM(HtmlColor1, html_color_1,
-     darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954)
+BETTER_ENUM(HtmlColor1, html_color_1,
+            darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+            slimegreen = 0xbce954)
 
 
 
@@ -75,12 +76,13 @@ struct html_color_2 {
 #endif
 
 #ifdef SUPPORT_INITIALIZER
-ENUM(HtmlColor2, html_color_2,
-     darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954,
-     celeste = html_color_2(0x50, 0xeb, 0xec))
+BETTER_ENUM(HtmlColor2, html_color_2,
+            darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+            slimegreen = 0xbce954, celeste = html_color_2(0x50, 0xeb, 0xec))
 #else
-ENUM(HtmlColor2, html_color_2,
-     darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954)
+BETTER_ENUM(HtmlColor2, html_color_2,
+            darksalmon = 0xc47451, purplemimosa = 0x9e7bff,
+            slimegreen = 0xbce954)
 #endif
 
 

@@ -38,8 +38,8 @@ See the [project page][project] for full documentation.
 
 Simply add `enum.h` to your project &mdash; that's it.
 
-Then, include it, and use the `ENUM` macro. Your compiler will generate the rich
-enums that are missing from standard C++.
+Then, include it, and use the `BETTER_ENUM` macro. Your compiler will generate
+the rich enums that are missing from standard C++.
 
 ## Additional features
 
@@ -61,12 +61,12 @@ enums that are missing from standard C++.
 
 ## Limitations
 
-The biggest limitation is that the `ENUM` macro can't be used inside a class.
-This seems [difficult to remove][nested]. There is a workaround with `typedef`
-(or C++11 `using`):
+The biggest limitation is that the `BETTER_ENUM` macro can't be used inside a
+class. This seems [difficult to remove][nested]. There is a workaround with
+`typedef` (or C++11 `using`):
 
 ```cpp
-ENUM(UniquePrefix_Color, uint8_t, Red, Green, Blue)
+BETTER_ENUM(UniquePrefix_Color, uint8_t, Red, Green, Blue)
 
 struct triplet {
     typedef UniquePrefix_Color      Color;
@@ -76,7 +76,7 @@ struct triplet {
 triplet::Color  color;
 ```
 
-You can, however, use `ENUM` inside a namespace.
+You can, however, use `BETTER_ENUM` inside a namespace.
 
 [nested]: http://aantron.github.io/better-enums/DesignDecisionsFAQ.html#NoEnumInsideClass
 

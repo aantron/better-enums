@@ -17,7 +17,7 @@
 
 #include <enum.h>
 
-ENUM(Channel, int, Red = 1, Green = 2, Blue = 3)
+BETTER_ENUM(Channel, int, Red = 1, Green = 2, Blue = 3)
 
 constexpr Channel      channel = Channel::_from_integral(2);
 constexpr int          value = channel._to_integral();

@@ -7,7 +7,7 @@
 #include <iostream>
 #include "enum.h"
 
-ENUM(Word, int, Hello, World)
+BETTER_ENUM(Word, int, Hello, World)
 
 int main()
 {

@@ -7,7 +7,7 @@ operators:
     #include <iostream>
     #include <enum.h>
 
-    <em>ENUM(Channel, int, Red, Green, Blue)</em>
+    <em>BETTER_ENUM(Channel, int, Red, Green, Blue)</em>
 
     int main()
     {

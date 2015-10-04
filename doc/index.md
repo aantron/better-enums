@@ -29,7 +29,7 @@ compilation
 </pre>
   <pre class="right"><em>#include &lt;enum.h&gt;</em>
 
-<em>ENUM(Channel, int, Red = 1, Green, Blue)</em>
+<em>BETTER_ENUM(Channel, int, Red = 1, Green, Blue)</em>
 
 
 Channel     c = <em>Channel::_from_string("Red")</em>;

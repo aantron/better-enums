@@ -7,7 +7,7 @@
 #include <iostream>
 #include <enum.h>
 
-ENUM(Channel, int, Red, Green, Blue)
+BETTER_ENUM(Channel, int, Red, Green, Blue)
 
 int main()
 {

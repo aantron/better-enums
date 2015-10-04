@@ -38,10 +38,10 @@ Now, we can have bit sets that are wide enough to hold whatever range we
 declared. We just declare enums, and the numeric values of their constants will
 be bit indices. The rest is straightforward.
 
-    ENUM(<em>EFLAGS</em>, int,
-         <em>Carry</em>, <em>Parity</em> = 2, <em>Adjust</em> = 4, <em>Zero</em>, <em>Sign</em>, <em>Trap</em>, <em>Interrupt</em>, <em>Direction</em>,
-         <em>Overflow</em>, <em>NestedTask</em> = 14, <em>Resume</em> = 16, <em>V8086</em>, <em>AlignmentCheck</em>,
-         <em>CPUIDPresent</em> = 21)
+    BETTER_ENUM(<em>EFLAGS</em>, int,
+                <em>Carry</em>, <em>Parity</em> = 2, <em>Adjust</em> = 4, <em>Zero</em>, <em>Sign</em>, <em>Trap</em>, <em>Interrupt</em>, <em>Direction</em>,
+                <em>Overflow</em>, <em>NestedTask</em> = 14, <em>Resume</em> = 16, <em>V8086</em>, <em>AlignmentCheck</em>,
+                <em>CPUIDPresent</em> = 21)
 
     int main()
     {

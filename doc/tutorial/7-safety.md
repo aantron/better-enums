@@ -12,7 +12,7 @@ You have probably noticed by now that Better Enums are scoped: when you declare
     #include <cassert>
     <em>#include <enum.h></em>
 
-    <em>ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Red</em> = <em>1</em>, <em>Green</em>, <em>Blue</em>)
+    <em>BETTER_ENUM</em>(<em>Channel</em>, <em>int</em>, <em>Red</em> = <em>1</em>, <em>Green</em>, <em>Blue</em>)
 
 you don't get names such as `Red` in the global namespace. Instead, you get
 `Channel`, and `Red` is accessible as `Channel::Red`. This is no big deal in
@@ -20,7 +20,7 @@ $cxx11, which has `enum class`. In $cxx98, however, this typically requires
 effort. Better Enums brings scope uniformly to both variants. So, despite the
 above declaration, you can safely declare
 
-    <em>ENUM</em>(<em>Node</em>, <em>char</em>, <em>Red</em>, <em>Black</em>)
+    <em>BETTER_ENUM</em>(<em>Node</em>, <em>char</em>, <em>Red</em>, <em>Black</em>)
 
 and everything will work as expected.
 

@@ -9,7 +9,7 @@
 
 #include <enum.h>
 
-ENUM(Channel, int, Cyan = 1, Magenta, Yellow, Black)
+BETTER_ENUM(Channel, int, Cyan = 1, Magenta, Yellow, Black)
 
 // We now have an int-sized enum with four constants.
 //

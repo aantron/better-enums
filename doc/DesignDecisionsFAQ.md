@@ -29,7 +29,7 @@ constants declared by the user. I chose to prefix members with underscores to
 lessen the chances of collision. For example, take `_valid`, and suppose it was
 `valid` instead. That would make this enum impossible:
 
-    <em>ENUM(Status, char, valid, invalid)</em>
+    <em>BETTER_ENUM(Status, char, valid, invalid)</em>
 
 because the constant `Status::valid` would clash with the member
 `Status::valid`.
@@ -67,7 +67,7 @@ initializers as built-in enums. So, I am trying to keep even this one macro out
 of the user's way. I wouldn't accept any change that involved turning the
 declaration into a preprocessor sequence or tuple, i.e. something like
 
-    <em>ENUM(Channel, int, (Red)(Green)((Blue)(5)))</em>
+    <em>BETTER_ENUM(Channel, int, (Red)(Green)((Blue)(5)))</em>
 
 even if it promised extra capabilities.
 
@@ -88,10 +88,10 @@ This is due to an interaction between linkage and `constexpr`.
    arrays can be declared in namespace scope, in class scope, or in function
    scope, but they also need to be defined somewhere.
 
-   If `ENUM` is to be usable in both namespace and class scope, it already can't
-   assume that it can declare arrays in namespace scope, since if `ENUM` is used
-   in a class, its entire expansion will be enclosed in the declaration of that
-   class.
+   If `BETTER_ENUM` is to be usable in both namespace and class scope, it
+   already can't assume that it can declare arrays in namespace scope, since if
+   `BETTER_ENUM` is used in a class, its entire expansion will be enclosed in
+   the declaration of that class.
 
    That leaves class scope and function scope. If the arrays are declared in
    class scope, there needs to be a separate definition of them in some
@@ -120,7 +120,7 @@ $cxx98.
 A Better Enum value is an "object," whose memory representation is the same as
 its underlying type. For example,
 
-    <em>ENUM(Channel, int, Red, Green, Blue)</em>
+    <em>BETTER_ENUM(Channel, int, Red, Green, Blue)</em>
 
 expands to something like
 
@@ -136,7 +136,7 @@ There is an alternative interpretation, in which the Better Enums library
 generates enum traits instead, i.e. the generated arrays and members sit
 alongside built-in enums instead of wrapping them:
 
-    <em>ENUM(Channel, int, Red, Green, Blue)</em>
+    <em>BETTER_ENUM(Channel, int, Red, Green, Blue)</em>
 
 generates
 
@@ -251,7 +251,7 @@ Enum is simply an index, then getting its string representation is simply
 indexing an array, rather than some kind of data structure lookup.
 
     // Representations 0, 1, 2, 3 instead of 1, 2, 3, 1.
-    <em>ENUM(Kind, int, A = 1, B, C, D = A)</em>
+    <em>BETTER_ENUM(Kind, int, A = 1, B, C, D = A)</em>
 
 Choosing this approach has serious drawbacks.
 

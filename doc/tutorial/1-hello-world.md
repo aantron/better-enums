@@ -5,7 +5,7 @@ Download <a $download><code>enum.h</code></a>, then compile this program:
     #include <iostream>
     <em>#include "enum.h"</em>
 
-    <em>ENUM</em>(<em>Word</em>, <em>int</em>, <em>Hello</em>, <em>World</em>)
+    <em>BETTER_ENUM</em>(<em>Word</em>, <em>int</em>, <em>Hello</em>, <em>World</em>)
 
     int main()
     {

@@ -38,10 +38,10 @@ using EnumSet = std::bitset<max<Enum>()._to_integral() + 1>;
 // declared. We just declare enums, and the numeric values of their constants
 // will be bit indices. The rest is straightforward.
 
-ENUM(EFLAGS, int,
-     Carry, Parity = 2, Adjust = 4, Zero, Sign, Trap, Interrupt, Direction,
-     Overflow, NestedTask = 14, Resume = 16, V8086, AlignmentCheck,
-     CPUIDPresent = 21)
+BETTER_ENUM(EFLAGS, int,
+            Carry, Parity = 2, Adjust = 4, Zero, Sign, Trap, Interrupt, Direction,
+            Overflow, NestedTask = 14, Resume = 16, V8086, AlignmentCheck,
+            CPUIDPresent = 21)
 
 int main()
 {

@@ -8,7 +8,7 @@ buffer for the definition at compile time.
 Ok, so it's not really a quine, because we won't be writing all the code needed
 to generate the definition to the buffer as well. And, there are better ways to
 dump the definition than shown here. You could simply define a macro that
-expands to an `ENUM` declaration and also stringizes it.
+expands to an `BETTER_ENUM` declaration and also stringizes it.
 
 But that's not the point here. The point of this page is to show some of the
 reflective capabilities of Better Enums, so you can adapt them for cases where a
@@ -37,8 +37,8 @@ since we will be calling `_to_string`. Let's make sure it's enabled by defining
 
 Now, let's declare some enums to dump later:
 
-    ENUM(<em>Channel</em>, int, Red, Green, Blue)
-    ENUM(<em>Depth</em>, int, TrueColor = 1, HighColor = 0)
+    BETTER_ENUM(<em>Channel</em>, int, Red, Green, Blue)
+    BETTER_ENUM(<em>Depth</em>, int, TrueColor = 1, HighColor = 0)
 
 
 
@@ -102,7 +102,7 @@ the whole enum:
     constexpr <em>size_t declaration_length</em>()
     {
         return
-            <em>string_length("ENUM(")
+            <em>string_length("BETTER_ENUM(")
             + string_length(Enum::_name())
             + string_length(", int")
             + constants_length<Enum>()
@@ -129,7 +129,7 @@ so that we can do a sanity check on it.
     {
         size_t  offset = 0;
 
-        offset += std::sprintf(buffer, <em>"ENUM(%s, int", Enum::_name()</em>);
+        offset += std::sprintf(buffer, <em>"BETTER_ENUM(%s, int", Enum::_name()</em>);
 
         <em>for</em> (<em>Enum value</em> : <em>Enum::_values()</em>) {
             offset +=
@@ -166,8 +166,8 @@ Now, we can write and run this code.
 It prints:
 
 ~~~comment
-ENUM(Channel, int, Red = 0, Green = 1, Blue = 2)
-ENUM(Depth, int, TrueColor = 1, HighColor = 0)
+BETTER_ENUM(Channel, int, Red = 0, Green = 1, Blue = 2)
+BETTER_ENUM(Depth, int, TrueColor = 1, HighColor = 0)
 ~~~
 
 %% description = Have a Better Enum print its own definition. Shows how to
