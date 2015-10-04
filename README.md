@@ -53,11 +53,9 @@ the rich enums that are missing from standard C++.
 - Stream operators.
 - Does not use the heap and can be compiled with exceptions disabled, for use in
   minimal freestanding environments.
-- The underlying type [does not have to be an integral type][underlying].
 
 [testing]:     http://aantron.github.io/better-enums/CompilerSupport.html
 [performance]: http://aantron.github.io/better-enums/Performance.html
-[underlying]:  http://aantron.github.io/better-enums/demo/NonIntegralUnderlyingTypes.html
 
 ## Limitations
 

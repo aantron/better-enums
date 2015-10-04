@@ -112,14 +112,14 @@ endforeach(TEST)
 
 set(EXAMPLES
     1-hello-world 2-conversions 3-iterate 4-switch 6-iostreams 7-safety
-    8-representation 9-constexpr 101-special-values 102-any-underlying
-    103-bitset 104-quine 105-c++17-reflection)
-
-set(SKIPPED_FOR_CXX98
-    5-map 9-constexpr 101-special-values 102-any-underlying 103-bitset 104-quine
+    8-representation 9-constexpr 101-special-values 103-bitset 104-quine
     105-c++17-reflection)
 
-set(SKIPPED_FOR_STRICT_CONVERSION 4-switch 102-any-underlying)
+set(SKIPPED_FOR_CXX98
+    5-map 9-constexpr 101-special-values 103-bitset 104-quine
+    105-c++17-reflection)
+
+set(SKIPPED_FOR_STRICT_CONVERSION 4-switch)
 
 if(CONFIGURATION STREQUAL CXX98 OR NOT SUPPORTS_CONSTEXPR)
     list(REMOVE_ITEM EXAMPLES ${SKIPPED_FOR_CXX98})

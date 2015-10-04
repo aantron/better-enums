@@ -186,13 +186,6 @@ However, it also introduces some difficulties.
   type, similar to how it is done [here][infer], but that will not be suitable
   for all contexts, and the user may be surprised by ambiguous resolution error
   messages when it is not.
-- The experimental feature presented [here][underlying] would be questionable in
-  the traits interpretation. It is still possible to have a non-integral
-  underlying type with traits, but it would be strange if the traits version of
-  the macro accepted a non-integral underlying type, and then declared the
-  actual language enum with an integral underlying type. Even though that is
-  exactly what the non-traits version does, there the language enum is hidden
-  inside the generated type, instead of being exposed alongside a traits type.
 - Scoped constants are lost for $cxx98 unless Better Enums again wraps them in a
   generated type, though it will be more lightweight than a full Better Enum of
   the non-traits approach.
@@ -272,7 +265,6 @@ Choosing this approach has serious drawbacks.
 [traits]: #Traits
 [implicit]: ${prefix}OptInFeatures.html#StrictConversions
 [infer]: ${prefix}demo/SpecialValues.html
-[underlying]: ${prefix}demo/NonIntegralUnderlyingTypes.html
 [traits-branch]: $repo/tree/traits
 [traits-samples]: $repo/tree/traits/samples
 

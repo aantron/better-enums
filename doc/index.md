@@ -163,14 +163,6 @@ Try it live online in
   </li>
 
   <li class="zero-mod-two one-mod-three">
-    <strong>Non-integral underlying types</strong>
-    <em>
-      Have sets of named, <code>switch</code>-friendly constants of any literal
-      type.
-    </em>
-  </li>
-
-  <li class="one-mod-two two-mod-three">
     <strong>Free and open source</strong>
     <em>
       Released under the BSD license for use in any project, free or commercial.
