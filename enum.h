@@ -644,9 +644,9 @@ class Enum {                                                                   \
                                                                                \
     _integral      _value;                                                     \
                                                                                \
-  private:                                                                     \
-    Enum() : _value(0) { }                                                     \
+    BETTER_ENUMS_DEFAULT_CONSTRUCTOR(Enum)                                     \
                                                                                \
+  private:                                                                     \
     explicit BETTER_ENUMS__CONSTEXPR Enum(const _integral &value) :            \
         _value(value) { }                                                      \
                                                                                \
@@ -993,6 +993,14 @@ BETTER_ENUMS__CONSTEXPR inline bool operator >=(const Enum &a, const Enum &b)  \
         BETTER_ENUMS__REGULAR_ENUM_SWITCH_TYPE
 #   define BETTER_ENUMS__DEFAULT_SWITCH_TYPE_GENERATE                          \
         BETTER_ENUMS__REGULAR_ENUM_SWITCH_TYPE_GENERATE
+#endif
+
+
+
+#ifndef BETTER_ENUMS_DEFAULT_CONSTRUCTOR
+#   define BETTER_ENUMS_DEFAULT_CONSTRUCTOR(Enum)                              \
+      private:                                                                 \
+        Enum() { }
 #endif
 
 
