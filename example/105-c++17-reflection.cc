@@ -40,14 +40,12 @@
 //
 // Resulting in the values 3, Foo::A, and "B", respectively.
 
-// The optional Better Enums header file extra/better-enums/n4428.h implements
-// this interface, though with two necessary differences.
+// The interface is implemented in the optional header file
+// extra/better-enums/n4428.h. There are two necessary differences.
 //
-//   1. The interface is only available for Better Enums, i.e. enums declared
-//      through the BETTER_ENUM macro. This is because the macro is what
-//      generates the information necessary for reflection.
-//   2. The type of identifier is const char*, not the ${cxx17} proposed
-//      string_literal.
+//   1. The interface is only available for enums declared through the
+//      BETTER_ENUM macro. This is because the macro is what generates the
+//      information necessary for reflection.
 //
 // Demo
 //
@@ -95,23 +93,12 @@ int main()
 }
 
 // That prints Blue, as you would expect.
-
-// So, Better Enums can be used in C++11 to test N4428, and maybe start
-// developing libraries on top of it. N4428 is very low-level, so it needs
-// additional code over it to be truly useful. Whether developing now is a good
-// idea is debatable, since N4428 is still only a proposal. But, it's an
-// interesting thing to consider.
-//
-// Also, Better Enums can be implemented almost completely in terms of N4428, so
-// the two interfaces are in some vaguely mathematical sense "equivalent." If
-// N4428 is accepted, I may implement a variant of Better Enums on top of it,
-// since it will remove many limitations.
 //
 // Quirk
 //
 // The reason for the #define in the code above is that there is one quirk: the
 // interface above is available only for Better Enums for which compile-time
-// name trimming is enabled, i.e. those declared when
+// name trimming is enabled - those declared when
 // BETTER_ENUMS_CONSTEXPR_TO_STRING was defined, or declared with the SLOW_ENUM
 // variant of BETTER_ENUM. As mentioned on the linked page, the reason
 // compile-time name trimming is not the default is that, while still pretty

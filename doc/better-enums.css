@@ -55,6 +55,18 @@ code, samp {
     margin-right: 150px;
 }
 
+.main .container > * {
+    max-width: 41em;
+}
+
+.index .main .container > * {
+    max-width: none;
+}
+
+.main .container > .contents {
+    max-width: none;
+}
+
 @media (max-width: 1400px) {
     .container {
         margin-left: auto;

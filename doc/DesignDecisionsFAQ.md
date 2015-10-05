@@ -192,8 +192,6 @@ However, it also introduces some difficulties.
 - Traits types must be specialized in either the same namespace scope they are
   declared in, or in an enclosing scope. This makes it impossible to declare an
   enum and specialize traits for it in a user's custom namespace.
-- Traits types are not intuitive for some $cxx users, which would present a
-  barrier to usage.
 
 Despite the disadvantages listed just above, I consider the traits approach
 interesting &mdash; it's a close call. There is an

@@ -2,7 +2,7 @@
 
 Better Enums aims to support all major compilers. It is known to work on:
 
-  - clang 3.3 to 3.6
+  - clang 3.3 to 3.7
   - gcc 4.3 to 5.2
   - Visual C++ 2008 to 2015RC.
 
@@ -78,6 +78,10 @@ vc2013 /EHsc /DBETTER_ENUMS_STRICT_CONVERSION
 vc2012 /EHsc
 vc2010 /EHsc
 vc2008 /EHsc
+clang++37 -std=c++11
+clang++37 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++37 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++37 -std=c++98
 clang++36 -std=c++11
 clang++36 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
 clang++36 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING

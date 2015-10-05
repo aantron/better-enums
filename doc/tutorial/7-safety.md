@@ -49,27 +49,16 @@ The reason this is not enabled by default is explained in the reference page on
 
 ### Default constructor
 
-Better Enums don't have a default constructor, for three reasons.
-
-  - Better Enums is a library that can't know what your application would like
-    the default value to be for each enum, or whether you even want one.
-  - I chose not to leave the default value undefined, because the idea is to
-    encourage the convention that whenever a Better Enum exists, it has a valid
-    value. This is borrowed from typed functional programming.
-  - Better Enums is still under development, and this option is the most
-    future-proof.
-
-So, if you uncomment this code, the file won't compile:
+Better Enums generate without a default constructor. The purpose is to support
+the convention where if a Better Enum exists, then it has a valid value. So, if
+you uncomment this code, the program won't compile:
 
 ~~~comment
     Channel      channel;
 ~~~
 
-This may be too strict, and I may relax it in the future. In the meantime, the
-solution sketched in the [special values demo](${prefix}demo/SpecialValues.html)
-can replace default constructors for some purposes, and in a more flexible way.
-I may eventually have the default constructor calling a template function like
-the one in that demo.
+If this is too strict for your project, you can relax it as described
+[here](${prefix}OptInFeatures.html#DefaultConstructors).
 
 ---
 

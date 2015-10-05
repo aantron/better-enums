@@ -72,7 +72,7 @@ fast, portable, and documented exhaustively.
 To use it, just include <code>enum.h</code>.
 
 Try it live online in
-[Wandbox](http://melpon.org/wandbox/permlink/wICNzu2LW2vEgqzh), or begin the
+[Wandbox](http://melpon.org/wandbox/permlink/6kFervewqeDsNAGu), or begin the
 [tutorial](${prefix}tutorial/HelloWorld.html)!
 
 <div class="hack"></div>

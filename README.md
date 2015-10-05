@@ -5,7 +5,7 @@ file.
 
 ![Better Enums code overview][sample]
 
-[sample]: https://raw.githubusercontent.com/aantron/better-enums/0.10.1/doc/image/sample.gif
+[sample]: https://raw.githubusercontent.com/aantron/better-enums/master/doc/image/sample.gif
 
 [![Try online][wandbox-img]][wandbox] [![version 0.10.1][version]][releases]
 [![BSD license][license-img]][license]
@@ -25,7 +25,7 @@ See the [project page][project] for full documentation.
 [max]:      http://aantron.github.io/better-enums/demo/BitSets.html
 [enforce]:  http://aantron.github.io/better-enums/demo/SpecialValues.html
 [project]:  http://aantron.github.io/better-enums
-[wandbox]:  http://melpon.org/wandbox/permlink/5N9QZYdA5LqWy26R
+[wandbox]:  http://melpon.org/wandbox/permlink/2QCi3cwQnplAToge
 [tutorial]: http://aantron.github.io/better-enums#Tutorial
 [api]:      http://aantron.github.io/better-enums/ApiReference.html
 [releases]: https://github.com/aantron/better-enums/releases

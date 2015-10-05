@@ -6,6 +6,27 @@ default. Read this page if you want to enable them.
 
 $internal_toc
 
+### Default constructors
+
+Better Enums generate with inaccessible (private or deleted) default
+constructors. This is meant to help control where in your program Better Enums
+values are introduced, and thus ensure that only valid, properly initialized
+enum values are ever created.
+
+If you want Better Enums to have a default constructor, you can do something
+like the following:
+
+~~~
+<em>#define</em> <em>BETTER_ENUMS_DEFAULT_CONSTRUCTOR</em>(<em>Enum</em>) \
+  <em>public</em>:                                      \
+    <em>Enum()</em> = <em>default</em>;
+
+<em>#include</em> <<em>enum.h</em>>
+~~~
+
+You can put this in its own header file, and include that header file instead of
+including `enum.h` directly.
+
 ### Compile-time name trimming
 
 This makes `_to_string` and `_names` `constexpr`, i.e. "full" `constexpr` mode.
