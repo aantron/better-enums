@@ -1,7 +1,7 @@
 language: cpp
 
 env:
-  - COMPILER="clang++-3.6"
+  - COMPILER="clang++-3.7"
   - COMPILER="g++-5"
   - COMPILER="g++-4.6"
   - COMPILER="g++-4.7"
@@ -12,12 +12,14 @@ env:
   - COMPILER="clang++-3.3"
   - COMPILER="clang++-3.4"
   - COMPILER="clang++-3.5"
+  - COMPILER="clang++-3.6"
 
 before_script:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
   - sudo add-apt-repository --yes ppa:h-rayflood/llvm
   - sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.5 main'
   - sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.6 main'
+  - sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.7 main'
   - sudo apt-get update -qq
   - sudo apt-get install --allow-unauthenticated $COMPILER
   - git clone https://github.com/CxxTest/cxxtest.git cxxtest-ro
