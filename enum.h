@@ -684,6 +684,39 @@ operator +(Enum::_enumerated enumerated)                                       \
     return (Enum)enumerated;                                                   \
 }                                                                              \
                                                                                \
+BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
+Enum::_from_value_loop(Enum::_integral value, std::size_t index)               \
+{                                                                              \
+    return                                                                     \
+        index == _size() ?                                                     \
+            _optional_index() :                                                \
+            BETTER_ENUMS__NS(Enum)::_value_array[index]._value == value ?      \
+                _optional_index(index) :                                       \
+                _from_value_loop(value, index + 1);                            \
+}                                                                              \
+                                                                               \
+BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
+Enum::_from_string_loop(const char *name, std::size_t index)                   \
+{                                                                              \
+    return                                                                     \
+        index == _size() ? _optional_index() :                                 \
+        ::better_enums::_names_match(                                          \
+            BETTER_ENUMS__NS(Enum)::_raw_names()[index], name) ?               \
+            _optional_index(index) :                                           \
+            _from_string_loop(name, index + 1);                                \
+}                                                                              \
+                                                                               \
+BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
+Enum::_from_string_nocase_loop(const char *name, std::size_t index)            \
+{                                                                              \
+    return                                                                     \
+        index == _size() ? _optional_index() :                                 \
+            ::better_enums::_names_match_nocase(                               \
+                BETTER_ENUMS__NS(Enum)::_raw_names()[index], name) ?           \
+                    _optional_index(index) :                                   \
+                    _from_string_nocase_loop(name, index + 1);                 \
+}                                                                              \
+                                                                               \
 BETTER_ENUMS__CONSTEXPR inline Enum::_integral Enum::_to_integral() const      \
 {                                                                              \
     return _integral(_value);                                                  \
@@ -695,6 +728,14 @@ Enum::_from_integral_unchecked(_integral value)                                \
     return (_enumerated)value;                                                 \
 }                                                                              \
                                                                                \
+BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
+Enum::_from_integral_nothrow(_integral value)                                  \
+{                                                                              \
+    return                                                                     \
+        ::better_enums::_map_index<Enum>(BETTER_ENUMS__NS(Enum)::_value_array, \
+                                         _from_value_loop(value));             \
+}                                                                              \
+                                                                               \
 BETTER_ENUMS__IF_EXCEPTIONS(                                                   \
 BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_integral(_integral value)      \
 {                                                                              \
@@ -704,14 +745,6 @@ BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_integral(_integral value)      \
 }                                                                              \
 )                                                                              \
                                                                                \
-BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
-Enum::_from_integral_nothrow(_integral value)                                  \
-{                                                                              \
-    return                                                                     \
-        ::better_enums::_map_index<Enum>(BETTER_ENUMS__NS(Enum)::_value_array, \
-                                         _from_value_loop(value));             \
-}                                                                              \
-                                                                               \
 ToStringConstexpr inline const char* Enum::_to_string() const                  \
 {                                                                              \
     return                                                                     \
@@ -719,6 +752,14 @@ ToStringConstexpr inline const char* Enum::_to_string() const                  \
             ::better_enums::_map_index<const char*>(                           \
                 BETTER_ENUMS__NS(Enum)::_name_array(),                         \
                 _from_value_loop(CallInitialize(_value))));                    \
+}                                                                              \
+                                                                               \
+BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
+Enum::_from_string_nothrow(const char *name)                                   \
+{                                                                              \
+    return                                                                     \
+        ::better_enums::_map_index<Enum>(                                      \
+            BETTER_ENUMS__NS(Enum)::_value_array, _from_string_loop(name));    \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__IF_EXCEPTIONS(                                                   \
@@ -731,11 +772,11 @@ BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_string(const char *name)       \
 )                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
-Enum::_from_string_nothrow(const char *name)                                   \
+Enum::_from_string_nocase_nothrow(const char *name)                            \
 {                                                                              \
     return                                                                     \
-        ::better_enums::_map_index<Enum>(                                      \
-            BETTER_ENUMS__NS(Enum)::_value_array, _from_string_loop(name));    \
+        ::better_enums::_map_index<Enum>(BETTER_ENUMS__NS(Enum)::_value_array, \
+                                         _from_string_nocase_loop(name));      \
 }                                                                              \
                                                                                \
 BETTER_ENUMS__IF_EXCEPTIONS(                                                   \
@@ -747,14 +788,6 @@ BETTER_ENUMS__CONSTEXPR inline Enum Enum::_from_string_nocase(const char *name)\
             #Enum "::_from_string_nocase: invalid argument");                  \
 }                                                                              \
 )                                                                              \
-                                                                               \
-BETTER_ENUMS__CONSTEXPR inline Enum::_optional                                 \
-Enum::_from_string_nocase_nothrow(const char *name)                            \
-{                                                                              \
-    return                                                                     \
-        ::better_enums::_map_index<Enum>(BETTER_ENUMS__NS(Enum)::_value_array, \
-                                         _from_string_nocase_loop(name));      \
-}                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline bool Enum::_is_valid(_integral value)           \
 {                                                                              \
@@ -789,39 +822,6 @@ ToStringConstexpr inline Enum::_name_iterable Enum::_names()                   \
 }                                                                              \
                                                                                \
 DefineInitialize(Enum)                                                         \
-                                                                               \
-BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
-Enum::_from_value_loop(Enum::_integral value, std::size_t index)               \
-{                                                                              \
-    return                                                                     \
-        index == _size() ?                                                     \
-            _optional_index() :                                                \
-            BETTER_ENUMS__NS(Enum)::_value_array[index]._value == value ?      \
-                _optional_index(index) :                                       \
-                _from_value_loop(value, index + 1);                            \
-}                                                                              \
-                                                                               \
-BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
-Enum::_from_string_loop(const char *name, std::size_t index)                   \
-{                                                                              \
-    return                                                                     \
-        index == _size() ? _optional_index() :                                 \
-        ::better_enums::_names_match(                                          \
-            BETTER_ENUMS__NS(Enum)::_raw_names()[index], name) ?               \
-            _optional_index(index) :                                           \
-            _from_string_loop(name, index + 1);                                \
-}                                                                              \
-                                                                               \
-BETTER_ENUMS__CONSTEXPR inline Enum::_optional_index                           \
-Enum::_from_string_nocase_loop(const char *name, std::size_t index)            \
-{                                                                              \
-    return                                                                     \
-        index == _size() ? _optional_index() :                                 \
-            ::better_enums::_names_match_nocase(                               \
-                BETTER_ENUMS__NS(Enum)::_raw_names()[index], name) ?           \
-                    _optional_index(index) :                                   \
-                    _from_string_nocase_loop(name, index + 1);                 \
-}                                                                              \
                                                                                \
 BETTER_ENUMS__CONSTEXPR inline bool operator ==(const Enum &a, const Enum &b)  \
     { return a._to_integral() == b._to_integral(); }                           \
