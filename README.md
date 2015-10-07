@@ -7,7 +7,7 @@ file.
 
 [sample]: https://raw.githubusercontent.com/aantron/better-enums/master/doc/image/sample.gif
 
-[![Try online][wandbox-img]][wandbox] [![version 0.10.1][version]][releases]
+[![Try online][wandbox-img]][wandbox] [![version 0.11.0][version]][releases]
 [![BSD license][license-img]][license]
 
 In C++11, *everything* can be used at compile time. You can convert your enums,
@@ -31,7 +31,7 @@ See the [project page][project] for full documentation.
 [releases]: https://github.com/aantron/better-enums/releases
 
 [wandbox-img]: https://img.shields.io/badge/try%20it-online-blue.svg
-[version]:     https://img.shields.io/badge/version-0.10.1-lightgrey.svg
+[version]:     https://img.shields.io/badge/version-0.11.0-lightgrey.svg
 [license-img]: https://img.shields.io/badge/license-BSD-lightgrey.svg
 
 ## Installation
