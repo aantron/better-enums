@@ -22,6 +22,14 @@ else()
     set(SUPPORTS_RELAXED_CONSTEXPR 1)
 endif()
 
+# Current versions of CMake report VS2015 as supporting constexpr. However, the
+# support is too buggy to build Better Enums. Avoid trying to build constexpr
+# configurations on MSVC.
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
+    set(SUPPORTS_CONSTEXPR 0)
+    set(SUPPORTS_RELAXED_CONSTEXPR 0)
+endif()
+
 list(FIND CMAKE_CXX_COMPILE_FEATURES cxx_strong_enums ENUM_CLASS_INDEX)
 if(ENUM_CLASS_INDEX EQUAL -1)
     set(SUPPORTS_ENUM_CLASS 0)

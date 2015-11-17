@@ -23,7 +23,7 @@ before_script:
   - sudo apt-get update -qq
   - sudo apt-get install --allow-unauthenticated $COMPILER
   - git clone https://github.com/CxxTest/cxxtest.git cxxtest-ro
-  - wget http://www.cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz
+  - curl -O https://cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz
   - tar -xzf cmake-3.2.3-Linux-x86_64.tar.gz
   - sudo cp -fR cmake-3.2.3-Linux-x86_64/* /usr
 

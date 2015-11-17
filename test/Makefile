@@ -36,7 +36,7 @@ define PATH_FIX
 sed 's!include "/!include "C:/cygwin/!g' $1 > $$$$ && mv $$$$ $1
 endef
 SUFFIX := .exe
-CXXTESTGEN := python `which cxxtestgen | sed s!/cygdrive/c!c:/!`
+CXXTESTGEN := python `which cxxtestgen | sed -E 's!(/cygdrive)?/c/!c:/!'`
 
 endif
 
