@@ -5,6 +5,12 @@
 // This tutorial shows some of the safety features of Better Enums: scope, how
 // to control conversions, and the lack of a default constructor.
 //
+// On balance, Better Enums are in one way less type-safe than enum class, and
+// in another way more type-safe. The first difference in safety is the presence
+// of implicit conversion to integral types. The second difference is the lack
+// of a default constructor. Both of these can be toggled, so you can make
+// Better Enums strictly safer than enum class, or just as safe.
+//
 // Scope
 //
 // You have probably noticed by now that Better Enums are scoped: when you
@@ -45,28 +51,20 @@ int main()
 // The reason this is not enabled by default is explained in the reference page
 // on strict conversions.
 //
+// You can conveniently define the macro on your compiler's command line, or by
+// creating a little header file that defines it, and then includes enum.h. You
+// can then include this new header file in your project everywhere where you
+// would have included enum.h.
+//
 // Default constructor
 //
-// Better Enums don't have a default constructor, for three reasons.
-//
-//   1. Better Enums is a library that can't know what your application would
-//      like the default value to be for each enum, or whether you even want
-//      one.
-//   2. I chose not to leave the default value undefined, because the idea is to
-//      encourage the convention that whenever a Better Enum exists, it has a
-//      valid value. This is borrowed from typed functional programming.
-//   3. Better Enums is still under development, and this option is the most
-//      future-proof.
-//
-// So, if you uncomment this code, the file won't compile:
+// Better Enums generate without a default constructor. The purpose is to
+// support the convention where if a Better Enum exists, then it has a valid
+// value. So, if you uncomment this code, the program won't compile:
 //
 //     Channel      channel;
 //
-// This may be too strict, and I may relax it in the future. In the meantime,
-// the solution sketched in the special values demo can replace default
-// constructors for some purposes, and in a more flexible way. I may eventually
-// have the default constructor calling a template function like the one in that
-// demo.
+// If this is too strict for your project, you can relax it as described here.
 
 
     return 0;

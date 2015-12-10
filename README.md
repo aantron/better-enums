@@ -76,13 +76,25 @@ triplet::Color  color;
 
 You can, however, use `BETTER_ENUM` inside a namespace.
 
+The macro has a soft limit of 64 declared constants. You can extend it by
+following [these instructions][extend]. Ultimately, the number of constants is
+limited by your compiler's maximum macro argument count.
+
+In some cases, it is necessary to prefix constants such as `Channel::Red` with a
+`+` to explicitly promote them to type `Channel`. For example, if you are doing
+a comparison:
+
+```
+channel == +Channel::Red
+```
+
 [nested]: http://aantron.github.io/better-enums/DesignDecisionsFAQ.html#NoEnumInsideClass
+[extend]: http://aantron.github.io/better-enums/ExtendingLimits.html
 
 ## Contact and development
 
 Don't hesitate to contact me about features or bugs:
-[antonbachin@yahoo.com][email], Twitter [@better_enums][twitter], or open an
-issue on GitHub.
+[antonbachin@yahoo.com][email], or open an issue on GitHub.
 
 If you'd like to help develop Better Enums, see [CONTRIBUTING][contributing].
 
@@ -90,7 +102,6 @@ If you'd like to help develop Better Enums, see [CONTRIBUTING][contributing].
 [![AppVeyor status][appveyor-img]][appveyor]
 
 [email]:        mailto:antonbachin@yahoo.com
-[twitter]:      https://twitter.com/better_enums
 [contributing]: https://github.com/aantron/better-enums/blob/master/doc/CONTRIBUTING.md
 [stable]:       https://img.shields.io/badge/master-kept_stable-brightgreen.svg
 [commits]:      https://github.com/aantron/better-enums/blob/master/doc/CONTRIBUTING.md#commits

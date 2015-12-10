@@ -3,6 +3,12 @@
 This tutorial shows some of the safety features of Better Enums: scope, how to
 control conversions, and the lack of a default constructor.
 
+On balance, Better Enums are in one way less type-safe than enum class, and in
+another way more type-safe. The first difference in safety is the presence of
+implicit conversion to integral types. The second difference is the lack of a
+default constructor. Both of these can be toggled, so you can make Better Enums
+strictly safer than enum class, or just as safe.
+
 $internal_toc
 
 ### Scope
@@ -46,6 +52,11 @@ will not compile:
 
 The reason this is not enabled by default is explained in the reference page on
 [strict conversions](${prefix}OptInFeatures.html#StrictConversions).
+
+You can conveniently define the macro on your compiler's command line, or by
+creating a little header file that defines it, and then includes
+<code>enum.h</code>. You can then include this new header file in your project
+everywhere where you would have included <code>enum.h</code>.
 
 ### Default constructor
 

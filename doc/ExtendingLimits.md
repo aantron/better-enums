@@ -34,6 +34,17 @@ constants of full-`constexpr` enums. To extend:
      - With CMake, you may need something like
        `add_definitions(-DBETTER_ENUMS_MACRO_FILE="$${CMAKE_SOURCE_DIR}/src/enum-macros.h")`
 
+     You can also create a new header file that defines this macro, and then
+     includes `enum.h`. Then, include your new file everywhere where you would
+     otherwise include `enum.h`:
+
+     ~~~comment
+     <em>#pragma once
+
+     #define BETTER_ENUMS_MACRO_FILE <common/enum_macros.h>
+     #include <enum.h></em>
+     ~~~
+
   6. Enjoy the looser limits. Just watch out &mdash; increasing the second
      number can really slow down compilation of full-`constexpr` enums.
   7. You don't need `make_macros.py` anymore. It's not part of your build

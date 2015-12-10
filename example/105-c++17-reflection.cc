@@ -41,11 +41,9 @@
 // Resulting in the values 3, Foo::A, and "B", respectively.
 
 // The interface is implemented in the optional header file
-// extra/better-enums/n4428.h. There are two necessary differences.
-//
-//   1. The interface is only available for enums declared through the
-//      BETTER_ENUM macro. This is because the macro is what generates the
-//      information necessary for reflection.
+// extra/better-enums/n4428.h. There is a necessary difference: the interface is
+// only available for enums declared through the BETTER_ENUM macro. This is
+// because the macro is what generates the information necessary for reflection.
 //
 // Demo
 //
