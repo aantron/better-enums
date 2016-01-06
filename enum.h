@@ -681,7 +681,7 @@ BETTER_ENUMS_ID(GenerateStrings(Enum, __VA_ARGS__))                            \
 BETTER_ENUMS_CONSTEXPR_ inline const Enum                                      \
 operator +(Enum::_enumerated enumerated)                                       \
 {                                                                              \
-    return (Enum)enumerated;                                                   \
+    return static_cast<Enum>(enumerated);                                      \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional_index                           \
@@ -725,7 +725,7 @@ BETTER_ENUMS_CONSTEXPR_ inline Enum::_integral Enum::_to_integral() const      \
 BETTER_ENUMS_CONSTEXPR_ inline Enum                                            \
 Enum::_from_integral_unchecked(_integral value)                                \
 {                                                                              \
-    return (_enumerated)value;                                                 \
+    return static_cast<_enumerated>(value);                                    \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional                                 \
