@@ -1,7 +1,7 @@
 # Better Enums
 
 Reflective compile-time enum library with clean syntax, in a single header
-file.
+file and without dependencies.
 
 ![Better Enums code overview][sample]
 
