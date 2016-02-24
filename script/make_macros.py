@@ -5,14 +5,14 @@
 
 # You only need this script if you are developing enum.h, or run into a limit.
 #
-# This script generates the macros BETTER_ENUMS__PP_MAP and
-# BETTER_ENUMS__ITERATE, used internally by enum.h. These are already inlined
+# This script generates the macros BETTER_ENUMS_PP_MAP and
+# BETTER_ENUMS_ITERATE, used internally by enum.h. These are already inlined
 # into enum.h.
 #
-# BETTER_ENUMS__PP_MAP has a limit, which determines the maximum number of
+# BETTER_ENUMS_PP_MAP has a limit, which determines the maximum number of
 # constants an enum can have. By default, this limit is 64 constants.
 #
-# BETTER_ENUMS__ITERATE also has a limit. This one determines the maximum length
+# BETTER_ENUMS_ITERATE also has a limit. This one determines the maximum length
 # of the name of a constant that is followed by an initializer (" = 2") when
 # compiling an enum with constexpr _to_string function (i.e. usually, this limit
 # does not apply). By default, the limit is 23 characters (24 with the
@@ -68,38 +68,38 @@ def generate(stream, constants, length, script):
     print >> stream, ''
     print >> stream, '#pragma once'
     print >> stream, ''
-    print >> stream, '#ifndef BETTER_ENUMS__MACRO_FILE_H'
-    print >> stream, '#define BETTER_ENUMS__MACRO_FILE_H'
+    print >> stream, '#ifndef BETTER_ENUMS_MACRO_FILE_H'
+    print >> stream, '#define BETTER_ENUMS_MACRO_FILE_H'
 
     print >> stream, ''
-    print >> stream, '#define BETTER_ENUMS__PP_MAP(macro, data, ...) \\'
-    print >> stream, '    BETTER_ENUMS__ID( \\'
-    print >> stream, '        BETTER_ENUMS__APPLY( \\'
-    print >> stream, '            BETTER_ENUMS__PP_MAP_VAR_COUNT, \\'
-    print >> stream, '            BETTER_ENUMS__PP_COUNT(__VA_ARGS__)) \\'
+    print >> stream, '#define BETTER_ENUMS_PP_MAP(macro, data, ...) \\'
+    print >> stream, '    BETTER_ENUMS_ID( \\'
+    print >> stream, '        BETTER_ENUMS_APPLY( \\'
+    print >> stream, '            BETTER_ENUMS_PP_MAP_VAR_COUNT, \\'
+    print >> stream, '            BETTER_ENUMS_PP_COUNT(__VA_ARGS__)) \\'
     print >> stream, '        (macro, data, __VA_ARGS__))'
 
     print >> stream, ''
-    print >> stream, '#define BETTER_ENUMS__PP_MAP_VAR_COUNT(count) ' + \
-                     'BETTER_ENUMS__M ## count'
+    print >> stream, '#define BETTER_ENUMS_PP_MAP_VAR_COUNT(count) ' + \
+                     'BETTER_ENUMS_M ## count'
 
     print >> stream, ''
-    print >> stream, '#define BETTER_ENUMS__APPLY(macro, ...) ' + \
-                      'BETTER_ENUMS__ID(macro(__VA_ARGS__))'
+    print >> stream, '#define BETTER_ENUMS_APPLY(macro, ...) ' + \
+                      'BETTER_ENUMS_ID(macro(__VA_ARGS__))'
 
     print >> stream, ''
-    print >> stream, '#define BETTER_ENUMS__ID(x) x'
+    print >> stream, '#define BETTER_ENUMS_ID(x) x'
 
     print >> stream, ''
-    print >> stream, '#define BETTER_ENUMS__M1(m, d, x) m(d,0,x)'
+    print >> stream, '#define BETTER_ENUMS_M1(m, d, x) m(d,0,x)'
     for index in range(2, constants + 1):
-        print >> stream, '#define BETTER_ENUMS__M' + str(index) + \
+        print >> stream, '#define BETTER_ENUMS_M' + str(index) + \
                          '(m,d,x,...) m(d,' + str(index - 1) + ',x) \\'
-        print >> stream, '    BETTER_ENUMS__ID(BETTER_ENUMS__M' + \
+        print >> stream, '    BETTER_ENUMS_ID(BETTER_ENUMS_M' + \
                          str(index - 1) + '(m,d,__VA_ARGS__))'
 
     print >> stream, ''
-    pp_count_impl_prefix = '#define BETTER_ENUMS__PP_COUNT_IMPL(_1,'
+    pp_count_impl_prefix = '#define BETTER_ENUMS_PP_COUNT_IMPL(_1,'
     stream.write(pp_count_impl_prefix)
     pp_count_impl = MultiLine(stream = stream, indent = 4,
                               initial_column = len(pp_count_impl_prefix))
@@ -111,9 +111,9 @@ def generate(stream, constants, length, script):
     print >> stream, ''
 
     print >> stream, ''
-    print >> stream, '#define BETTER_ENUMS__PP_COUNT(...) \\'
+    print >> stream, '#define BETTER_ENUMS_PP_COUNT(...) \\'
     pp_count_prefix = \
-        '    BETTER_ENUMS__ID(BETTER_ENUMS__PP_COUNT_IMPL(__VA_ARGS__,'
+        '    BETTER_ENUMS_ID(BETTER_ENUMS_PP_COUNT_IMPL(__VA_ARGS__,'
     stream.write(pp_count_prefix)
     pp_count = MultiLine(stream = stream, indent = 8,
                          initial_column = len(pp_count_prefix))
@@ -123,7 +123,7 @@ def generate(stream, constants, length, script):
     print >> stream, ''
 
     print >> stream, ''
-    iterate_prefix = '#define BETTER_ENUMS__ITERATE(X, f, l)'
+    iterate_prefix = '#define BETTER_ENUMS_ITERATE(X, f, l)'
     stream.write(iterate_prefix)
     iterate = MultiLine(stream = stream, indent = 4,
                         initial_column = len(iterate_prefix))
@@ -132,7 +132,7 @@ def generate(stream, constants, length, script):
     print >> stream, ''
 
     print >> stream, ''
-    print >> stream, '#endif // #ifndef BETTER_ENUMS__MACRO_FILE_H'
+    print >> stream, '#endif // #ifndef BETTER_ENUMS_MACRO_FILE_H'
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
