@@ -26,9 +26,9 @@ BETTER_ENUM(Namespaced, short, One, Two)
 
 
 
-// Using _ENUM_HAVE_CONSTEXPR as a proxy for C++11 support. This should be
-// changed to be more precise in the future.
-#ifdef BETTER_ENUMS__HAVE_CONSTEXPR
+// Using BETTER_ENUMS_HAVE_CONSTEXPR_ as a proxy for C++11 support. This should
+// be changed to be more precise in the future.
+#ifdef BETTER_ENUMS_HAVE_CONSTEXPR_
 
 #include <type_traits>
 
