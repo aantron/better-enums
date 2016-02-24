@@ -12,8 +12,8 @@
 
 #pragma once
 
-#ifndef BETTER_ENUMS__N4428_H
-#define BETTER_ENUMS__N4428_H
+#ifndef BETTER_ENUMS_N4428_H
+#define BETTER_ENUMS_N4428_H
 
 
 
@@ -49,4 +49,4 @@ struct enum_traits {
 
 
 
-#endif // #ifndef BETTER_ENUMS__N4428_H
+#endif // #ifndef BETTER_ENUMS_N4428_H
