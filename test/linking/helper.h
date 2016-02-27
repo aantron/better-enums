@@ -1,8 +1,8 @@
-#ifndef _HELPER_H_
-#define _HELPER_H_
+#ifndef HELPER_H
+#define HELPER_H
 
 #include "shared.h"
 
 void print(Channel channel);
 
-#endif // #ifndef _HELPER_H_
+#endif // #ifndef HELPER_H

@@ -264,7 +264,7 @@ namespace better_enums {
 template <typename T>
 BETTER_ENUMS_CONSTEXPR_ inline T _default()
 {
-    return (typename T::_enumerated)0;
+    return static_cast<typename T::_enumerated>(0);
 }
 
 template <>
@@ -302,7 +302,7 @@ template <typename CastTo, typename Element>
 BETTER_ENUMS_CONSTEXPR_ static optional<CastTo>
 _map_index(const Element *array, optional<std::size_t> index)
 {
-    return index ? (CastTo)array[*index] : optional<CastTo>();
+    return index ? static_cast<CastTo>(array[*index]) : optional<CastTo>();
 }
 
 #ifdef BETTER_ENUMS_VC2008_WORKAROUNDS
@@ -425,7 +425,7 @@ _select(const char *from, std::size_t from_length, std::size_t index)
 
 BETTER_ENUMS_CONSTEXPR_ inline char _to_lower_ascii(char c)
 {
-    return c >= 0x41 && c <= 0x5A ? (char)(c + 0x20) : c;
+    return c >= 0x41 && c <= 0x5A ? static_cast<char>(c + 0x20) : c;
 }
 
 BETTER_ENUMS_CONSTEXPR_ inline bool _names_match(const char *stringizedName,
@@ -1000,7 +1000,7 @@ BETTER_ENUMS_CONSTEXPR_ inline bool operator >=(const Enum &a, const Enum &b)  \
 #ifndef BETTER_ENUMS_DEFAULT_CONSTRUCTOR
 #   define BETTER_ENUMS_DEFAULT_CONSTRUCTOR(Enum)                              \
       private:                                                                 \
-        Enum() { }
+        Enum() : _value(0) { }
 #endif
 
 
