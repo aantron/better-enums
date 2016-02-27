@@ -2,9 +2,9 @@
 
 Better Enums aims to support all major compilers. It is known to work on:
 
-  - clang 3.3 to 3.7
-  - gcc 4.3 to 5.2
-  - Visual C++ 2008 to 2015RC.
+  - clang 3.3 to 3.9
+  - gcc 4.3 to 5.3
+  - Visual C++ 2008 to 2015.
 
 The library can be used with any compiler that supports either $cxx11, or $cxx98
 with the `__VA_ARGS__` extension. This includes every version of gcc and clang I
@@ -78,6 +78,14 @@ vc2013 /EHsc /DBETTER_ENUMS_STRICT_CONVERSION
 vc2012 /EHsc
 vc2010 /EHsc
 vc2008 /EHsc
+clang++39 -std=c++11
+clang++39 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++39 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++39 -std=c++98
+clang++38 -std=c++11
+clang++38 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++38 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++38 -std=c++98
 clang++37 -std=c++11
 clang++37 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
 clang++37 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
@@ -95,10 +103,10 @@ clang++34 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
 clang++34 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
 clang++34 -std=c++98
 clang++33 -std=c++98
-g++52 -std=c++11
-g++52 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
-g++52 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
-g++52 -std=c++98
+g++53 -std=c++11
+g++53 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+g++53 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+g++53 -std=c++98
 g++49 -std=c++11
 g++49 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
 g++49 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING

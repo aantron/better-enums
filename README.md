@@ -1,14 +1,21 @@
-# Better Enums
+# Better Enums &nbsp; [![version 0.11.0][version]][releases] [![Try online][wandbox-img]][wandbox] [![Travis status][travis-img]][travis] [![AppVeyor status][appveyor-img]][appveyor] [![BSD license][license-img]][license]
+
+[version]:      https://img.shields.io/badge/version-0.11.0-blue.svg
+[releases]:     https://github.com/aantron/better-enums/releases
+[wandbox]:      http://melpon.org/wandbox/permlink/2QCi3cwQnplAToge
+[wandbox-img]:  https://img.shields.io/badge/try%20it-online-blue.svg
+[appveyor]:     https://ci.appveyor.com/project/aantron/better-enums/branch/master
+[travis]:       https://travis-ci.org/aantron/better-enums/branches
+[travis-img]:   https://img.shields.io/travis/aantron/better-enums/master.svg?label=travis
+[appveyor-img]: https://img.shields.io/appveyor/ci/aantron/better-enums/master.svg?label=appveyor
+[license-img]:  https://img.shields.io/badge/license-BSD-lightgrey.svg
 
 Reflective compile-time enum library with clean syntax, in a single header
-file and without dependencies.
+file, and without dependencies.
 
 ![Better Enums code overview][sample]
 
 [sample]: https://raw.githubusercontent.com/aantron/better-enums/master/doc/image/sample.gif
-
-[![Try online][wandbox-img]][wandbox] [![version 0.11.0][version]][releases]
-[![BSD license][license-img]][license]
 
 In C++11, *everything* can be used at compile time. You can convert your enums,
 loop over them, [find their max][max],
@@ -25,14 +32,6 @@ See the [project page][project] for full documentation.
 [max]:      http://aantron.github.io/better-enums/demo/BitSets.html
 [enforce]:  http://aantron.github.io/better-enums/demo/SpecialValues.html
 [project]:  http://aantron.github.io/better-enums
-[wandbox]:  http://melpon.org/wandbox/permlink/2QCi3cwQnplAToge
-[tutorial]: http://aantron.github.io/better-enums#Tutorial
-[api]:      http://aantron.github.io/better-enums/ApiReference.html
-[releases]: https://github.com/aantron/better-enums/releases
-
-[wandbox-img]: https://img.shields.io/badge/try%20it-online-blue.svg
-[version]:     https://img.shields.io/badge/version-0.11.0-lightgrey.svg
-[license-img]: https://img.shields.io/badge/license-BSD-lightgrey.svg
 
 ## Installation
 
@@ -97,19 +96,11 @@ Don't hesitate to contact me about features or bugs:
 [antonbachin@yahoo.com][email], or open an issue on GitHub.
 
 If you'd like to help develop Better Enums, see [CONTRIBUTING][contributing].
-
-[![master kept stable][stable]][commits] [![Travis status][travis-img]][travis]
-[![AppVeyor status][appveyor-img]][appveyor]
+One area that could use fresh ideas is finding a compile-time data structure
+that both compiles quickly and allows lookup in sub-linear time.
 
 [email]:        mailto:antonbachin@yahoo.com
 [contributing]: https://github.com/aantron/better-enums/blob/master/doc/CONTRIBUTING.md
-[stable]:       https://img.shields.io/badge/master-kept_stable-brightgreen.svg
-[commits]:      https://github.com/aantron/better-enums/blob/master/doc/CONTRIBUTING.md#commits
-
-[appveyor]:     https://ci.appveyor.com/project/aantron/better-enums/branch/master
-[travis]:       https://travis-ci.org/aantron/better-enums/branches
-[travis-img]:   https://img.shields.io/travis/aantron/better-enums/master.svg?label=travis
-[appveyor-img]: https://img.shields.io/appveyor/ci/aantron/better-enums/master.svg?label=appveyor
 
 ## License and history
 
