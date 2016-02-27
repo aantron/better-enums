@@ -167,6 +167,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES Clang)
     add_cxx_flag_if_supported("-Wall")
     add_cxx_flag_if_supported("-Wextra")
     add_cxx_flag_if_supported("-Wno-variadic-macros")
+    add_cxx_flag_if_supported("-Wno-unused-const-variable")
 
     add_definitions("-Werror")
 endif()
