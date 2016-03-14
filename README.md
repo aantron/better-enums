@@ -1,6 +1,6 @@
-# Better Enums &nbsp; [![version 0.11.0][version]][releases] [![Try online][wandbox-img]][wandbox] [![Travis status][travis-img]][travis] [![AppVeyor status][appveyor-img]][appveyor] [![BSD license][license-img]][license]
+# Better Enums &nbsp; [![version 0.11.1][version]][releases] [![Try online][wandbox-img]][wandbox] [![Travis status][travis-img]][travis] [![AppVeyor status][appveyor-img]][appveyor] [![BSD license][license-img]][license]
 
-[version]:      https://img.shields.io/badge/version-0.11.0-blue.svg
+[version]:      https://img.shields.io/badge/version-0.11.1-blue.svg
 [releases]:     https://github.com/aantron/better-enums/releases
 [wandbox]:      http://melpon.org/wandbox/permlink/2QCi3cwQnplAToge
 [wandbox-img]:  https://img.shields.io/badge/try%20it-online-blue.svg
@@ -95,7 +95,7 @@ channel == +Channel::Red
 Don't hesitate to contact me about features or bugs:
 [antonbachin@yahoo.com][email], or open an issue on GitHub.
 
-If you'd like to help develop Better Enums, see [CONTRIBUTING][contributing].
+If you'd like to help develop Better Enums, see [`CONTRIBUTING`][contributing].
 One area that could use fresh ideas is finding a compile-time data structure
 that both compiles quickly and allows lookup in sub-linear time.
 
@@ -104,10 +104,11 @@ that both compiles quickly and allows lookup in sub-linear time.
 
 ## License and history
 
-Better Enums is released under the BSD 2-clause license. See [LICENSE][license].
+Better Enums is released under the BSD 2-clause license. See
+[`LICENSE`][license].
 
-The library was originally developed by the author in the winter of 2012-2013 at
-Hudson River Trading, as a replacement for an older generator called
-`BETTER_ENUM`.
+The original version of the library was developed by the author in the winter of
+2012-2013 at Hudson River Trading, as a replacement for an older generator
+called `BETTER_ENUM`.
 
 [license]: https://github.com/aantron/better-enums/blob/master/doc/LICENSE
