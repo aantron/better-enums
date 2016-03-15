@@ -35,20 +35,17 @@ See the [project page][project] for full documentation.
 
 ## Installation
 
-Simply add `enum.h` to your project &mdash; that's it.
-
-Then, include it, and use the `BETTER_ENUM` macro. Your compiler will generate
-the rich enums that are missing from standard C++.
+Simply add `enum.h` to your project.
 
 ## Additional features
 
-- No dependencies and no external build tools. Uses only standard C++, though,
-  for C++98, variadic macro support is required.
+- Uses only standard C++, though, for C++98, variadic macro support is required
+  (major compilers have it).
 - Supported and tested on [clang, gcc, and msvc][testing].
 - Fast compilation. You have to declare a few dozen enums to slow down your
-  compiler as much as [just including `iostream` does][performance].
+  compiler as much as [only including `iostream` does][performance].
 - Use any initializers and sparse ranges, just like with a built-in enum.
-- Guaranteed size and alignment &mdash; you choose the representation type.
+- Control over size and alignment &mdash; you choose the representation type.
 - Stream operators.
 - Does not use the heap and can be compiled with exceptions disabled, for use in
   minimal freestanding environments.
@@ -62,12 +59,12 @@ The biggest limitation is that the `BETTER_ENUM` macro can't be used inside a
 class. This seems [difficult to remove][nested]. There is a workaround with
 `typedef` (or C++11 `using`):
 
-```cpp
-BETTER_ENUM(UniquePrefix_Color, uint8_t, Red, Green, Blue)
+```
+BETTER_ENUM(SomePrefix_Color, uint8_t, Red, Green, Blue)
 
 struct triplet {
-    typedef UniquePrefix_Color      Color;
-    Color                           r, g, b;
+    typedef SomePrefix_Color    Color;
+    Color                       r, g, b;
 };
 
 triplet::Color  color;
