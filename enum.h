@@ -555,7 +555,7 @@ constexpr const char    *_final_ ## index =                                    \
 
 // The enums proper.
 
-#define BETTER_ENUMS_NS(EnumType)  better_enums::_data_ ## EnumType
+#define BETTER_ENUMS_NS(EnumType)  better_enums_data_ ## EnumType
 
 #ifdef BETTER_ENUMS_VC2008_WORKAROUNDS
 
@@ -574,12 +574,10 @@ constexpr const char    *_final_ ## index =                                    \
                           DeclareInitialize, DefineInitialize, CallInitialize, \
                           Enum, Underlying, ...)                               \
                                                                                \
-namespace better_enums {                                                       \
-namespace _data_ ## Enum {                                                     \
+namespace better_enums_data_ ## Enum {                                         \
                                                                                \
 BETTER_ENUMS_ID(GenerateSwitchType(Underlying, __VA_ARGS__))                   \
                                                                                \
-}                                                                              \
 }                                                                              \
                                                                                \
 class Enum {                                                                   \
@@ -662,8 +660,7 @@ class Enum {                                                                   \
     friend struct ::better_enums::_initialize_at_program_start<Enum>;          \
 };                                                                             \
                                                                                \
-namespace better_enums {                                                       \
-namespace _data_ ## Enum {                                                     \
+namespace better_enums_data_ ## Enum {                                         \
                                                                                \
 static ::better_enums::_initialize_at_program_start<Enum>                      \
                                                 _force_initialization;         \
@@ -675,7 +672,6 @@ BETTER_ENUMS_CONSTEXPR_ const Enum      _value_array[] =                       \
                                                                                \
 BETTER_ENUMS_ID(GenerateStrings(Enum, __VA_ARGS__))                            \
                                                                                \
-}                                                                              \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline const Enum                                      \
