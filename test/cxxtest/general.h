@@ -1,3 +1,4 @@
+#include <iosfwd>
 #include <stdexcept>
 #include <cxxtest/TestSuite.h>
 #include <enum.h>
@@ -124,6 +125,17 @@ static_assert_1(Channel::_values().size() == 3);
 static_assert_1(*Channel::_values().begin() == +Channel::Red);
 static_assert_1(*(Channel::_values().end() - 1) == +Channel::Blue);
 static_assert_1(Channel::_values()[1] == +Channel::Green);
+
+namespace name_clash_test {
+
+struct Foo {};
+std::ostream& operator<<(std::ostream&, Foo);
+
+BETTER_ENUM(Enum, int, ONE, TWO, THREE)
+
+static_assert_1((std::is_same<decltype(std::declval<std::ostream&>() << +Enum::ONE), std::ostream&>()));
+
+}
 
 #ifdef BETTER_ENUMS_CONSTEXPR_TO_STRING
 

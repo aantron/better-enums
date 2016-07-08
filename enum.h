@@ -555,7 +555,7 @@ constexpr const char    *_final_ ## index =                                    \
 
 // The enums proper.
 
-#define BETTER_ENUMS_NS(EnumType)  better_enums::_data_ ## EnumType
+#define BETTER_ENUMS_NS(EnumType)  better_enums_data_ ## EnumType
 
 #ifdef BETTER_ENUMS_VC2008_WORKAROUNDS
 
@@ -574,12 +574,10 @@ constexpr const char    *_final_ ## index =                                    \
                           DeclareInitialize, DefineInitialize, CallInitialize, \
                           Enum, Underlying, ...)                               \
                                                                                \
-namespace better_enums {                                                       \
-namespace _data_ ## Enum {                                                     \
+namespace better_enums_data_ ## Enum {                                         \
                                                                                \
 BETTER_ENUMS_ID(GenerateSwitchType(Underlying, __VA_ARGS__))                   \
                                                                                \
-}                                                                              \
 }                                                                              \
                                                                                \
 class Enum {                                                                   \
@@ -662,8 +660,7 @@ class Enum {                                                                   \
     friend struct ::better_enums::_initialize_at_program_start<Enum>;          \
 };                                                                             \
                                                                                \
-namespace better_enums {                                                       \
-namespace _data_ ## Enum {                                                     \
+namespace better_enums_data_ ## Enum {                                         \
                                                                                \
 static ::better_enums::_initialize_at_program_start<Enum>                      \
                                                 _force_initialization;         \
@@ -675,7 +672,6 @@ BETTER_ENUMS_CONSTEXPR_ const Enum      _value_array[] =                       \
                                                                                \
 BETTER_ENUMS_ID(GenerateStrings(Enum, __VA_ARGS__))                            \
                                                                                \
-}                                                                              \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline const Enum                                      \
@@ -834,7 +830,33 @@ BETTER_ENUMS_CONSTEXPR_ inline bool operator <=(const Enum &a, const Enum &b)  \
 BETTER_ENUMS_CONSTEXPR_ inline bool operator >(const Enum &a, const Enum &b)   \
     { return a._to_integral() > b._to_integral(); }                            \
 BETTER_ENUMS_CONSTEXPR_ inline bool operator >=(const Enum &a, const Enum &b)  \
-    { return a._to_integral() >= b._to_integral(); }
+    { return a._to_integral() >= b._to_integral(); }                           \
+                                                                               \
+                                                                               \
+template <typename Char, typename Traits>                                      \
+std::basic_ostream<Char, Traits>&                                              \
+operator <<(std::basic_ostream<Char, Traits>& stream, const Enum &value)       \
+{                                                                              \
+    return stream << value._to_string();                                       \
+}                                                                              \
+                                                                               \
+template <typename Char, typename Traits>                                      \
+std::basic_istream<Char, Traits>&                                              \
+operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
+{                                                                              \
+    std::basic_string<Char, Traits>     buffer;                                \
+                                                                               \
+    stream >> buffer;                                                          \
+    ::better_enums::optional<Enum>      converted =                            \
+        Enum::_from_string_nothrow(buffer.c_str());                            \
+                                                                               \
+    if (converted)                                                             \
+        value = *converted;                                                    \
+    else                                                                       \
+        stream.setstate(std::basic_istream<Char, Traits>::failbit);            \
+                                                                               \
+    return stream;                                                             \
+}
 
 
 
@@ -1140,45 +1162,6 @@ BETTER_ENUMS_CONSTEXPR_ map<Enum, T> make_map(T (*f)(Enum))
     return map<Enum, T>(f);
 }
 
-
-
-// Stream I/O operators.
-
-// This template is used as a sort of enable_if for SFINAE. It should be
-// possible to use std::enable_if, however <type_traits> is not available in
-// C++98. Non-char streams are currently not supported.
-template <typename T, typename Enum>
-struct only_if_enum { typedef T type; };
-
 }
-
-template <typename Char, typename Traits, typename Enum>
-inline typename better_enums::only_if_enum<std::basic_ostream<Char, Traits>,
-                                           typename Enum::_enumerated>::type&
-operator <<(std::basic_ostream<Char, Traits>& stream, const Enum &value)
-{
-    return stream << value._to_string();
-}
-
-template <typename Char, typename Traits, class Enum>
-inline typename better_enums::only_if_enum<std::basic_istream<Char, Traits>,
-                                           typename Enum::_enumerated>::type&
-operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)
-{
-    std::basic_string<Char, Traits>     buffer;
-
-    stream >> buffer;
-    better_enums::optional<Enum>        converted =
-        Enum::_from_string_nothrow(buffer.c_str());
-
-    if (converted)
-        value = *converted;
-    else
-        stream.setstate(std::basic_istream<Char, Traits>::failbit);
-
-    return stream;
-}
-
-
 
 #endif // #ifndef BETTER_ENUMS_ENUM_H
