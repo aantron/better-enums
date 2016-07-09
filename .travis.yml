@@ -1,34 +1,211 @@
 language: cpp
 
-env:
-  - COMPILER="clang++-3.7"
-  - COMPILER="g++-5"
-  - COMPILER="g++-4.6"
-  - COMPILER="g++-4.7"
-  - COMPILER="g++-4.4"
-  - COMPILER="g++-4.8"
-  - COMPILER="g++-4.9"
-  - COMPILER="g++-4.5"
-  - COMPILER="clang++-3.3"
-  - COMPILER="clang++-3.4"
-  - COMPILER="clang++-3.5"
-  - COMPILER="clang++-3.6"
+matrix:
+  include:
+  ########################################
+  ## GCC 4.4
+  ########################################
+  - os: linux
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.4
+    env:
+    - C_COMPILER=gcc-4.4
+    - CXX_COMPILER=g++-4.4
+
+  ########################################
+  ## GCC 4.5
+  ########################################
+  - os: linux
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.5
+    env:
+    - C_COMPILER=gcc-4.5
+    - CXX_COMPILER=g++-4.5
+
+  ########################################
+  ## GCC 4.6
+  ########################################
+  - os: linux
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.6
+    env:
+    - C_COMPILER=gcc-4.6
+    - CXX_COMPILER=g++-4.6
+
+  ########################################
+  ## GCC 4.7
+  ########################################
+  - os: linux
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.7
+    env:
+    - C_COMPILER=gcc-4.7
+    - CXX_COMPILER=g++-4.7
+
+  ########################################
+  ## GCC 4.8
+  ########################################
+  - os: linux
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.8
+    env:
+    - C_COMPILER=gcc-4.8
+    - CXX_COMPILER=g++-4.8
+
+  ########################################
+  ## GCC 4.9
+  ########################################
+  - os: linux
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.9
+    env:
+    - C_COMPILER=gcc-4.9
+    - CXX_COMPILER=g++-4.9
+
+  ########################################
+  ## GCC 5
+  ########################################
+  - os: linux
+    compiler: gcc
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-5
+    env:
+    - C_COMPILER=gcc-5
+    - CXX_COMPILER=g++-5
+
+  ########################################
+  ## CLANG 3.3
+  ########################################
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-precise-3.3
+        - sourceline: 'ppa:ubuntu-toolchain-r/test'
+        - sourceline: 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.3 main'
+          key_url: 'http://llvm.org/apt/llvm-snapshot.gpg.key'
+        packages:
+        - clang-3.3
+    env:
+    - C_COMPILER=clang-3.3
+    - CXX_COMPILER=clang++-3.3
+
+  ########################################
+  ## CLANG 3.4
+  ########################################
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-precise-3.4
+        packages:
+        - clang-3.4
+    env:
+    - C_COMPILER=clang-3.4
+    - CXX_COMPILER=clang++-3.4
+
+  ########################################
+  ## CLANG 3.5
+  ########################################
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-precise-3.5
+        packages:
+        - clang-3.5
+    env:
+    - C_COMPILER=clang-3.5
+    - CXX_COMPILER=clang++-3.5
+
+  ########################################
+  ## CLANG 4.6
+  ########################################
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-precise-3.6
+        packages:
+        - clang-3.6
+    env:
+    - C_COMPILER=clang-3.6
+    - CXX_COMPILER=clang++-3.6
+
+  ########################################
+  ## CLANG 3.7
+  ########################################
+  - os: linux
+    compiler: clang
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        - llvm-toolchain-precise-3.7
+        packages:
+        - clang-3.7
+    env:
+    - C_COMPILER=clang-3.7
+    - CXX_COMPILER=clang++-3.7
+
+git:
+  submodules: false
+
+before_install:
+- git submodule update --init --recursive
 
 before_script:
-  - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-  - sudo add-apt-repository --yes ppa:h-rayflood/llvm
-  - sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.5 main'
-  - sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.6 main'
-  - sudo add-apt-repository -y 'deb http://llvm.org/apt/precise/ llvm-toolchain-precise-3.7 main'
-  - sudo apt-get update -qq
-  - sudo apt-get install --allow-unauthenticated $COMPILER
-  - git clone https://github.com/CxxTest/cxxtest.git cxxtest-ro
-  - curl -O https://cmake.org/files/v3.2/cmake-3.2.3-Linux-x86_64.tar.gz
-  - tar -xzf cmake-3.2.3-Linux-x86_64.tar.gz
-  - sudo cp -fR cmake-3.2.3-Linux-x86_64/* /usr
+- sudo apt-get update -qq
+- sudo apt-get install ninja-build
+- curl -O https://cmake.org/files/v3.6/cmake-3.6.0-Linux-x86_64.tar.gz
+- tar -xzf cmake-3.6.0-Linux-x86_64.tar.gz
+- sudo cp -fR cmake-3.6.0-Linux-x86_64/* /usr
 
 script:
-  - export PATH="$PATH:$(pwd)/cxxtest-ro/bin"
-  - ln -s cxxtest-ro/cxxtest cxxtest
-  - cd test
-  - make COMPILER=$COMPILER unix
+- mkdir build
+- cd build
+- cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=$C_COMPILER -DCMAKE_CXX_COMPILER=$CXX_COMPILER
+- ninja
+- ctest -T test --output-on-failure
