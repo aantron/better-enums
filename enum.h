@@ -38,6 +38,11 @@
 #endif
 
 #ifdef _MSC_VER
+#   ifdef __clang__
+#       if __has_feature(cxx_constexpr)
+#           define BETTER_ENUMS_HAVE_CONSTEXPR
+#       endif
+#   endif
 #   ifndef _CPPUNWIND
 #       define BETTER_ENUMS_NO_EXCEPTIONS
 #   endif
