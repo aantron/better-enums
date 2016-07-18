@@ -84,9 +84,9 @@
 #endif
 
 #ifdef __GNUC__
-#   define BETTER_ENUMS_UNUSED(x) x __attribute__((__unused__))
+#   define BETTER_ENUMS_UNUSED __attribute__((__unused__))
 #else
-#   define BETTER_ENUMS_UNUSED(x) x
+#   define BETTER_ENUMS_UNUSED
 #endif
 
 
@@ -349,7 +349,7 @@ BETTER_ENUMS_CONSTEXPR_ static T* _or_null(optional<T*> maybe)
 
 template <typename T, typename U>
 BETTER_ENUMS_CONSTEXPR_ U
-continue_with(T BETTER_ENUMS_UNUSED(ignored), U value) { return value; }
+continue_with(T ignored BETTER_ENUMS_UNUSED, U value) { return value; }
 
 
 
@@ -362,7 +362,7 @@ struct _eat_assign {
 
     template <typename Any>
     BETTER_ENUMS_CONSTEXPR_ const _eat_assign&
-    operator =(Any BETTER_ENUMS_UNUSED(dummy)) const { return *this; }
+    operator =(Any dummy BETTER_ENUMS_UNUSED) const { return *this; }
 
     BETTER_ENUMS_CONSTEXPR_ operator EnumType () const { return _value; }
 
@@ -679,7 +679,8 @@ BETTER_ENUMS_ID(GenerateStrings(Enum, __VA_ARGS__))                            \
                                                                                \
 }                                                                              \
                                                                                \
-BETTER_ENUMS_CONSTEXPR_ inline const Enum                                      \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline const Enum                                                              \
 operator +(Enum::_enumerated enumerated)                                       \
 {                                                                              \
     return static_cast<Enum>(enumerated);                                      \
@@ -824,17 +825,28 @@ ToStringConstexpr inline Enum::_name_iterable Enum::_names()                   \
                                                                                \
 DefineInitialize(Enum)                                                         \
                                                                                \
-BETTER_ENUMS_CONSTEXPR_ inline bool operator ==(const Enum &a, const Enum &b)  \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator ==(const Enum &a, const Enum &b)                          \
     { return a._to_integral() == b._to_integral(); }                           \
-BETTER_ENUMS_CONSTEXPR_ inline bool operator !=(const Enum &a, const Enum &b)  \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator !=(const Enum &a, const Enum &b)                          \
     { return a._to_integral() != b._to_integral(); }                           \
-BETTER_ENUMS_CONSTEXPR_ inline bool operator <(const Enum &a, const Enum &b)   \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator <(const Enum &a, const Enum &b)                           \
     { return a._to_integral() < b._to_integral(); }                            \
-BETTER_ENUMS_CONSTEXPR_ inline bool operator <=(const Enum &a, const Enum &b)  \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator <=(const Enum &a, const Enum &b)                          \
     { return a._to_integral() <= b._to_integral(); }                           \
-BETTER_ENUMS_CONSTEXPR_ inline bool operator >(const Enum &a, const Enum &b)   \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator >(const Enum &a, const Enum &b)                           \
     { return a._to_integral() > b._to_integral(); }                            \
-BETTER_ENUMS_CONSTEXPR_ inline bool operator >=(const Enum &a, const Enum &b)  \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator >=(const Enum &a, const Enum &b)                          \
     { return a._to_integral() >= b._to_integral(); }                           \
                                                                                \
                                                                                \
