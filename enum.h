@@ -38,6 +38,9 @@
 #endif
 
 #ifdef _MSC_VER
+#   if _MSC_VER >= 1911
+#       define BETTER_ENUMS_HAVE_CONSTEXPR
+#   endif
 #   ifdef __clang__
 #       if __has_feature(cxx_constexpr)
 #           define BETTER_ENUMS_HAVE_CONSTEXPR
