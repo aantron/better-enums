@@ -351,7 +351,7 @@ BETTER_ENUMS_CONSTEXPR_ static T* _or_null(optional<T*> maybe)
 
 template <typename T, typename U>
 BETTER_ENUMS_CONSTEXPR_ U
-continue_with(T BETTER_ENUMS_UNUSED_WRAPPER(ignored) BETTER_ENUMS_UNUSED, U value) { return value; }
+continue_with(T, U value) { return value; }
 
 
 
@@ -888,12 +888,14 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
 #define BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)                         \
     : Underlying
 
-#if _MSC_VER >= 1700
+#ifdef _MSC_VER
+#   if _MSC_VER >= 1700
 // VS 2012 and above fully support strongly typed enums and will warn about
 // incorrect usage.
-#   define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)
-#else
-#   define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX98_UNDERLYING_TYPE(Underlying)
+#       define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)
+#   else
+#       define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX98_UNDERLYING_TYPE(Underlying)
+#   endif
 #endif
 
 // C++98, C++11
