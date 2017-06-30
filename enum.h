@@ -85,10 +85,8 @@
 
 #ifdef __GNUC__
 #   define BETTER_ENUMS_UNUSED __attribute__((__unused__))
-#   define BETTER_ENUMS_UNUSED_WRAPPER(x) x
 #else
 #   define BETTER_ENUMS_UNUSED
-#   define BETTER_ENUMS_UNUSED_WRAPPER(x)
 #endif
 
 
@@ -364,7 +362,7 @@ struct _eat_assign {
 
     template <typename Any>
     BETTER_ENUMS_CONSTEXPR_ const _eat_assign&
-    operator =(Any BETTER_ENUMS_UNUSED_WRAPPER(dummy) BETTER_ENUMS_UNUSED) const { return *this; }
+    operator =(Any) const { return *this; }
 
     BETTER_ENUMS_CONSTEXPR_ operator EnumType () const { return _value; }
 
@@ -888,14 +886,12 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
 #define BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)                         \
     : Underlying
 
-#ifdef _MSC_VER
-#   if _MSC_VER >= 1700
+#if !defined(_MSC_VER) || _MSC_VER >= 1700
 // VS 2012 and above fully support strongly typed enums and will warn about
 // incorrect usage.
-#       define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)
-#   else
-#       define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX98_UNDERLYING_TYPE(Underlying)
-#   endif
+#   define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)
+#else
+#   define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX98_UNDERLYING_TYPE(Underlying)
 #endif
 
 // C++98, C++11
