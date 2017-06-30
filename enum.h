@@ -886,7 +886,7 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
 #define BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)                         \
     : Underlying
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1700
+#if defined(_MSC_VER) && _MSC_VER >= 1700
 // VS 2012 and above fully support strongly typed enums and will warn about
 // incorrect usage.
 #   define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)
