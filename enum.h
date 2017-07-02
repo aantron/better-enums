@@ -349,7 +349,7 @@ BETTER_ENUMS_CONSTEXPR_ static T* _or_null(optional<T*> maybe)
 
 template <typename T, typename U>
 BETTER_ENUMS_CONSTEXPR_ U
-continue_with(T ignored BETTER_ENUMS_UNUSED, U value) { return value; }
+continue_with(T, U value) { return value; }
 
 
 
@@ -362,7 +362,7 @@ struct _eat_assign {
 
     template <typename Any>
     BETTER_ENUMS_CONSTEXPR_ const _eat_assign&
-    operator =(Any dummy BETTER_ENUMS_UNUSED) const { return *this; }
+    operator =(Any) const { return *this; }
 
     BETTER_ENUMS_CONSTEXPR_ operator EnumType () const { return _value; }
 
@@ -886,6 +886,14 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
 #define BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)                         \
     : Underlying
 
+#if defined(_MSC_VER) && _MSC_VER >= 1700
+// VS 2012 and above fully support strongly typed enums and will warn about
+// incorrect usage.
+#   define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX11_UNDERLYING_TYPE(Underlying)
+#else
+#   define BETTER_ENUMS_LEGACY_UNDERLYING_TYPE(Underlying) BETTER_ENUMS_CXX98_UNDERLYING_TYPE(Underlying)
+#endif
+
 // C++98, C++11
 #define BETTER_ENUMS_REGULAR_ENUM_SWITCH_TYPE(Type)                            \
     _enumerated
@@ -1102,7 +1110,7 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
 
 #define BETTER_ENUM(Enum, Underlying, ...)                                     \
     BETTER_ENUMS_ID(BETTER_ENUMS_TYPE(                                         \
-        BETTER_ENUMS_CXX98_UNDERLYING_TYPE,                                    \
+        BETTER_ENUMS_LEGACY_UNDERLYING_TYPE,                                   \
         BETTER_ENUMS_DEFAULT_SWITCH_TYPE,                                      \
         BETTER_ENUMS_DEFAULT_SWITCH_TYPE_GENERATE,                             \
         BETTER_ENUMS_CXX98_TRIM_STRINGS_ARRAYS,                                \
