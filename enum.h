@@ -1150,6 +1150,23 @@ struct map_compare<const char*> {
     }
 };
 
+// chenyao add
+template <>
+struct map_compare<const wchar_t*> {
+    BETTER_ENUMS_CONSTEXPR_ static bool less(const wchar_t *a, const wchar_t *b)
+        { return less_loop(a, b); }
+
+  private:
+    BETTER_ENUMS_CONSTEXPR_ static bool
+    less_loop(const wchar_t *a, const wchar_t *b, size_t index = 0)
+    {
+        return
+            a[index] != b[index] ? a[index] < b[index] :
+            a[index] == L'\0' ? false :
+            less_loop(a, b, index + 1);
+    }
+};
+
 template <typename Enum, typename T, typename Compare = map_compare<T> >
 struct map {
     typedef T (*function)(Enum);
