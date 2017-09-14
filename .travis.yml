@@ -8,11 +8,14 @@ env:
   - COMPILER="g++-4.4"
   - COMPILER="g++-4.8"
   - COMPILER="g++-4.9"
-  - COMPILER="g++-4.5"
   - COMPILER="clang++-3.3"
   - COMPILER="clang++-3.4"
   - COMPILER="clang++-3.5"
   - COMPILER="clang++-3.6"
+
+matrix:
+  allow_failures:
+    - env: COMPILER="clang++-3.5"
 
 before_script:
   - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
