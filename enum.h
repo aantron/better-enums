@@ -485,6 +485,8 @@ struct _initialize_at_program_start {
     _initialize_at_program_start() { Enum::initialize(); }
 };
 
+struct Base {};
+
 } // namespace better_enums
 
 
@@ -588,7 +590,7 @@ BETTER_ENUMS_ID(GenerateSwitchType(Underlying, __VA_ARGS__))                   \
                                                                                \
 }                                                                              \
                                                                                \
-class Enum {                                                                   \
+class Enum : better_enums::Base {                                                                   \
   private:                                                                     \
     typedef ::better_enums::optional<Enum>                  _optional;         \
     typedef ::better_enums::optional<std::size_t>           _optional_index;   \
