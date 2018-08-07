@@ -222,8 +222,6 @@ def main():
         compose_general_page(page)
 
     copy_static_file("better-enums.css")
-    copy_static_file("image/twsupport.png")
-    copy_static_file("image/tweet.png")
 
     generate_sitemap()
 
