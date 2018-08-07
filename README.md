@@ -33,9 +33,13 @@ See the [project page][project] for full documentation.
 [enforce]:  http://aantron.github.io/better-enums/demo/SpecialValues.html
 [project]:  http://aantron.github.io/better-enums
 
+<br/>
+
 ## Installation
 
 Simply add `enum.h` to your project.
+
+<br/>
 
 ## Additional features
 
@@ -52,6 +56,8 @@ Simply add `enum.h` to your project.
 
 [testing]:     http://aantron.github.io/better-enums/CompilerSupport.html
 [performance]: http://aantron.github.io/better-enums/Performance.html
+
+<br/>
 
 ## Limitations
 
@@ -87,6 +93,8 @@ channel == +Channel::Red
 [nested]: http://aantron.github.io/better-enums/DesignDecisionsFAQ.html#NoEnumInsideClass
 [extend]: http://aantron.github.io/better-enums/ExtendingLimits.html
 
+<br/>
+
 ## Contact and development
 
 Don't hesitate to contact me about features or bugs:
@@ -98,6 +106,8 @@ that both compiles quickly and allows lookup in sub-linear time.
 
 [email]:        mailto:antonbachin@yahoo.com
 [contributing]: https://github.com/aantron/better-enums/blob/master/doc/CONTRIBUTING.md
+
+<br/>
 
 ## License and history
 
