@@ -22,6 +22,8 @@ int main()
 
 // If you miss a case or add a redundant one, your compiler should be able to
 // give you a warning - try it!
+//
+// Note that on msvc, you may need to enable warning C4062.
 
 
     std::cout << n << std::endl;

@@ -61,37 +61,40 @@ Simply add `enum.h` to your project.
 
 ## Limitations
 
-The biggest limitation is that the `BETTER_ENUM` macro can't be used inside a
+1. The biggest limitation is that the `BETTER_ENUM` macro can't be used inside a
 class. This seems [difficult to remove][nested]. There is a workaround with
 `typedef` (or C++11 `using`):
 
-```
-BETTER_ENUM(SomePrefix_Color, uint8_t, Red, Green, Blue)
+    ```
+    BETTER_ENUM(SomePrefix_Color, uint8_t, Red, Green, Blue)
 
-struct triplet {
-    typedef SomePrefix_Color    Color;
-    Color                       r, g, b;
-};
+    struct triplet {
+        typedef SomePrefix_Color    Color;
+        Color                       r, g, b;
+    };
 
-triplet::Color  color;
-```
+    triplet::Color  color;
+    ```
 
-You can, however, use `BETTER_ENUM` inside a namespace.
+    You can, however, use `BETTER_ENUM` inside a namespace.
 
-The macro has a soft limit of 64 declared constants. You can extend it by
+2. The macro has a soft limit of 64 declared constants. You can extend it by
 following [these instructions][extend]. Ultimately, the number of constants is
 limited by your compiler's maximum macro argument count.
 
-In some cases, it is necessary to prefix constants such as `Channel::Red` with a
+3. In some cases, it is necessary to prefix constants such as `Channel::Red` with a
 `+` to explicitly promote them to type `Channel`. For example, if you are doing
 a comparison:
 
-```
-channel == +Channel::Red
-```
+    ```
+    channel == +Channel::Red
+    ```
+
+4. On msvc, you may need to enable [warning C4062][C4062] to get `switch` case exhaustiveness checking.
 
 [nested]: http://aantron.github.io/better-enums/DesignDecisionsFAQ.html#NoEnumInsideClass
 [extend]: http://aantron.github.io/better-enums/ExtendingLimits.html
+[C4062]: https://docs.microsoft.com/en-us/cpp/error-messages/compiler-warnings/compiler-warning-level-4-c4062
 
 <br/>
 
