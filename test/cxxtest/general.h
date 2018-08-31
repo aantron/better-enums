@@ -330,9 +330,9 @@ class EnumTests : public CxxTest::TestSuite {
 	
 	void test_from_index()
 	{
-        TS_ASSERT_EQUALS((+Channel::Red), Depth::_from_index(0));
-        TS_ASSERT_EQUALS((+Channel::Green), Depth::_from_index(1));
-        TS_ASSERT_EQUALS((+Channel::Blue), Depth::_from_index(1));
+        TS_ASSERT_EQUALS((+Channel::Red), Channel::_from_index(0));
+        TS_ASSERT_EQUALS((+Channel::Green), Channel::_from_index(1));
+        TS_ASSERT_EQUALS((+Channel::Blue), Channel::_from_index(2));
         TS_ASSERT_THROWS(Channel::_from_index(42), std::runtime_error);
 		
         TS_ASSERT_EQUALS((+Depth::HighColor), Depth::_from_index(0));
@@ -358,7 +358,9 @@ class EnumTests : public CxxTest::TestSuite {
 		maybe_channel = Channel::_from_index(2);
         TS_ASSERT(maybe_channel);
         TS_ASSERT_EQUALS(*maybe_channel, +Channel::Blue);
-		TS_ASSERT(!Channel::_from_index(45));
+
+		maybe_channel = Channel::_from_index(45);
+		TS_ASSERT(!maybe_channel);
 		
 		better_enums::optional<Depth> maybe_depth = Depth::_from_index(0);
         TS_ASSERT(maybe_depth);
@@ -367,7 +369,9 @@ class EnumTests : public CxxTest::TestSuite {
 		maybe_depth = Depth::_from_index(1);
         TS_ASSERT(maybe_depth);
         TS_ASSERT_EQUALS(*maybe_depth, +Depth::TrueColor);
-		TS_ASSERT(!Channel::_from_index(45));
+
+		maybe_depth = Depth::_from_index(45);
+		TS_ASSERT(!maybe_depth);
 
 		better_enums::optional<Compression> maybe_compression = Compression::_from_index(0);
         TS_ASSERT(maybe_compression);
@@ -380,7 +384,9 @@ class EnumTests : public CxxTest::TestSuite {
 		maybe_compression = Compression::_from_index(2);
         TS_ASSERT(maybe_compression);
         TS_ASSERT_EQUALS(*maybe_compression, +Compression::Default);
-		TS_ASSERT(!Compression::_from_index(45));
+
+		maybe_compression = Compression::_from_index(45);
+		TS_ASSERT(!maybe_compression);
     }
 	
 	void test_from_index_unchecked()
