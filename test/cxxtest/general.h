@@ -368,20 +368,7 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT(maybe_depth);
         TS_ASSERT_EQUALS(*maybe_depth, +Depth::TrueColor);
 		TS_ASSERT(!Channel::_from_index(45));
-		
-		better_enums::optional<Depth> maybe_depth = Depth::_from_index(0);
-        TS_ASSERT(maybe_depth);
-        TS_ASSERT_EQUALS(*maybe_depth, +Depth::HighColor);
-		
-		maybe_depth = Depth::_from_index(1);
-        TS_ASSERT(maybe_depth);
-        TS_ASSERT_EQUALS(*maybe_depth, +Depth::TrueColor);
-		TS_ASSERT(!Channel::_from_index(45));
-		
-		better_enums::optional<Depth> maybe_depth = Depth::_from_index(0);
-        TS_ASSERT(maybe_depth);
-        TS_ASSERT_EQUALS(*maybe_depth, +Depth::HighColor);
-		
+
 		better_enums::optional<Compression> maybe_compression = Compression::_from_index(0);
         TS_ASSERT(maybe_compression);
         TS_ASSERT_EQUALS(*maybe_compression, +Compression::None);
@@ -403,7 +390,7 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS((+Channel::Green), Channel::_from_index_unchecked(1));
         TS_ASSERT_EQUALS((+Channel::Blue), Channel::_from_index_unchecked(2));
 		
-        TS_ASSERT_EQUALS((+Depth::HighColor)), Depth::_from_index_unchecked(0));
+        TS_ASSERT_EQUALS((+Depth::HighColor), Depth::_from_index_unchecked(0));
         TS_ASSERT_EQUALS((+Depth::TrueColor), Depth::_from_index_unchecked(1));
 		
         TS_ASSERT_EQUALS((+Compression::None), Compression::_from_index_unchecked(0));
