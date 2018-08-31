@@ -330,12 +330,12 @@ class EnumTests : public CxxTest::TestSuite {
 	
 	void test_from_index()
 	{
-        TS_ASSERT_EQUALS((+Channel::Red)), Depth::_from_index(0));
+        TS_ASSERT_EQUALS((+Channel::Red), Depth::_from_index(0));
         TS_ASSERT_EQUALS((+Channel::Green), Depth::_from_index(1));
         TS_ASSERT_EQUALS((+Channel::Blue), Depth::_from_index(1));
         TS_ASSERT_THROWS(Channel::_from_index(42), std::runtime_error);
 		
-        TS_ASSERT_EQUALS((+Depth::HighColor)), Depth::_from_index(0));
+        TS_ASSERT_EQUALS((+Depth::HighColor), Depth::_from_index(0));
         TS_ASSERT_EQUALS((+Depth::TrueColor), Depth::_from_index(1));
         TS_ASSERT_THROWS(Depth::_from_index(42), std::runtime_error);
 		
