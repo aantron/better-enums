@@ -346,7 +346,7 @@ BETTER_ENUMS_CONSTEXPR_ static T* _or_null(optional<T*> maybe)
 template <typename T>
 BETTER_ENUMS_CONSTEXPR_ static T _or_zero(optional<T> maybe)
 {
-    return maybe ? *maybe : static_cast<T>(0);
+    return maybe ? *maybe : T::_from_integral_unchecked(0);
 }
 
 
@@ -675,7 +675,7 @@ class Enum {                                                                   \
                                                                                \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_value_loop(_integral value, std::size_t index = 0);                  \
-    BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
+    BETTER_ENUMS_CONSTEXPR_ static _optional                                   \
     _from_index_loop(_integral value, std::size_t index = 0);                  \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_string_loop(const char *name, std::size_t index = 0);                \
@@ -721,11 +721,9 @@ BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional                                 \
 Enum::_from_index_loop(Enum::_integral value, std::size_t index)               \
 {                                                                              \
     return                                                                     \
-        index == _size() ?                                                     \
+        index >= _size() ?                                                     \
             _optional() :                                                      \
-            BETTER_ENUMS_NS(Enum)::index == value ?                            \
-                _optional(_value_array[index]) :                               \
-                _from_value_loop(value, index + 1);                            \
+             _optional(BETTER_ENUMS_NS(Enum)::_value_array[index]);            \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional_index                           \
@@ -757,7 +755,7 @@ BETTER_ENUMS_CONSTEXPR_ inline Enum::_integral Enum::_to_integral() const      \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_integral Enum::_to_index() const         \
 {                                                                              \
-    return _from_value_loop(value)                                             \
+    return *_from_value_loop(_value);                                          \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum                                            \
