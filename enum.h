@@ -676,7 +676,7 @@ class Enum {                                                                   \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_value_loop(_integral value, std::size_t index = 0);                  \
     BETTER_ENUMS_CONSTEXPR_ static _optional                                   \
-    _from_index_loop(_integral value);                                         \
+    _from_index_loop(std::size_t index);                                       \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_string_loop(const char *name, std::size_t index = 0);                \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
@@ -718,12 +718,12 @@ Enum::_from_value_loop(Enum::_integral value, std::size_t index)               \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional                                 \
-Enum::_from_index_loop(Enum::_integral value)                                  \
+Enum::_from_index_loop(std::size_t index)                                      \
 {                                                                              \
     return                                                                     \
-        value >= _size() ?                                                     \
+        index >= _size() ?                                                     \
             _optional() :                                                      \
-             _optional(BETTER_ENUMS_NS(Enum)::_value_array[value]);            \
+             _optional(BETTER_ENUMS_NS(Enum)::_value_array[index]);            \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional_index                           \
