@@ -721,7 +721,7 @@ BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional                                 \
 Enum::_from_index_loop(Enum::_integral value)                                  \
 {                                                                              \
     return                                                                     \
-        index >= _size() ?                                                     \
+        value >= _size() ?                                                     \
             _optional() :                                                      \
              _optional(BETTER_ENUMS_NS(Enum)::_value_array[value]);            \
 }                                                                              \
