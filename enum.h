@@ -621,8 +621,8 @@ class Enum {                                                                   \
     _from_integral_unchecked(_integral value);                                 \
     BETTER_ENUMS_CONSTEXPR_ static _optional                                   \
     _from_integral_nothrow(_integral value);                                   \
-																			   \
-    BETTER_ENUMS_CONSTEXPR_ _integral _to_index() const;   	                   \
+																	     	   \
+    BETTER_ENUMS_CONSTEXPR_ std::size_t _to_index() const;   	               \
     BETTER_ENUMS_IF_EXCEPTIONS(                                                \
     BETTER_ENUMS_CONSTEXPR_ static Enum _from_index(_integral value);          \
     )                                                                          \
@@ -753,7 +753,7 @@ BETTER_ENUMS_CONSTEXPR_ inline Enum::_integral Enum::_to_integral() const      \
     return _integral(_value);                                                  \
 }                                                                              \
                                                                                \
-BETTER_ENUMS_CONSTEXPR_ inline Enum::_integral Enum::_to_index() const         \
+BETTER_ENUMS_CONSTEXPR_ inline std::size_t Enum::_to_index() const             \
 {                                                                              \
     return *_from_value_loop(_value);                                          \
 }                                                                              \
