@@ -313,6 +313,103 @@ class EnumTests : public CxxTest::TestSuite {
                          +test::Namespaced::One);
         TS_ASSERT_EQUALS(strcmp(*test::Namespaced::_names().begin(), "One"), 0);
     }
+	
+    void test_to_index()
+    {
+        TS_ASSERT_EQUALS((+Channel::Red)._to_index(), 0);
+        TS_ASSERT_EQUALS((+Channel::Green)._to_index(), 1);
+        TS_ASSERT_EQUALS((+Channel::Blue)._to_index(), 2);
+		
+        TS_ASSERT_EQUALS((+Depth::HighColor)._to_index(), 0);
+        TS_ASSERT_EQUALS((+Depth::TrueColor)._to_index(), 1);
+		
+        TS_ASSERT_EQUALS((+Compression::None)._to_index(), 0);
+        TS_ASSERT_EQUALS((+Compression::Huffman)._to_index(), 1);
+        TS_ASSERT_EQUALS((+Compression::Default)._to_index(), 2);
+    }
+	
+	void test_from_index()
+	{
+        TS_ASSERT_EQUALS((+Channel::Red)), Depth::_from_index(0));
+        TS_ASSERT_EQUALS((+Channel::Green), Depth::_from_index(1));
+        TS_ASSERT_EQUALS((+Channel::Blue), Depth::_from_index(1));
+        TS_ASSERT_THROWS(Channel::_from_index(42), std::runtime_error);
+		
+        TS_ASSERT_EQUALS((+Depth::HighColor)), Depth::_from_index(0));
+        TS_ASSERT_EQUALS((+Depth::TrueColor), Depth::_from_index(1));
+        TS_ASSERT_THROWS(Depth::_from_index(42), std::runtime_error);
+		
+        TS_ASSERT_EQUALS((+Compression::None), Compression::_from_index(0));
+        TS_ASSERT_EQUALS((+Compression::Huffman), Compression::_from_index(1));
+        TS_ASSERT_EQUALS((+Compression::Default), Compression::_from_index(2));
+        TS_ASSERT_THROWS(Compression::_from_index(42), std::runtime_error);
+	}
+	
+    void test_from_index_nothrow()
+    {
+		better_enums::optional<Channel> maybe_channel = Channel::_from_index(0);
+        TS_ASSERT(maybe_channel);
+        TS_ASSERT_EQUALS(*maybe_channel, +Channel::Red);
+		
+		maybe_channel = Channel::_from_index(1);
+        TS_ASSERT(maybe_channel);
+        TS_ASSERT_EQUALS(*maybe_channel, +Channel::Green);
+		
+		maybe_channel = Channel::_from_index(2);
+        TS_ASSERT(maybe_channel);
+        TS_ASSERT_EQUALS(*maybe_channel, +Channel::Blue);
+		TS_ASSERT(!Channel::_from_index(45));
+		
+		better_enums::optional<Depth> maybe_depth = Depth::_from_index(0);
+        TS_ASSERT(maybe_depth);
+        TS_ASSERT_EQUALS(*maybe_depth, +Depth::HighColor);
+		
+		maybe_depth = Depth::_from_index(1);
+        TS_ASSERT(maybe_depth);
+        TS_ASSERT_EQUALS(*maybe_depth, +Depth::TrueColor);
+		TS_ASSERT(!Channel::_from_index(45));
+		
+		better_enums::optional<Depth> maybe_depth = Depth::_from_index(0);
+        TS_ASSERT(maybe_depth);
+        TS_ASSERT_EQUALS(*maybe_depth, +Depth::HighColor);
+		
+		maybe_depth = Depth::_from_index(1);
+        TS_ASSERT(maybe_depth);
+        TS_ASSERT_EQUALS(*maybe_depth, +Depth::TrueColor);
+		TS_ASSERT(!Channel::_from_index(45));
+		
+		better_enums::optional<Depth> maybe_depth = Depth::_from_index(0);
+        TS_ASSERT(maybe_depth);
+        TS_ASSERT_EQUALS(*maybe_depth, +Depth::HighColor);
+		
+		better_enums::optional<Compression> maybe_compression = Compression::_from_index(0);
+        TS_ASSERT(maybe_compression);
+        TS_ASSERT_EQUALS(*maybe_compression, +Compression::None);
+		
+		maybe_compression = Compression::_from_index(1);
+        TS_ASSERT(maybe_compression);
+        TS_ASSERT_EQUALS(*maybe_compression, +Compression::Huffman);
+		
+		maybe_compression = Compression::_from_index(2);
+        TS_ASSERT(maybe_compression);
+        TS_ASSERT_EQUALS(*maybe_compression, +Compression::Default);
+		TS_ASSERT(!Compression::_from_index(45));
+    }
+	
+	void test_from_index_unchecked()
+	{
+		
+        TS_ASSERT_EQUALS((+Channel::Red), Channel::_from_index_unchecked(0));
+        TS_ASSERT_EQUALS((+Channel::Green), Channel::_from_index_unchecked(1));
+        TS_ASSERT_EQUALS((+Channel::Blue), Channel::_from_index_unchecked(2));
+		
+        TS_ASSERT_EQUALS((+Depth::HighColor)), Depth::_from_index_unchecked(0));
+        TS_ASSERT_EQUALS((+Depth::TrueColor), Depth::_from_index_unchecked(1));
+		
+        TS_ASSERT_EQUALS((+Compression::None), Compression::_from_index_unchecked(0));
+        TS_ASSERT_EQUALS((+Compression::Huffman), Compression::_from_index_unchecked(1));
+        TS_ASSERT_EQUALS((+Compression::Default), Compression::_from_index_unchecked(2));
+	}
 };
 
 

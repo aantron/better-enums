@@ -343,6 +343,12 @@ BETTER_ENUMS_CONSTEXPR_ static T* _or_null(optional<T*> maybe)
     return maybe ? *maybe : BETTER_ENUMS_NULLPTR;
 }
 
+template <typename T>
+BETTER_ENUMS_CONSTEXPR_ static T _or_zero(optional<T> maybe)
+{
+    return maybe ? *maybe : static_cast<T>(0);
+}
+
 
 
 // Functional sequencing. This is essentially a comma operator wrapped in a
@@ -615,6 +621,15 @@ class Enum {                                                                   \
     _from_integral_unchecked(_integral value);                                 \
     BETTER_ENUMS_CONSTEXPR_ static _optional                                   \
     _from_integral_nothrow(_integral value);                                   \
+																			   \
+    BETTER_ENUMS_CONSTEXPR_ _integral _to_index() const;   	                   \
+    BETTER_ENUMS_IF_EXCEPTIONS(                                                \
+    BETTER_ENUMS_CONSTEXPR_ static Enum _from_index(_integral value);          \
+    )                                                                          \
+    BETTER_ENUMS_CONSTEXPR_ static Enum                                        \
+    _from_index_unchecked(_integral value);                                    \
+    BETTER_ENUMS_CONSTEXPR_ static _optional                                   \
+    _from_index_nothrow(_integral value);                                      \
                                                                                \
     ToStringConstexpr const char* _to_string() const;                          \
     BETTER_ENUMS_IF_EXCEPTIONS(                                                \
@@ -661,6 +676,8 @@ class Enum {                                                                   \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_value_loop(_integral value, std::size_t index = 0);                  \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
+    _from_index_loop(_integral value, std::size_t index = 0);                  \
+    BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_string_loop(const char *name, std::size_t index = 0);                \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_string_nocase_loop(const char *name, std::size_t index = 0);         \
@@ -700,6 +717,17 @@ Enum::_from_value_loop(Enum::_integral value, std::size_t index)               \
                 _from_value_loop(value, index + 1);                            \
 }                                                                              \
                                                                                \
+BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional                                 \
+Enum::_from_index_loop(Enum::_integral value, std::size_t index)               \
+{                                                                              \
+    return                                                                     \
+        index == _size() ?                                                     \
+            _optional() :                                                      \
+            BETTER_ENUMS_NS(Enum)::index == value ?                            \
+                _optional(_value_array[index]) :                               \
+                _from_value_loop(value, index + 1);                            \
+}                                                                              \
+                                                                               \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional_index                           \
 Enum::_from_string_loop(const char *name, std::size_t index)                   \
 {                                                                              \
@@ -726,6 +754,33 @@ BETTER_ENUMS_CONSTEXPR_ inline Enum::_integral Enum::_to_integral() const      \
 {                                                                              \
     return _integral(_value);                                                  \
 }                                                                              \
+                                                                               \
+BETTER_ENUMS_CONSTEXPR_ inline Enum::_integral Enum::_to_index() const         \
+{                                                                              \
+    return _from_value_loop(value)                                             \
+}                                                                              \
+                                                                               \
+BETTER_ENUMS_CONSTEXPR_ inline Enum                                            \
+Enum::_from_index_unchecked(_integral value)                                   \
+{                                                                              \
+    return                                                                     \
+        ::better_enums::_or_zero(_from_index_nothrow(value));                  \
+}                                                                              \
+                                                                               \
+BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional                                 \
+Enum::_from_index_nothrow(_integral value)                                     \
+{                                                                              \
+    return _from_index_loop(value);                                            \
+}                                                                              \
+                                                                               \
+BETTER_ENUMS_IF_EXCEPTIONS(                                                    \
+BETTER_ENUMS_CONSTEXPR_ inline Enum Enum::_from_index(_integral value)         \
+{                                                                              \
+    return                                                                     \
+        ::better_enums::_or_throw(_from_index_nothrow(value),                  \
+                                  #Enum "::_from_index: invalid argument");    \
+}                                                                              \
+)                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum                                            \
 Enum::_from_integral_unchecked(_integral value)                                \
