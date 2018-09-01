@@ -675,8 +675,6 @@ class Enum {                                                                   \
                                                                                \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_value_loop(_integral value, std::size_t index = 0);                  \
-    BETTER_ENUMS_CONSTEXPR_ static _optional                                   \
-    _from_index_loop(std::size_t index);                                       \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
     _from_string_loop(const char *name, std::size_t index = 0);                \
     BETTER_ENUMS_CONSTEXPR_ static _optional_index                             \
@@ -715,15 +713,6 @@ Enum::_from_value_loop(Enum::_integral value, std::size_t index)               \
             BETTER_ENUMS_NS(Enum)::_value_array[index]._value == value ?       \
                 _optional_index(index) :                                       \
                 _from_value_loop(value, index + 1);                            \
-}                                                                              \
-                                                                               \
-BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional                                 \
-Enum::_from_index_loop(std::size_t index)                                      \
-{                                                                              \
-    return                                                                     \
-        index >= _size() ?                                                     \
-            _optional() :                                                      \
-             _optional(BETTER_ENUMS_NS(Enum)::_value_array[index]);            \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional_index                           \
@@ -768,7 +757,10 @@ Enum::_from_index_unchecked(std::size_t index)                                 \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional                                 \
 Enum::_from_index_nothrow(std::size_t index)                                   \
 {                                                                              \
-    return _from_index_loop(index);                                            \
+    return                                                                     \
+        index >= _size() ?                                                     \
+            _optional() :                                                      \
+             _optional(BETTER_ENUMS_NS(Enum)::_value_array[index]);            \
 }                                                                              \
                                                                                \
 BETTER_ENUMS_IF_EXCEPTIONS(                                                    \
