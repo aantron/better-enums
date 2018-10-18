@@ -65,7 +65,7 @@ Simply add `enum.h` to your project.
 class. This seems [difficult to remove][nested]. There is a workaround with
 `typedef` (or C++11 `using`):
 
-    ```
+    ```c++
     BETTER_ENUM(SomePrefix_Color, uint8_t, Red, Green, Blue)
 
     struct triplet {
@@ -86,7 +86,7 @@ limited by your compiler's maximum macro argument count.
 `+` to explicitly promote them to type `Channel`. For example, if you are doing
 a comparison:
 
-    ```
+    ```c++
     channel == +Channel::Red
     ```
 
