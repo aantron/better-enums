@@ -15,6 +15,7 @@ env:
 
 matrix:
   allow_failures:
+    - env: COMPILER="clang++-3.3"
     - env: COMPILER="clang++-3.5"
 
 before_script:
