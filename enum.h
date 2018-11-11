@@ -498,7 +498,7 @@ struct _initialize_at_program_start {
 // Array generation macros.
 
 #define BETTER_ENUMS_EAT_ASSIGN_SINGLE(EnumType, index, expression)            \
-    ((::better_enums::_eat_assign<EnumType>)EnumType::expression),
+    (EnumType::expression),
 
 #define BETTER_ENUMS_EAT_ASSIGN(EnumType, ...)                                 \
     BETTER_ENUMS_ID(                                                           \
