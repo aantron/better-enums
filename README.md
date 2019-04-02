@@ -1,6 +1,6 @@
-# Better Enums &nbsp; [![version 0.11.1][version]][releases] [![Try online][wandbox-img]][wandbox] [![Travis status][travis-img]][travis] [![AppVeyor status][appveyor-img]][appveyor] [![BSD license][license-img]][license]
+# Better Enums &nbsp; [![version 0.11.2][version]][releases] [![Try online][wandbox-img]][wandbox] [![Travis status][travis-img]][travis] [![AppVeyor status][appveyor-img]][appveyor] [![BSD license][license-img]][license]
 
-[version]:      https://img.shields.io/badge/version-0.11.1-blue.svg
+[version]:      https://img.shields.io/badge/version-0.11.2-blue.svg
 [releases]:     https://github.com/aantron/better-enums/releases
 [wandbox]:      http://melpon.org/wandbox/permlink/2QCi3cwQnplAToge
 [wandbox-img]:  https://img.shields.io/badge/try%20it-online-blue.svg
