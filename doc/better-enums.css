@@ -19,7 +19,7 @@ pre {
     background-color: #477093;
     padding: 1.5em 20px;
     border-radius: 5px;
-    overflow: scroll;
+    overflow: auto;
     color: rgba(255, 255, 255, 0.6);
     font-size: 78%;
     max-width: 84ex;
