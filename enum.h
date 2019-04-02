@@ -1198,7 +1198,6 @@ struct map_compare<const char*> {
     }
 };
 
-// chenyao add
 template <>
 struct map_compare<const wchar_t*> {
     BETTER_ENUMS_CONSTEXPR_ static bool less(const wchar_t *a, const wchar_t *b)
