@@ -72,6 +72,6 @@ signature of the template `better_enums::map` is
 `Compare` has to be a class with a static member function
 `bool less(const T&, const T&)`. The default implementation
 `better_enums::map_compare` simply applies `operator <`, except when `T` is
-`const char*`. In that case, it does lexicographic comparison.
+`const char*` or `const wchar_t*`. In that case, it does lexicographic comparison.
 
 %% description = Mapping enums to arbitrary types and vice versa.
