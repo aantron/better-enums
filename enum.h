@@ -585,8 +585,9 @@ constexpr const char    *_final_ ## index =                                    \
 
 #define BETTER_ENUMS_TYPE(SetUnderlyingType, SwitchType, GenerateSwitchType,   \
                           GenerateStrings, ToStringConstexpr,                  \
+                          GenerateConstructor,                                 \
                           DeclareInitialize, DefineInitialize, CallInitialize, \
-                          Enum, Underlying, ...)                               \
+                          Enum, Underlying, Default, ...)                      \
                                                                                \
 namespace better_enums_data_ ## Enum {                                         \
                                                                                \
@@ -665,7 +666,7 @@ class Enum {                                                                   \
                                                                                \
     _integral      _value;                                                     \
                                                                                \
-    BETTER_ENUMS_DEFAULT_CONSTRUCTOR(Enum)                                     \
+    GenerateConstructor(Enum, Default)                                         \
                                                                                \
   private:                                                                     \
     explicit BETTER_ENUMS_CONSTEXPR_ Enum(const _integral &value) :            \
@@ -1100,7 +1101,13 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
         Enum() : _value(0) { }
 #endif
 
+#define BETTER_ENUMS_DEFAULT_MAKE_CONSTRUCTOR(Enum, Value)                     \
+    BETTER_ENUMS_DEFAULT_CONSTRUCTOR(Enum)
 
+#ifndef BETTER_ENUMS_DEFAULT_MAKE_DEFAULT_CONSTRUCTOR
+#   define BETTER_ENUMS_DEFAULT_MAKE_DEFAULT_CONSTRUCTOR(Enum, Default)        \
+        Enum() : _value(Default) { }
+#endif
 
 #ifdef BETTER_ENUMS_HAVE_CONSTEXPR
 
@@ -1139,10 +1146,11 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
         BETTER_ENUMS_DEFAULT_SWITCH_TYPE_GENERATE,                             \
         BETTER_ENUMS_DEFAULT_TRIM_STRINGS_ARRAYS,                              \
         BETTER_ENUMS_DEFAULT_TO_STRING_KEYWORD,                                \
+        BETTER_ENUMS_DEFAULT_MAKE_CONSTRUCTOR,                                 \
         BETTER_ENUMS_DEFAULT_DECLARE_INITIALIZE,                               \
         BETTER_ENUMS_DEFAULT_DEFINE_INITIALIZE,                                \
         BETTER_ENUMS_DEFAULT_CALL_INITIALIZE,                                  \
-        Enum, Underlying, __VA_ARGS__))
+        Enum, Underlying, 0, __VA_ARGS__))
 
 #define SLOW_ENUM(Enum, Underlying, ...)                                       \
     BETTER_ENUMS_ID(BETTER_ENUMS_TYPE(                                         \
@@ -1151,10 +1159,24 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
         BETTER_ENUMS_DEFAULT_SWITCH_TYPE_GENERATE,                             \
         BETTER_ENUMS_CXX11_FULL_CONSTEXPR_TRIM_STRINGS_ARRAYS,                 \
         BETTER_ENUMS_CONSTEXPR_TO_STRING_KEYWORD,                              \
+        BETTER_ENUMS_DEFAULT_MAKE_CONSTRUCTOR,                                 \
         BETTER_ENUMS_DECLARE_EMPTY_INITIALIZE,                                 \
         BETTER_ENUMS_DO_NOT_DEFINE_INITIALIZE,                                 \
         BETTER_ENUMS_DO_NOT_CALL_INITIALIZE,                                   \
-        Enum, Underlying, __VA_ARGS__))
+        Enum, Underlying, 0, __VA_ARGS__))
+
+#define BETTER_ENUM_DEFAULT(Enum, Underlying, Default, ...)                    \
+    BETTER_ENUMS_ID(BETTER_ENUMS_TYPE(                                         \
+        BETTER_ENUMS_CXX11_UNDERLYING_TYPE,                                    \
+        BETTER_ENUMS_DEFAULT_SWITCH_TYPE,                                      \
+        BETTER_ENUMS_DEFAULT_SWITCH_TYPE_GENERATE,                             \
+        BETTER_ENUMS_DEFAULT_TRIM_STRINGS_ARRAYS,                              \
+        BETTER_ENUMS_DEFAULT_TO_STRING_KEYWORD,                                \
+        BETTER_ENUMS_DEFAULT_MAKE_DEFAULT_CONSTRUCTOR,                         \
+        BETTER_ENUMS_DEFAULT_DECLARE_INITIALIZE,                               \
+        BETTER_ENUMS_DEFAULT_DEFINE_INITIALIZE,                                \
+        BETTER_ENUMS_DEFAULT_CALL_INITIALIZE,                                  \
+        Enum, Underlying, Default, __VA_ARGS__))
 
 #else
 
@@ -1165,10 +1187,11 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
         BETTER_ENUMS_DEFAULT_SWITCH_TYPE_GENERATE,                             \
         BETTER_ENUMS_CXX98_TRIM_STRINGS_ARRAYS,                                \
         BETTER_ENUMS_NO_CONSTEXPR_TO_STRING_KEYWORD,                           \
+        BETTER_ENUMS_DEFAULT_MAKE_CONSTRUCTOR,                                 \
         BETTER_ENUMS_DO_DECLARE_INITIALIZE,                                    \
         BETTER_ENUMS_DO_DEFINE_INITIALIZE,                                     \
         BETTER_ENUMS_DO_CALL_INITIALIZE,                                       \
-        Enum, Underlying, __VA_ARGS__))
+        Enum, Underlying, 0, __VA_ARGS__))
 
 #endif
 
