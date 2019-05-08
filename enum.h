@@ -364,6 +364,7 @@ continue_with(T, U value) { return value; }
 
 // Values array declaration helper.
 
+//! Get intrinsic value of an (Enum::value) by taking advantage of C-conversion's parentheses priority
 template <typename EnumType>
 struct _eat_assign {
     explicit BETTER_ENUMS_CONSTEXPR_ _eat_assign(EnumType value) : _value(value)
@@ -498,7 +499,7 @@ struct _initialize_at_program_start {
 // Array generation macros.
 
 #define BETTER_ENUMS_EAT_ASSIGN_SINGLE(EnumType, index, expression)            \
-    static_cast<EnumType>(static_cast<::better_enums::_eat_assign<EnumType>>(EnumType::expression)),
+    (EnumType)((::better_enums::_eat_assign<EnumType>)EnumType::expression),
 
 #define BETTER_ENUMS_EAT_ASSIGN(EnumType, ...)                                 \
     BETTER_ENUMS_ID(                                                           \
@@ -690,8 +691,11 @@ static ::better_enums::_initialize_at_program_start<Enum>                      \
                                                                                \
 enum _putNamesInThisScopeAlso { __VA_ARGS__ };                                 \
                                                                                \
+_Pragma("GCC diagnostic push")                                                 \
+_Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")                         \
 BETTER_ENUMS_CONSTEXPR_ const Enum      _value_array[] =                       \
     { BETTER_ENUMS_ID(BETTER_ENUMS_EAT_ASSIGN(Enum, __VA_ARGS__)) };           \
+_Pragma("GCC diagnostic pop")                                                  \
                                                                                \
 BETTER_ENUMS_ID(GenerateStrings(Enum, __VA_ARGS__))                            \
                                                                                \
