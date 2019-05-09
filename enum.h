@@ -27,6 +27,10 @@
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER _Pragma("GCC diagnostic push")
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_END _Pragma("GCC diagnostic pop")
+#      else
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_END
 #      endif
 #   endif
 #endif
