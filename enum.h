@@ -14,6 +14,24 @@
 #include <stdexcept>
 
 
+// in-line warning handling
+#ifdef __GNUC__
+#   ifdef __clang__
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER _Pragma("clang diagnostic push")
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN _Pragma("clang diagnostic ignored \"-Wold-style-cast\"")
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_END _Pragma("clang diagnostic pop")
+#   else
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER _Pragma("GCC diagnostic push")
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_END _Pragma("GCC diagnostic pop")
+#   endif
+#endif
+// msvc does not recognize `_Pragma`
+#ifdef _MSC_VER
+#   define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER
+#   define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN
+#   define BETTER_ENUMS_IGNORE_OLD_CAST_END
+#endif
 
 // Feature detection.
 
@@ -691,11 +709,11 @@ static ::better_enums::_initialize_at_program_start<Enum>                      \
                                                                                \
 enum _putNamesInThisScopeAlso { __VA_ARGS__ };                                 \
                                                                                \
-_Pragma("GCC diagnostic push")                                                 \
-_Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")                         \
+BETTER_ENUMS_IGNORE_OLD_CAST_HEADER                                            \
+BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN                                             \
 BETTER_ENUMS_CONSTEXPR_ const Enum      _value_array[] =                       \
     { BETTER_ENUMS_ID(BETTER_ENUMS_EAT_ASSIGN(Enum, __VA_ARGS__)) };           \
-_Pragma("GCC diagnostic pop")                                                  \
+BETTER_ENUMS_IGNORE_OLD_CAST_END                                               \
                                                                                \
 BETTER_ENUMS_ID(GenerateStrings(Enum, __VA_ARGS__))                            \
                                                                                \
