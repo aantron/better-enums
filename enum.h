@@ -61,9 +61,7 @@
 #           define BETTER_ENUMS_NO_EXCEPTIONS
 #       endif
 #   endif
-#endif
-
-#ifdef _MSC_VER
+#else
 #   if _MSC_VER >= 1911
 #       define BETTER_ENUMS_HAVE_CONSTEXPR
 #   endif
