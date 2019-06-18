@@ -33,9 +33,7 @@
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_END
 #      endif
 #   endif
-#endif
-// msvc does not recognize `_Pragma`
-#ifdef _MSC_VER
+#else // empty definitions for compilers that don't support _Pragma
 #   define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER
 #   define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN
 #   define BETTER_ENUMS_IGNORE_OLD_CAST_END
@@ -61,7 +59,9 @@
 #           define BETTER_ENUMS_NO_EXCEPTIONS
 #       endif
 #   endif
-#else
+#endif
+
+#ifdef _MSVC_VER
 #   if _MSC_VER >= 1911
 #       define BETTER_ENUMS_HAVE_CONSTEXPR
 #   endif
