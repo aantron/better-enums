@@ -14,6 +14,30 @@
 #include <stdexcept>
 
 
+// in-line, non-#pragma warning handling
+// not supported in very old compilers (namely gcc 4.4 or less)
+#ifdef __GNUC__
+#   ifdef __clang__
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER _Pragma("clang diagnostic push")
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN _Pragma("clang diagnostic ignored \"-Wold-style-cast\"")
+#      define BETTER_ENUMS_IGNORE_OLD_CAST_END _Pragma("clang diagnostic pop")
+#   else
+#      define BETTER_ENUMS_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100)
+#      if BETTER_ENUMS_GCC_VERSION > 40400
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER _Pragma("GCC diagnostic push")
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_END _Pragma("GCC diagnostic pop")
+#      else
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN
+#         define BETTER_ENUMS_IGNORE_OLD_CAST_END
+#      endif
+#   endif
+#else // empty definitions for compilers that don't support _Pragma
+#   define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER
+#   define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN
+#   define BETTER_ENUMS_IGNORE_OLD_CAST_END
+#endif
 
 // Feature detection.
 
@@ -364,6 +388,7 @@ continue_with(T, U value) { return value; }
 
 // Values array declaration helper.
 
+//! Get intrinsic value of an (Enum::value) by taking advantage of C-conversion's parentheses priority
 template <typename EnumType>
 struct _eat_assign {
     explicit BETTER_ENUMS_CONSTEXPR_ _eat_assign(EnumType value) : _value(value)
@@ -690,8 +715,11 @@ static ::better_enums::_initialize_at_program_start<Enum>                      \
                                                                                \
 enum _putNamesInThisScopeAlso { __VA_ARGS__ };                                 \
                                                                                \
+BETTER_ENUMS_IGNORE_OLD_CAST_HEADER                                            \
+BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN                                             \
 BETTER_ENUMS_CONSTEXPR_ const Enum      _value_array[] =                       \
     { BETTER_ENUMS_ID(BETTER_ENUMS_EAT_ASSIGN(Enum, __VA_ARGS__)) };           \
+BETTER_ENUMS_IGNORE_OLD_CAST_END                                               \
                                                                                \
 BETTER_ENUMS_ID(GenerateStrings(Enum, __VA_ARGS__))                            \
                                                                                \
