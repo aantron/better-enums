@@ -61,7 +61,7 @@
 #   endif
 #endif
 
-#ifdef _MSVC_VER
+#ifdef _MSC_VER
 #   if _MSC_VER >= 1911
 #       define BETTER_ENUMS_HAVE_CONSTEXPR
 #   endif
