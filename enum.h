@@ -949,6 +949,16 @@ operator >>(std::basic_istream<Char, Traits>& stream, Enum &value)             \
         stream.setstate(std::basic_istream<Char, Traits>::failbit);            \
                                                                                \
     return stream;                                                             \
+}                                                                              \
+                                                                               \
+namespace std {                                                                \
+template <> struct hash<Enum>                                                  \
+{                                                                              \
+   size_t operator()(const Enum &x) const                                      \
+   {                                                                           \
+      return std::hash<size_t>()(x._to_index());                               \
+   }                                                                           \
+};                                                                             \
 }
 
 
