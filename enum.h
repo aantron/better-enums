@@ -1283,17 +1283,15 @@ BETTER_ENUMS_CONSTEXPR_ map<Enum, T> make_map(T (*f)(Enum))
 
 }
 
-#ifndef BETTER_ENUMS_DECLARE_STD_HASH
 #define BETTER_ENUMS_DECLARE_STD_HASH(type) \
 	namespace std { \
 		template <> struct hash<type> \
 		{ \
 			size_t operator()(const type &x) const \
 			{ \
-				return std::hash<size_t>()(x._to_index()); \
+				return std::hash<size_t>()(x._to_integral()); \
 			} \
 		}; \
 	}	
-#endif
 
 #endif // #ifndef BETTER_ENUMS_ENUM_H
