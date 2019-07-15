@@ -16,7 +16,7 @@
 BETTER_ENUM(Channel, short, Red, Green, Blue)
 BETTER_ENUM(Depth, short, HighColor = 40, TrueColor = 20)
 BETTER_ENUM(Compression, short, None, Huffman, Default = Huffman)
-
+BETTER_ENUMS_DECLARE_STD_HASH(Channel)
 
 
 namespace test {
@@ -158,9 +158,17 @@ static_assert_1(same_string(Depth::_names()[0], "HighColor"));
 
 #endif // #ifdef _ENUM_HAVE_CONSTEXPR
 
-
-
 // Run-time testing.
+class HashTests : public CxxTest::TestSuite {
+   public:
+      void test_same_values()
+      {
+         TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Red), std::hash<int>().operator()(0));
+         TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Green), std::hash<int>().operator()(1));
+         TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Blue), std::hash<int>().operator()(2));
+      }
+};
+
 class EnumTests : public CxxTest::TestSuite {
   public:
     void test_constant_values()
