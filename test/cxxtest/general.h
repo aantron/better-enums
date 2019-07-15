@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <cxxtest/TestSuite.h>
 #include <enum.h>
+#include <functional>
 
 #define static_assert_1(e)  static_assert(e, #e)
 
