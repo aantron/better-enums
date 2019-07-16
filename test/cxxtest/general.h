@@ -18,11 +18,14 @@ BETTER_ENUM(Depth, short, HighColor = 40, TrueColor = 20)
 BETTER_ENUM(Compression, short, None, Huffman, Default = Huffman)
 
 
+
 namespace test {
 
 BETTER_ENUM(Namespaced, short, One, Two)
 
 }
+
+
 
 // Using BETTER_ENUMS_HAVE_CONSTEXPR_ as a proxy for C++11 support. This should
 // be changed to be more precise in the future.
@@ -158,17 +161,25 @@ static_assert_1(same_string(Depth::_names()[0], "HighColor"));
 
 #endif // #ifdef _ENUM_HAVE_CONSTEXPR
 
+
+
 // Run-time testing.
 class HashTests : public CxxTest::TestSuite {
-   public:
-      void test_same_values()
-      {
+  public:
+    void test_same_values()
+    {
 #ifdef _ENUM_HAVE_CONSTEXPR
-         TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Red), std::hash<int>().operator()(0));
-         TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Green), std::hash<int>().operator()(1));
-         TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Blue), std::hash<int>().operator()(2));
+        TS_ASSERT_EQUALS(
+            std::hash<Channel>().operator()(Channel::Red),
+            std::hash<int>().operator()(0));
+        TS_ASSERT_EQUALS(
+            std::hash<Channel>().operator()(Channel::Green),
+            std::hash<int>().operator()(1));
+        TS_ASSERT_EQUALS(
+            std::hash<Channel>().operator()(Channel::Blue),
+            std::hash<int>().operator()(2));
 #endif // #ifdef _ENUM_HAVE_CONSTEXPR
-      }
+    }
 };
 
 class EnumTests : public CxxTest::TestSuite {
@@ -323,59 +334,59 @@ class EnumTests : public CxxTest::TestSuite {
                          +test::Namespaced::One);
         TS_ASSERT_EQUALS(strcmp(*test::Namespaced::_names().begin(), "One"), 0);
     }
-	
+
     void test_to_index()
     {
         TS_ASSERT_EQUALS((+Channel::Red)._to_index(), 0);
         TS_ASSERT_EQUALS((+Channel::Green)._to_index(), 1);
         TS_ASSERT_EQUALS((+Channel::Blue)._to_index(), 2);
-		
+
         TS_ASSERT_EQUALS((+Depth::HighColor)._to_index(), 0);
         TS_ASSERT_EQUALS((+Depth::TrueColor)._to_index(), 1);
-		
+
         TS_ASSERT_EQUALS((+Compression::None)._to_index(), 0);
         TS_ASSERT_EQUALS((+Compression::Huffman)._to_index(), 1);
 //        TS_ASSERT_EQUALS((+Compression::Default)._to_index(), 2); // This won't pass as Compression::Huffman == Compression::Default
     }
-	
+
 	void test_from_index()
 	{
         TS_ASSERT_EQUALS((+Channel::Red), Channel::_from_index(0));
         TS_ASSERT_EQUALS((+Channel::Green), Channel::_from_index(1));
         TS_ASSERT_EQUALS((+Channel::Blue), Channel::_from_index(2));
         TS_ASSERT_THROWS(Channel::_from_index(42), std::runtime_error);
-		
+
         TS_ASSERT_EQUALS((+Depth::HighColor), Depth::_from_index(0));
         TS_ASSERT_EQUALS((+Depth::TrueColor), Depth::_from_index(1));
         TS_ASSERT_THROWS(Depth::_from_index(42), std::runtime_error);
-		
+
         TS_ASSERT_EQUALS((+Compression::None), Compression::_from_index(0));
         TS_ASSERT_EQUALS((+Compression::Huffman), Compression::_from_index(1));
         TS_ASSERT_EQUALS((+Compression::Default), Compression::_from_index(2));
         TS_ASSERT_THROWS(Compression::_from_index(42), std::runtime_error);
 	}
-	
+
     void test_from_index_nothrow()
     {
 		better_enums::optional<Channel> maybe_channel = Channel::_from_index_nothrow(0);
         TS_ASSERT(maybe_channel);
         TS_ASSERT_EQUALS(*maybe_channel, +Channel::Red);
-		
+
 		maybe_channel = Channel::_from_index_nothrow(1);
         TS_ASSERT(maybe_channel);
         TS_ASSERT_EQUALS(*maybe_channel, +Channel::Green);
-		
+
 		maybe_channel = Channel::_from_index_nothrow(2);
         TS_ASSERT(maybe_channel);
         TS_ASSERT_EQUALS(*maybe_channel, +Channel::Blue);
 
 		maybe_channel = Channel::_from_index_nothrow(45);
 		TS_ASSERT(!maybe_channel);
-		
+
 		better_enums::optional<Depth> maybe_depth = Depth::_from_index_nothrow(0);
         TS_ASSERT(maybe_depth);
         TS_ASSERT_EQUALS(*maybe_depth, +Depth::HighColor);
-		
+
 		maybe_depth = Depth::_from_index_nothrow(1);
         TS_ASSERT(maybe_depth);
         TS_ASSERT_EQUALS(*maybe_depth, +Depth::TrueColor);
@@ -386,11 +397,11 @@ class EnumTests : public CxxTest::TestSuite {
 		better_enums::optional<Compression> maybe_compression = Compression::_from_index_nothrow(0);
         TS_ASSERT(maybe_compression);
         TS_ASSERT_EQUALS(*maybe_compression, +Compression::None);
-		
+
 		maybe_compression = Compression::_from_index_nothrow(1);
         TS_ASSERT(maybe_compression);
         TS_ASSERT_EQUALS(*maybe_compression, +Compression::Huffman);
-		
+
 		maybe_compression = Compression::_from_index_nothrow(2);
         TS_ASSERT(maybe_compression);
         TS_ASSERT_EQUALS(*maybe_compression, +Compression::Default);
@@ -398,17 +409,17 @@ class EnumTests : public CxxTest::TestSuite {
 		maybe_compression = Compression::_from_index_nothrow(45);
 		TS_ASSERT(!maybe_compression);
     }
-	
+
 	void test_from_index_unchecked()
 	{
-		
+
         TS_ASSERT_EQUALS((+Channel::Red), Channel::_from_index_unchecked(0));
         TS_ASSERT_EQUALS((+Channel::Green), Channel::_from_index_unchecked(1));
         TS_ASSERT_EQUALS((+Channel::Blue), Channel::_from_index_unchecked(2));
-		
+
         TS_ASSERT_EQUALS((+Depth::HighColor), Depth::_from_index_unchecked(0));
         TS_ASSERT_EQUALS((+Depth::TrueColor), Depth::_from_index_unchecked(1));
-		
+
         TS_ASSERT_EQUALS((+Compression::None), Compression::_from_index_unchecked(0));
         TS_ASSERT_EQUALS((+Compression::Huffman), Compression::_from_index_unchecked(1));
         TS_ASSERT_EQUALS((+Compression::Default), Compression::_from_index_unchecked(2));
