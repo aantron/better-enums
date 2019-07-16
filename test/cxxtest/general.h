@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <cxxtest/TestSuite.h>
 #include <enum.h>
-#include <functional>
 
 #define static_assert_1(e)  static_assert(e, #e)
 
@@ -17,7 +16,6 @@
 BETTER_ENUM(Channel, short, Red, Green, Blue)
 BETTER_ENUM(Depth, short, HighColor = 40, TrueColor = 20)
 BETTER_ENUM(Compression, short, None, Huffman, Default = Huffman)
-BETTER_ENUMS_DECLARE_STD_HASH(Channel)
 
 
 namespace test {
@@ -26,13 +24,14 @@ BETTER_ENUM(Namespaced, short, One, Two)
 
 }
 
-
-
 // Using BETTER_ENUMS_HAVE_CONSTEXPR_ as a proxy for C++11 support. This should
 // be changed to be more precise in the future.
 #ifdef BETTER_ENUMS_HAVE_CONSTEXPR_
 
+BETTER_ENUMS_DECLARE_STD_HASH(Channel)
+
 #include <type_traits>
+#include <functional>
 
 // Type properties.
 static_assert_1(std::is_class<Channel>());
@@ -164,9 +163,11 @@ class HashTests : public CxxTest::TestSuite {
    public:
       void test_same_values()
       {
+#ifdef _ENUM_HAVE_CONSTEXPR
          TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Red), std::hash<int>().operator()(0));
          TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Green), std::hash<int>().operator()(1));
          TS_ASSERT_EQUALS(std::hash<Channel>().operator()(Channel::Blue), std::hash<int>().operator()(2));
+#endif // #ifdef _ENUM_HAVE_CONSTEXPR
       }
 };
 
