@@ -1,4 +1,4 @@
-# Better Enums &nbsp; [![version 0.11.2][version]][releases] [![Try online][wandbox-img]][wandbox] [![Travis status][travis-img]][travis] [![AppVeyor status][appveyor-img]][appveyor] [![BSD license][license-img]][license]
+# Better Enums &nbsp; [![version 0.11.2][version]][releases] [![Try online][wandbox-img]][wandbox] [![Travis status][travis-img]][travis] [![AppVeyor status][appveyor-img]][appveyor]
 
 [version]:      https://img.shields.io/badge/version-0.11.2-blue.svg
 [releases]:     https://github.com/aantron/better-enums/releases
@@ -112,13 +112,8 @@ that both compiles quickly and allows lookup in sub-linear time.
 
 <br/>
 
-## License and history
-
-Better Enums is released under the BSD 2-clause license. See
-[`LICENSE`][license].
+## History
 
 The original version of the library was developed by the author in the winter of
 2012-2013 at Hudson River Trading, as a replacement for an older generator
 called `BETTER_ENUM`.
-
-[license]: https://github.com/aantron/better-enums/blob/master/doc/LICENSE
