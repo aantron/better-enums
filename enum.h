@@ -27,16 +27,31 @@
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER _Pragma("GCC diagnostic push")
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN _Pragma("GCC diagnostic ignored \"-Wold-style-cast\"")
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_END _Pragma("GCC diagnostic pop")
+#         if (BETTER_ENUMS_GCC_VERSION >= 70300)
+#               define BETTER_ENUMS_IGNORE_ATTRIBUTES_HEADER _Pragma("GCC diagnostic push")
+#               define BETTER_ENUMS_IGNORE_ATTRIBUTES_BEGIN _Pragma("GCC diagnostic ignored \"-Wattributes\"")
+#               define BETTER_ENUMS_IGNORE_ATTRIBUTES_END _Pragma("GCC diagnostic pop")
+#         else
+#               define BETTER_ENUMS_IGNORE_ATTRIBUTES_HEADER
+#               define BETTER_ENUMS_IGNORE_ATTRIBUTES_BEGIN
+#               define BETTER_ENUMS_IGNORE_ATTRIBUTES_END
+#         endif
 #      else
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN
 #         define BETTER_ENUMS_IGNORE_OLD_CAST_END
+#         define BETTER_ENUMS_IGNORE_ATTRIBUTES_HEADER
+#         define BETTER_ENUMS_IGNORE_ATTRIBUTES_BEGIN
+#         define BETTER_ENUMS_IGNORE_ATTRIBUTES_END
 #      endif
 #   endif
 #else // empty definitions for compilers that don't support _Pragma
 #   define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER
 #   define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN
 #   define BETTER_ENUMS_IGNORE_OLD_CAST_END
+#   define BETTER_ENUMS_IGNORE_ATTRIBUTES_HEADER
+#   define BETTER_ENUMS_IGNORE_ATTRIBUTES_BEGIN
+#   define BETTER_ENUMS_IGNORE_ATTRIBUTES_END
 #endif
 
 // Feature detection.
@@ -725,12 +740,15 @@ BETTER_ENUMS_ID(GenerateStrings(Enum, __VA_ARGS__))                            \
                                                                                \
 }                                                                              \
                                                                                \
+BETTER_ENUMS_IGNORE_ATTRIBUTES_HEADER                                          \
+BETTER_ENUMS_IGNORE_ATTRIBUTES_BEGIN                                           \
 BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
 inline const Enum                                                              \
 operator +(Enum::_enumerated enumerated)                                       \
 {                                                                              \
     return static_cast<Enum>(enumerated);                                      \
 }                                                                              \
+BETTER_ENUMS_IGNORE_ATTRIBUTES_END                                             \
                                                                                \
 BETTER_ENUMS_CONSTEXPR_ inline Enum::_optional_index                           \
 Enum::_from_value_loop(Enum::_integral value, std::size_t index)               \
@@ -901,6 +919,8 @@ ToStringConstexpr inline Enum::_name_iterable Enum::_names()                   \
                                                                                \
 DefineInitialize(Enum)                                                         \
                                                                                \
+BETTER_ENUMS_IGNORE_ATTRIBUTES_HEADER                                          \
+BETTER_ENUMS_IGNORE_ATTRIBUTES_BEGIN                                           \
 BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
 inline bool operator ==(const Enum &a, const Enum &b)                          \
     { return a._to_integral() == b._to_integral(); }                           \
@@ -924,6 +944,7 @@ inline bool operator >(const Enum &a, const Enum &b)                           \
 BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
 inline bool operator >=(const Enum &a, const Enum &b)                          \
     { return a._to_integral() >= b._to_integral(); }                           \
+BETTER_ENUMS_IGNORE_ATTRIBUTES_END                                             \
                                                                                \
                                                                                \
 template <typename Char, typename Traits>                                      \
