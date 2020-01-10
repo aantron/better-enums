@@ -21,6 +21,9 @@
 #      define BETTER_ENUMS_IGNORE_OLD_CAST_HEADER _Pragma("clang diagnostic push")
 #      define BETTER_ENUMS_IGNORE_OLD_CAST_BEGIN _Pragma("clang diagnostic ignored \"-Wold-style-cast\"")
 #      define BETTER_ENUMS_IGNORE_OLD_CAST_END _Pragma("clang diagnostic pop")
+#      define BETTER_ENUMS_IGNORE_ATTRIBUTES_HEADER _Pragma("clang diagnostic push")
+#      define BETTER_ENUMS_IGNORE_ATTRIBUTES_BEGIN _Pragma("clang diagnostic ignored \"-Wattributes\"")
+#      define BETTER_ENUMS_IGNORE_ATTRIBUTES_END _Pragma("clang diagnostic pop")
 #   else
 #      define BETTER_ENUMS_GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100)
 #      if BETTER_ENUMS_GCC_VERSION > 40400
