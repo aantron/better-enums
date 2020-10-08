@@ -17,7 +17,9 @@ file, and without dependencies.
 
 [sample]: https://raw.githubusercontent.com/aantron/better-enums/master/doc/image/sample.gif
 
-**Note**: consider [**magic_enum**](https://github.com/Neargye/magic_enum) (if using GCC, requires at least GCC 9.0).
+**Note**: consider [**magic_enum**](https://github.com/Neargye/magic_enum)
+(note it requires C++17 and a fairly recent compiler; see
+[*Limitations*](https://github.com/Neargye/magic_enum/blob/master/doc/limitations.md#readme)).
 
 In C++11, *everything* can be used at compile time. You can convert your enums,
 loop over them, [find their max][max],
