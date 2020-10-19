@@ -406,7 +406,8 @@ continue_with(T, U value) { return value; }
 
 // Values array declaration helper.
 
-//! Get intrinsic value of an (Enum::value) by taking advantage of C-conversion's parentheses priority
+//! Get intrinsic value of an (Enum::value) by taking advantage of
+// C-conversion's parentheses priority
 template <typename EnumType>
 struct _eat_assign {
     explicit BETTER_ENUMS_CONSTEXPR_ _eat_assign(EnumType value) : _value(value)
@@ -641,7 +642,7 @@ BETTER_ENUMS_ID(GenerateSwitchType(Underlying, __VA_ARGS__))                   \
                                                                                \
 }                                                                              \
                                                                                \
-class BETTER_ENUMS_CLASS_ATTRIBUTE Enum {                                                                   \
+class BETTER_ENUMS_CLASS_ATTRIBUTE Enum {                                      \
   private:                                                                     \
     typedef ::better_enums::optional<Enum>                  _optional;         \
     typedef ::better_enums::optional<std::size_t>           _optional_index;   \
