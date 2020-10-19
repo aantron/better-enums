@@ -370,6 +370,34 @@ constants.
 
 
 
+### Index lookup
+
+#### member constexpr std::size_t <em>_to_index</em>() const
+
+Returns the index of a Better Enum value within its enum declaration. The index
+is determined from the value only; if two constants in the declaration have the
+same value, this function may return the index of either constant.
+
+If the value does not correspond to any constant in the declaration (for
+example, if it was obtained using an unchecked conversion or a cast), then the
+behavior of `value._to_index` is undefined.
+
+#### static constexpr Enum <em>_from_index</em>(size_t)
+
+Returns the value of the constant with the given index. Throws
+`std::runtime_error` if not given the index of one of the constants.
+
+#### static constexpr Enum <em>_from_index_unchecked</em>(size_t)
+
+Returns the value of the constant with the given index. If not given one of the
+constants in the declaration of the enum, the returned value is undefined.
+
+#### static constexpr optional<Enum> <em>_from_index_nothrow</em>(size_t)
+
+Returns the value of the constant with the given index.
+
+
+
 ### Stream operators
 
 #### non-member std::ostream& <em>operator <<</em>(std::ostream&, const Enum&)
