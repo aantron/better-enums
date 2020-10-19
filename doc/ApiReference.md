@@ -228,7 +228,7 @@ If the given string is the exact name of a declared constant, returns the
 constant. Otherwise, throws `std::runtime_error`. Running time is linear in the
 number of declared constants multiplied by the length of the longest constant.
 
-#### static constexpr optional<Enum> <em>_from_string_nothrow</em>(const char*)
+#### static constexpr optional&lt;Enum&gt; <em>_from_string_nothrow</em>(const char*)
 
 Same as [`_from_string`](#_from_string), but does not throw an exception on
 failure. Returns an [optional value](#StructBetter_enumsoptional) instead.
@@ -238,7 +238,7 @@ failure. Returns an [optional value](#StructBetter_enumsoptional) instead.
 Same as [`_from_string`](#_from_string), but comparison is up to case, in the
 usual sense in the Latin-1 encoding.
 
-#### static constexpr optional<Enum> <em>_from_string_nocase_nothrow</em>(const char*)
+#### static constexpr optional&lt;Enum&gt; <em>_from_string_nocase_nothrow</em>(const char*)
 
 Is to [`_from_string_nocase`](#_from_string_nocase) as
 [`_from_string_nothrow`](#_from_string_nothrow) is to
@@ -342,7 +342,7 @@ of one of the declared constants.
     <em>Enum::_from_integral</em>(<em>2</em>);    // Enum::C
     <em>Enum::_from_integral</em>(<em>42</em>);   // std::runtime_error
 
-#### static constexpr optional<Enum> <em>_from_integral_nothrow</em>(_integral)
+#### static constexpr optional&lt;Enum&gt; <em>_from_integral_nothrow</em>(_integral)
 
 Checked conversion as [`_from_integral`](#_from_integral), but does not throw an
 exception on failure. Returns an [optional value](#StructBetter_enumsoptional)
@@ -392,7 +392,7 @@ Returns the value of the constant with the given index. Throws
 Returns the value of the constant with the given index. If not given one of the
 constants in the declaration of the enum, the returned value is undefined.
 
-#### static constexpr optional<Enum> <em>_from_index_nothrow</em>(size_t)
+#### static constexpr optional&lt;Enum&gt; <em>_from_index_nothrow</em>(size_t)
 
 Returns the value of the constant with the given index.
 
