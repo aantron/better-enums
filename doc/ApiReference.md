@@ -413,6 +413,21 @@ as [`_from_string`](#_from_string). In case of failure, sets the stream's
 
 
 
+### Hashing
+
+#### macro <em>BETTER_ENUMS_DECLARE_STD_HASH</em>(Enum)
+
+Use this outside namespace scope to declare a specialization of `std::hash` for
+the type `Enum`. For example:
+
+    // This declaration might be inside a namespace.
+    <em>BETTER_ENUM</em>(<em>Channel</em>, int, Red, Green, Blue)
+
+    // Later, outside the namespace:
+    <em>BETTER_ENUMS_DECLARE_STD_HASH</em>(<em>Channel</em>)
+
+
+
 %% class = api
 
 %% description = Detailed description of the Better Enums API.
