@@ -69,10 +69,7 @@ It's what built-in enums ought to support. Better Enums simply adds the missing
 features. And, it is based on the best known techniques, thoroughly tested,
 fast, portable, and documented exhaustively.
 
-To use it, just include <code>enum.h</code>.
-
-Try it live online in
-[Wandbox](http://melpon.org/wandbox/permlink/6kFervewqeDsNAGu), or begin the
+To use it, just include <code>enum.h</code> and begin the
 [tutorial](${prefix}tutorial/HelloWorld.html)!
 
 <div class="hack"></div>
