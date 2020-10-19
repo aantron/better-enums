@@ -671,12 +671,12 @@ class BETTER_ENUMS_CLASS_ATTRIBUTE Enum {                                       
                                                                                \
     BETTER_ENUMS_CONSTEXPR_ std::size_t _to_index() const;                     \
     BETTER_ENUMS_IF_EXCEPTIONS(                                                \
-    BETTER_ENUMS_CONSTEXPR_ static Enum _from_index(std::size_t value);        \
+    BETTER_ENUMS_CONSTEXPR_ static Enum _from_index(std::size_t index);        \
     )                                                                          \
     BETTER_ENUMS_CONSTEXPR_ static Enum                                        \
-    _from_index_unchecked(std::size_t value);                                  \
+    _from_index_unchecked(std::size_t index);                                  \
     BETTER_ENUMS_CONSTEXPR_ static _optional                                   \
-    _from_index_nothrow(std::size_t value);                                    \
+    _from_index_nothrow(std::size_t index);                                    \
                                                                                \
     ToStringConstexpr const char* _to_string() const;                          \
     BETTER_ENUMS_IF_EXCEPTIONS(                                                \
