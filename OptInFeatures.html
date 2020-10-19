@@ -1,0 +1,165 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Opt-in features - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/OptInFeatures.html" />
+<meta name="description" content="Optional Better Enums features, disabled by default for
+performance or compatibility reasons." />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="index.html">Home</a>
+    <a href="tutorial/HelloWorld.html">Tutorial</a>
+    <a href="ApiReference.html">Reference</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.11.3</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+<div class="main">
+  <div class="container">
+
+
+<h2>Opt-in features</h2>
+<p>Better Enums has two opt-in features. They are both "good," but they either hurt
+compilation time or break compatibility with <span class="cpp">C++</span><span class="eleven">98</span>, so they are disabled by
+default. Read this page if you want to enable them.</p>
+<p><a id="contents"></a><h3 class="contents">Contents</h3><ul class="contents"><li><a href="#DefaultConstructors">Default constructors</a></li><li><a href="#CompileTimeNameTrimming">Compile-time name trimming</a></li><li><a href="#StrictConversions">Strict conversions</a></li><li><a href="#InjectingTokens">Injecting tokens</a></li></ul></p>
+<a id="DefaultConstructors"></a><h3>Default constructors</h3>
+<p>Better Enums generate with inaccessible (private or deleted) default
+constructors. This is meant to help control where in your program Better Enums
+values are introduced, and thus ensure that only valid, properly initialized
+enum values are ever created.</p>
+<p>If you want Better Enums to have a default constructor, you can do something
+like the following:</p>
+<pre><em>#define</em> <em>BETTER_ENUMS_DEFAULT_CONSTRUCTOR</em>(<em>Enum</em>) \
+  <em>public</em>:                                      \
+    <em>Enum()</em> = <em>default</em>;
+
+<em>#include</em> &lt;<em>enum.h</em>&gt;</pre><p>You can put this in its own header file, and include that header file instead of
+including <code>enum.h</code> directly.</p>
+<a id="CompileTimeNameTrimming"></a><h3>Compile-time name trimming</h3>
+<p>This makes <code>_to_string</code> and <code>_names</code> <code>constexpr</code>, i.e. "full" <code>constexpr</code> mode.
+To enable this for all enums, define <code>BETTER_ENUMS_CONSTEXPR_TO_STRING</code> before
+including <code>enum.h</code>. Typically, you would pass an option to your compiler to do
+this.</p>
+<p>You can also enable this feature for individual enums instead, by declaring them
+using the alternative <code>SLOW_ENUM</code> macro.</p>
+<p>The feature is disabled because it increases compilation times by a factor of
+about 4. Compilation is still relatively fast &mdash; you need about a dozen
+slow enums to get the same penalty as including <code>iostream</code> &mdash; but it is
+a steep penalty nonetheless. I don't think most people need this feature most of
+the time, so it's too high a price to pay. If I improve compilation times to the
+point where compile-time name trimming can be the default, I will simply
+redefine <code>SLOW_ENUM</code> as <code>BETTER_ENUM</code> and deprecate it, so your code will still
+work.</p>
+<a id="StrictConversions"></a><h3>Strict conversions</h3>
+<p>This disables implicit conversions to underlying integral types. At the moment,
+you can only enable this globally for all enums, by defining
+<code>BETTER_ENUMS_STRICT_CONVERSION</code> before including <code>enum.h</code>.</p>
+<p>The reason Better Enums have implicit conversions to integral types in the first
+place is that in <span class="cpp">C++</span><span class="eleven">98</span>, Better Enums have to be implicitly convertible to their
+member <a href="ApiReference.html#Typedef_enumerated"><code>_enumerated</code></a> types to
+be <a href="tutorial/SafeSwitch.html">usable</a> in <code>switch</code> statements. It is
+possible to avoid this in <span class="cpp">C++</span><span class="eleven">11</span> and convert to <code>enum class</code> types instead, but
+at the cost of breaking interface compatibility with <span class="cpp">C++</span><span class="eleven">98</span>.</p>
+<ul>
+<li>The "weaker" incompatibility is that you could write a bunch of <span class="cpp">C++</span><span class="eleven">98</span> code
+that relies on implicit integer conversions, and then try to switch to
+<span class="cpp">C++</span><span class="eleven">11</span>. The code would then fail to compile. An example where implicit
+conversions are an "advantage" is when using Better Enums as arguments to
+the methods of <code>std::bitset</code>. I could have ignored this problem by declaring
+usage of implicit integer conversions unsupported, but in light of the next
+issue, I decided not to do that.</li>
+<li>The "stronger" incompatibility is a difference in how <code>switch</code> cases must be
+written. The syntaxes for the two variants, implicitly-converting and
+strict, are mutually exclusive. They differ by a <code>+</code> character.</li>
+</ul>
+<p>Here they are:</p>
+<pre>// Default variant
+<em>switch</em> (<em>channel</em>) {
+    case Channel::Red:   break;
+    case Channel::Green: break;
+    case Channel::Blue:  break;
+}
+
+// Strict variant
+<em>switch</em> (<em>channel</em>) {
+    case <em>+</em>Channel::Red:   break;
+    case <em>+</em>Channel::Green: break;
+    case <em>+</em>Channel::Blue:  break;
+}</pre><a id="InjectingTokens"></a><h3>Injecting tokens</h3>
+<p>You can define <code>BETTER_ENUMS_CLASS_ATTRIBUTE</code> before declaring a Better Enum, to
+inject tokens into the class declaration. For example, in</p>
+<pre>#define <em>BETTER_ENUMS_CLASS_ATTRIBUTE</em> <em>__attribute__(foo)</em>
+<em>BETTER_ENUM</em>(<em>Channel</em>, int, Red, Green, Blue)</pre><p>The resulting enum declaration will begin with</p>
+<pre>class <em>__attribute__(foo)</em> <em>Channel</em> {</pre>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015-2019 Anton Bachin. Released under the BSD 2-clause
+    license. See
+    <a href="https://github.com/aantron/better-enums/blob/0.11.3/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.11.3.
+  </div>
+</footer>
+
+</body>
+</html>
+

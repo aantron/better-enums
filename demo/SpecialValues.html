@@ -1,0 +1,220 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Special values - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/demo/SpecialValues.html" />
+<meta name="description" content="An example that uses Better Enums compile-time reflection to
+create invalid and default values for each enum, enforced statically by the
+compiler, for readability and maintainability." />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="../better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="../index.html">Home</a>
+    <a href="../tutorial/HelloWorld.html">Tutorial</a>
+    <a href="../ApiReference.html">Reference</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="../index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.11.3</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+<div class="main">
+  <div class="container">
+
+
+<p>
+  This is an example of code you can write on top of Better Enums. It's a valid
+  program &mdash; you can <a href="https://github.com/aantron/better-enums/blob/0.11.3/example/101-special-values.cc">download</a> it and try it out. The
+  program is also part of the test suite.
+</p>
+
+<h2>Special values</h2>
+<p>Suppose your project has a convention where each enum has special <em>invalid</em> and
+<em>default</em> values &mdash; for example, <code>Enum::Invalid</code> is <em>invalid</em>, and the
+first valid constant is <em>default</em>. With Better Enums, you can get the compiler
+to enforce the convention. At the end of this demo, we will have defined
+functions and templates that allow us to write:</p>
+<pre class="comment"><em>Channel     channel</em> = <em>default_</em>;
+<em>Channel     channel</em> = <em>invalid</em>;
+
+void do_something(<em>Channel channel</em>);
+
+do_something(<em>default_</em>);
+do_something(<em>invalid</em>);</pre><p>The compiler will compute default and invalid values automatically, but the
+programmer will also be able to override the choice. Obviously, the syntax above
+is very legible and maintainable &mdash; the intent is clear and your code base
+will respond automatically to changes in enum definitions.</p>
+<p><a id="contents"></a><h3 class="contents">Contents</h3><ul class="contents"><li><a href="#InvalidValues">Invalid values</a></li><li><a href="#DefaultValues">Default values</a></li><li><a href="#MakingTheSyntaxNicer">Making the syntax nicer</a></li></ul></p>
+<a id="InvalidValues"></a><h3>Invalid values</h3>
+<p>Let's start by defining the invalid values.</p>
+<pre>#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+<em>#include &lt;enum.h&gt;</em></pre><p>Perhaps the convention is that the invalid value is usually called <code>Invalid</code>,
+but not for all enums. We will encode that using a template function. The
+unspecialized version will encode the default policy:</p>
+<pre><em>template</em> &lt;<em>typename Enum</em>&gt;
+constexpr <em>Enum invalid_impl</em>() { return <em>Enum::Invalid</em>; }</pre><p>A macro allows us to override the invalid value by specializing the template:</p>
+<pre><em>#define OVERRIDE_INVALID</em>(<em>Enum</em>, <em>Value</em>)                 \
+template&lt;&gt;                                            \
+constexpr <em>Enum invalid_impl</em>&lt;<em>Enum</em>&gt;() { return <em>Enum::Value</em>; }</pre><p>Now, we can declare enums like these:</p>
+<pre>BETTER_ENUM(<em>Channel</em>, int, Red, Green, Blue, <em>Invalid</em>)
+// Invalid is the invalid value by default
+
+BETTER_ENUM(<em>Compression</em>, int, <em>Undefined</em>, None, Huffman)
+OVERRIDE_INVALID(<em>Compression</em>, <em>Undefined</em>)</pre><p>and use them:</p>
+<pre>static_assert(<em>invalid_impl</em>&lt;<em>Channel</em>&gt;() == +<em>Channel::Invalid</em>, "");
+static_assert(<em>invalid_impl</em>&lt;<em>Compression</em>&gt;() == +<em>Compression::Undefined</em>, "");</pre><p>This even supports enums that don't have an invalid value at all. As long as
+they don't have a constant called <code>Invalid</code>, you will get a compile-time error
+if you try to call <code>invalid_impl&lt;&gt;()</code> on them &mdash; as you probably should!</p>
+<a id="DefaultValues"></a><h3>Default values</h3>
+<p>Perhaps here the convention is the first value that is not invalid is default,
+unless, again, overridden by the programmer. This can be encoded using only a
+slightly more complex template function for the general case:</p>
+<pre><em>template</em> &lt;<em>typename Enum</em>&gt;
+constexpr <em>Enum default_imp</em>l()
+{
+    return
+        <em>Enum::_size() &lt; 2 ?
+            throw std::logic_error("enum has no valid constants") :
+        Enum::_values()[0] == invalid_impl&lt;Enum&gt;() ?
+            Enum::_values()[1] :
+            Enum::_values()[0]</em>;
+}</pre><p>The above code gives us the first value if it is not invalid, otherwise the
+second value.</p>
+<p>The companion macro for overriding the choice of default value is almost the
+same as it was for invalid. The difference is that we do an extra sanity check
+to make sure the programmer doesn't declare the invalid value to be the default.
+If the sanity check fails, we produce a nice error message. Again, we are
+assuming that this is dictated by policy.</p>
+<pre><em>#define OVERRIDE_DEFAULT</em>(<em>Enum</em>, <em>Value</em>)                  \
+static_assert(<em>Enum::Value</em> != <em>Enum::Invalid</em>,            \
+              <em>#Enum ": default cannot equal invalid"</em>); \
+template&lt;&gt;                                             \
+constexpr <em>Enum default_impl</em>&lt;<em>Enum</em>&gt;() { return <em>Enum::Value</em>; }</pre><p>And, as before, the usage:</p>
+<pre>static_assert(<em>default_impl</em>&lt;<em>Channel</em>&gt;() == +<em>Channel::Red</em>, "");
+static_assert(<em>default_impl</em>&lt;<em>Compression</em>&gt;() == +<em>Compression::None</em>, "");</pre><p>And, if you do</p>
+<pre>BETTER_ENUM(<em>Answer</em>, int, Yes, No, <em>Invalid</em>)
+// OVERRIDE_DEFAULT(<em>Answer</em>, <em>Invalid</em>)</pre><p>you will get a helpful compile-time error saying
+<code>Answer: default cannot equal invalid</code>.</p>
+<a id="MakingTheSyntaxNicer"></a><h3>Making the syntax nicer</h3>
+<p>At this point, our policy is encoded by the ugly-looking functions
+<code>invalid_impl</code> and <code>default_impl</code>. We want a nicer syntax. The main reason we
+don't just use these functions directly is that the compiler wouldn't infer
+their template arguments from the context. For example, we would have to write
+things like</p>
+<pre class="comment">Channel     channel = invalid_impl&lt;Channel&gt;();</pre><p>which is unfortunate, because it results in repetition.</p>
+<p>In this section, we introduce two global objects called <code>invalid</code> and <code>default_</code>
+that will implicitly convert to any Better Enum type, and provide the invalid
+or default value, respectively, when they do so. They will act as new
+"keywords".</p>
+<pre><em>struct invalid_t</em> {
+    template &lt;<em>typename To</em>&gt;
+    constexpr <em>operator To</em>() const { return <em>invalid_impl&lt;To&gt;()</em>; }
+};
+
+<em>struct default_t</em> {
+    template &lt;<em>typename To</em>&gt;
+    constexpr <em>operator To</em>() const { return <em>default_impl&lt;To&gt;()</em>; }
+};
+
+constexpr <em>invalid_t     invalid</em>{};
+constexpr <em>default_t     default_</em>{};</pre><p>As you can see, both of these provide the families of implicit conversions that
+we need. Now, we can test:</p>
+<pre>static_assert(+<em>Channel::Invalid</em> == <em>invalid</em>, "");
+static_assert(+<em>Compression::Undefined</em> == <em>invalid</em>, "");
+
+static_assert(+<em>Channel::Red</em> == <em>default_</em>, "");
+static_assert(+<em>Compression::None</em> == <em>default_</em>, "");</pre><p>Finally, we can have nice code such as this:</p>
+<pre>void dump(<em>Channel channel</em>)
+{
+    std::cout &lt;&lt; channel._to_string() &lt;&lt; std::endl;
+}
+
+int main()
+{
+    dump(<em>invalid</em>);
+
+    <em>Channel     channel</em> = <em>default_</em>;
+    dump(channel);
+
+    return 0;
+}</pre><hr>
+<p>There are many possible variations of these policies, but I think most of them
+can be encoded in a reasonable fashion using the tools Better Enums provides.
+Enjoy!</p>
+
+
+<section class="tutorial-footer">
+  <p class="up">
+    Return to the <a href="../index.html#CompileTimeDemos">demo index</a>.
+  </p>
+</section>
+
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015-2019 Anton Bachin. Released under the BSD 2-clause
+    license. See
+    <a href="https://github.com/aantron/better-enums/blob/0.11.3/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.11.3.
+  </div>
+</footer>
+
+</body>
+</html>
+

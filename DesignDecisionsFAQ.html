@@ -1,0 +1,301 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Design decisions FAQ - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/DesignDecisionsFAQ.html" />
+<meta name="description" content="Better Enums design decisions and tradeoffs." />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="index.html">Home</a>
+    <a href="tutorial/HelloWorld.html">Tutorial</a>
+    <a href="ApiReference.html">Reference</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.11.3</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+<div class="main">
+  <div class="container">
+
+
+<h2>Design decisions FAQ</h2>
+<p><span class="self">Better Enums</span> pushes at the edges of what is possible in standard <span class="cpp">C++</span>, and I've had to
+make some difficult decisions as a result. You can imagine the set of
+potential reflective enum implementations as a space, with axes such as "concise
+syntax," "uniform interface," "compilation speed," "run-time performance," and
+so on. As is typical in engineering, the constraints are such that as you move
+to extremes along one axis, you have to retreat along others &mdash; for
+example, some desirable aspects of concise syntax conflict with having a uniform
+interface, which is nonetheless good for teachability, and compile-time
+performance is, in some ways, at odds with run-time performance.</p>
+<p>So, there are many variations possible on <span class="self">Better Enums</span>, and, in fact, I have tried and
+maintained a few. This page describes how I chose the one that is published.
+The choices are debatable, but I am attempting to record the debate. Hopefully,
+this will either convince you that I have made a good choice, or, if you
+disagree, you will have a good starting point for discussion, or even for
+implementing an alternative.</p>
+<p>I am always looking for new arguments and approaches. If you have an idea,
+comment, criticism, please do <a href="Contact.html">let me know</a>.</p>
+<p><a id="contents"></a><h3 class="contents">Contents</h3><ul class="contents"><li><a href="#WhyDoEnumMembersHaveUnderscores">Why do enum members have underscores?</a></li><li><a href="#WhyDoesBetterEnumsUseAMacroAtAll">Why does Better Enums use a macro at all?</a></li><li><a href="#WhyIsItNotPossibleToDeclareABetterEnumInsideAClass">Why is it not possible to declare a Better Enum inside a class?</a></li><li><a href="#ShouldBetterEnumsProvideEnum"objects"OrTraitsTypes">Should Better Enums provide enum "objects" or traits types?</a></li><li><a href="#WhyDoesBetterEnumsUseLinearScansForLookup">Why does Better Enums use linear scans for lookup?</a></li><li><a href="#WhyNotUseIndicesForTheRepresentation">Why not use indices for the representation?</a></li></ul></p>
+<a id="WhyDoEnumMembersHaveUnderscores"></a><h3>Why do enum members have underscores?</h3>
+<p>Enum members such as <code>_to_string</code> occupy the same scope as the names of
+constants declared by the user. I chose to prefix members with underscores to
+lessen the chances of collision. For example, take <code>_valid</code>, and suppose it was
+<code>valid</code> instead. That would make this enum impossible:</p>
+<pre><em>BETTER_ENUM(Status, char, valid, invalid)</em></pre><p>because the constant <code>Status::valid</code> would clash with the member
+<code>Status::valid</code>.</p>
+<p>Of course, users could try to declare constants with underscores as well, but I
+find it easier to ask users not to do that, rather than ask them to worry about
+a potentially growing set of reserved names, which they wouldn't fully know even
+for a single version of Better Enums, without frequently looking at the API
+documentation.</p>
+<p>Alternatives to this involve separating the namespaces occupied by members and
+constants. I don't think increasing nesting is an option, since nobody wants to
+write <code>Status::values::valid</code> or <code>Status::operations::valid</code>. I don't think
+moving constants out of <code>Status</code> is a good idea, since scoped constants is a
+feature of Better Enums, which is especially important for <span class="cpp">C++</span><span class="eleven">98</span> usage.</p>
+<p>This leaves the possibility of moving the operations performed by the members
+into traits types, i.e. something like <code>traits&lt;Status&gt;::valid</code>. That is an
+interesting option, and it has <a href="#Traits">its own section</a>. I have tried it, but
+the verbosity increase is much greater than the benefit of dropping underscores,
+so I chose not to do it.</p>
+<a id="WhyDoesBetterEnumsUseAMacroAtAll"></a><h3>Why does Better Enums use a macro at all?</h3>
+<p>Better Enums needs to turn the names of declared constants into strings, and I
+don't believe there is any way to do this in standard <span class="cpp">C++</span> except by using the
+preprocessor's macro parameter stringization operator (<code>#</code>). So, at the top
+level, Better Enums has to provide a macro. I am, however, trying to keep the
+user-facing macros to a minimum; in particular there is only one.</p>
+<p>I think that's the best that is possible. Furthermore, apart from the macro
+itself, the declaration looks very similar to a <span class="cpp">C++</span><span class="eleven">11</span> <code>enum</code> declaration, with
+an underlying type, comma-separated constant list, and the same support for
+initializers as built-in enums. So, I am trying to keep even this one macro out
+of the user's way. I wouldn't accept any change that involved turning the
+declaration into a preprocessor sequence or tuple, i.e. something like</p>
+<pre><em>BETTER_ENUM(Channel, int, (Red)(Green)((Blue)(5)))</em></pre><p>even if it promised extra capabilities.</p>
+<p>Better Enums uses additional macros internally, for two main purposes: to do the
+actual work of stringizing the declared constants and assembling them into
+arrays, and to configure itself by detecting which compiler it is running on.</p>
+<p>I am not a fan of gratuitous macros, but in these cases they are unavoidable,
+and, indeed, I am grateful for the stringization operator.</p>
+<p><a id="NoEnumInsideClass"></a></p>
+<a id="WhyIsItNotPossibleToDeclareABetterEnumInsideAClass"></a><h3>Why is it not possible to declare a Better Enum inside a class?</h3>
+<p>This is due to an interaction between linkage and <code>constexpr</code>.</p>
+<ol>
+<li><p>Better Enums is a header-only library that declares arrays with static
+storage, such as the array of constant names for each declared enum. Such
+arrays can be declared in namespace scope, in class scope, or in function
+scope, but they also need to be defined somewhere.</p>
+<p>If <code>BETTER_ENUM</code> is to be usable in both namespace and class scope, it
+already can't assume that it can declare arrays in namespace scope, since if
+<code>BETTER_ENUM</code> is used in a class, its entire expansion will be enclosed in
+the declaration of that class.</p>
+<p>That leaves class scope and function scope. If the arrays are declared in
+class scope, there needs to be a separate definition of them in some
+translation unit. This is too burdensome for the user, because the separate
+definition would involve repetition of the constants in the macro parameter
+list, creating exactly the type of maintenance problem that Better Enums is
+trying to eliminate.</p>
+<p>Function scope is the only viable option remaining after considering linkage
+constraints. Each array can be wrapped in a static function, which has a
+static local variable, which is initialized with the array. The functions can
+be called to get references to the arrays.</p>
+<p>However....</p>
+</li>
+<li><p>These arrays need to be accessible to <code>constexpr</code> code in <span class="cpp">C++</span><span class="eleven">11</span>, and
+<code>constexpr</code> functions are not allowed to have static local variables.</p>
+</li>
+</ol>
+<p>Ironically, this seems like one place where <span class="cpp">C++</span><span class="eleven">98</span> is more "flexible," but only
+for the reason that compile-time usage of Better Enums is not supported in
+<span class="cpp">C++</span><span class="eleven">98</span>.</p>
+<p><a id="Traits"></a></p>
+<a id="ShouldBetterEnumsProvideEnum"objects"OrTraitsTypes"></a><h3>Should Better Enums provide enum "objects" or traits types?</h3>
+<p>A Better Enum value is an "object," whose memory representation is the same as
+its underlying type. For example,</p>
+<pre><em>BETTER_ENUM(Channel, int, Red, Green, Blue)</em></pre><p>expands to something like</p>
+<pre><em>struct Channel {
+    enum _enumerated : int { Red, Green, Blue };
+    int _value;</em>
+    // Strings array, _to_string, _from_string, etc.
+<em>};</em></pre><hr>
+<p>There is an alternative interpretation, in which the Better Enums library
+generates enum traits instead, i.e. the generated arrays and members sit
+alongside built-in enums instead of wrapping them:</p>
+<pre><em>BETTER_ENUM(Channel, int, Red, Green, Blue)</em></pre><p>generates</p>
+<pre><em>enum class Channel : int { Red, Green, Blue };</em>
+
+<em>template &lt;&gt;
+struct ::better_enums::traits&lt;Channel&gt; {
+    using _enumerated = Channel;</em>
+    // Strings array, to_string, from_string, etc.
+<em>};</em></pre><hr>
+<p>There are a number of advantages to the traits approach.</p>
+<ul>
+<li>The underscore prefixes can be dropped from member names, since they no longer
+share a namespace with user-declared constants.</li>
+<li>The interface, at first glance, becomes more uniform, since now every member
+is a static member of the traits type. Without traits, <code>_to_string</code> is a
+non-static member, while <code>_from_string</code> is a static member.</li>
+<li><code>Channel</code> is one of the language's own enum types, instead of some mystery
+type provided by Better Enums. This may make it easier to understand. It also
+eliminates the problem with different syntaxes for <code>switch</code> statements
+described <a href="OptInFeatures.html#StrictConversions">here</a>.</li>
+</ul>
+<p>However, it also introduces some difficulties.</p>
+<ul>
+<li>The syntax is more verbose, since everything becomes a member of the traits
+type. For example, instead of <code>Channel::_from_string()</code>, you get
+<code>better_enums::traits&lt;Channel&gt;::from_string()</code>. The underscore may be
+unpleasant, but so far I have preferred the underscore to boilerplate.</li>
+<li><p>The uniform interface ends up getting wrapped behind functions anyway, for the
+sake of type inference. For example, the "naked" <code>to_string</code> function is
+called as <code>better_enums::traits&lt;Channel&gt;::to_string(channel)</code>, which is
+redundant, because the compiler could infer the type parameter <code>Channel</code> if it
+was the parameter of the function instead of the traits type. So, the obvious
+thing is to define such a wrapper function, which can then be called as
+<code>better_enums::to_string(channel)</code>. No such function can be easily defined for
+<code>from_string</code> and other <code>from_*</code> functions, however, because the type
+parameters can't be inferred from arguments. So, the signatures of <code>to_*</code> and
+<code>from_*</code> functions again effectively diverge, negating this advantage of
+traits. The closest I can get with wrappers is
+<code>better_enums::from_string&lt;Channel&gt;</code>, which has the same signature only in the
+formal sense, i.e. modulo the difference in type inference.</p>
+<p>I actually think there is a way to infer the type parameter from the return
+type, similar to how it is done <a href="demo/SpecialValues.html">here</a>, but that will not be suitable
+for all contexts, and the user may be surprised by ambiguous resolution error
+messages when it is not.</p>
+</li>
+<li>Scoped constants are lost for <span class="cpp">C++</span><span class="eleven">98</span> unless Better Enums again wraps them in a
+generated type, though it will be more lightweight than a full Better Enum of
+the non-traits approach.</li>
+<li>Traits types must be specialized in either the same namespace scope they are
+declared in, or in an enclosing scope. This makes it impossible to declare an
+enum and specialize traits for it in a user's custom namespace.</li>
+</ul>
+<p>Despite the disadvantages listed just above, I consider the traits approach
+interesting &mdash; it's a close call. There is an
+<a href="https://github.com/aantron/better-enums/tree/traits">out-of-date branch</a> containing a traits version of Better Enums.
+You can see some of the usage in its <a href="https://github.com/aantron/better-enums/tree/traits/samples">samples</a> directory. I may
+update it from time to time, especially if there is interest.</p>
+<a id="WhyDoesBetterEnumsUseLinearScansForLookup"></a><h3>Why does Better Enums use linear scans for lookup?</h3>
+<p>It seems that Better Enums needs to use the same algorithms at compile time as
+at run time, because I have not found a way (and doubt there is one) to
+determine, during the execution of a <code>constexpr</code> function, whether it is
+executing at compile time or at run time. So, whatever data structures I use to
+accelerate lookup, I have to generate them at compile time, to be available as
+early as possible.</p>
+<p>I tried to generate various data structures at compile time, but so far,
+generation has been too slow. The fastest algorithm so far, a compile-time merge
+sort based on template parameter packs, took over 100ms to run on the constant
+set of a large enum. I would have to run three of these per enum &mdash; for the
+constants, for the names, and for the names with case-insensitive comparison.
+This results in a 300ms slowdown per enum, which is not acceptable, given that
+on my system the same compiler takes 370ms to process <code>iostream</code>, and less than
+10ms to process an enum without acceleration data structures. Declaring five
+large enums with accelerated lookup would take 1.5 seconds of compilation time.
+This doesn't scale to large projects with many translation units.</p>
+<p>I am continuing to look for faster algorithms or better approaches, so faster
+lookup may be coming to Better Enums in the future.</p>
+<p>So far, I have tried Boost.MPL sort, Eric Niebler's Meta sort, my own selection
+sort based on <code>constexpr</code>, and an insertion and merge sort based on parameter
+packs. I cannot use (Boost?).Hana sort, because that requires <span class="cpp">C++</span><span class="eleven">14</span>. I am also
+considering various hash table-like data structures, and providing two sets of
+interfaces for compile-time and run-time usage, which is something I would
+really rather not have to do. The latter option would be worth considering,
+however, if I measured a significant improvement in running time from better
+data structures &mdash; something I haven't gotten to yet because there doesn't
+seem to be a data structure to measure that is not disqualified by the speed of
+generation.</p>
+<a id="WhyNotUseIndicesForTheRepresentation"></a><h3>Why not use indices for the representation?</h3>
+<p>Representing Better Enum values by their indices in the declaration list seems
+like a tempting solution for the problem of having multiple constants with the
+same numeric value. It also speeds up some operations. For example, if a Better
+Enum is simply an index, then getting its string representation is simply
+indexing an array, rather than some kind of data structure lookup.</p>
+<pre>// Representations 0, 1, 2, 3 instead of 1, 2, 3, 1.
+<em>BETTER_ENUM(Kind, int, A = 1, B, C, D = A)</em></pre><p>Choosing this approach has serious drawbacks.</p>
+<ul>
+<li>The data structure lookup has simply been moved to another place. It now takes
+time to convert from a literal <code>Kind::D</code> to a Better Enum.</li>
+<li>It is still impossible to disambiguate between the literals <code>Kind::D</code> and
+<code>Kind::A</code> (1 and 1). Only the Better Enums objects of type <code>Kind</code> that
+represent <code>D</code> and <code>A</code> are different from each other (0 and 3). This is not
+only a technical problem, but is also quite unintuitive.</li>
+<li>Treating a Better Enum represented by an index as untyped memory produces
+surprising results. This makes Better Enums much less useful with functions
+such as <code>fwrite</code>. Worse, Better Enums become sensitive to declaration order
+even when initializers are given explicitly. Using indices for the
+representation makes it difficult to maintain compatibility with external
+protocols and file formats.</li>
+</ul>
+
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015-2019 Anton Bachin. Released under the BSD 2-clause
+    license. See
+    <a href="https://github.com/aantron/better-enums/blob/0.11.3/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.11.3.
+  </div>
+</footer>
+
+</body>
+</html>
+

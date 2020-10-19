@@ -1,0 +1,156 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>C++17 reflection - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/demo/C++17Reflection.html" />
+<meta name="description" content="Approximate implementation of N4428 enum reflection based on
+Better Enums." />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="../better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/master/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="../index.html">Home</a>
+    <a href="../tutorial/HelloWorld.html">Tutorial</a>
+    <a href="../ApiReference.html">Reference</a>
+    <a href="../Contact.html">Contact</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="../index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.10.1</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/master/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+
+
+<div class="main">
+  <div class="container">
+
+
+<p>
+  This page is an advanced demo showing the kind of code you can write on top of
+  Better Enums. It's a valid program &mdash; you can
+  <a href="https://github.com/aantron/better-enums/blob/master/example/105-c++17-reflection.cc">download</a> it and try it out. The program runs as part of
+  the automated test suite.
+</p>
+
+<h2>C++17 reflection</h2>
+<p>Better Enums can be used to approximately implement the enums portion of the
+<a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4428.pdf"><span class="cpp">C++</span><span class="eleven">17</span> reflection proposal N4428</a> in <span class="cpp">C++</span><span class="eleven">11</span>. The implementation is
+<em>approximate</em> in the following senses:</p>
+<ul>
+<li>It only applies to Better Enums, not built-in enums.</li>
+<li><code>enum_traits&lt;E&gt;::enumerators::get&lt;I&gt;::identifier</code> is a non-<code>constexpr</code>
+function rather than a <code>constexpr</code> variable. I could make it a <code>constexpr</code>
+variable as in the proposal, but that requires
+<a href="../OptInFeatures.html#CompileTimeNameTrimming">compile-time name trimming</a> to be enabled for the Better Enum
+on which <code>get</code> is used. Since that's an opt-in feature, I can't guarantee it.
+I preferred not to write feature-detection code, in order to keep the
+implementation simple.</li>
+<li>The return type of <code>identifier</code> is <code>const char*</code> instead of the proposed
+<code>std::string_literal</code>, because I don't have an implementation of the latter
+available. I'm also ignoring the requirements on encoding, and just taking
+whatever the preprocessor provides.</li>
+</ul>
+<p>With that out of the way, we can look at a simple example.</p>
+<hr>
+<p>The implementation is defined in <a href="https://github.com/aantron/better-enums/blob/master/extra/better-enums/n4428.h"><code>extra/better-enums/n4428.h</code></a>. Let's
+assume that <code>extra/</code> has been added as a directory to search for include files.</p>
+<pre>#include &lt;iostream&gt;
+<em>#include</em> &lt;<em>enum.h</em>&gt;
+<em>#include</em> &lt;<em>better-enums/n4428.h</em>&gt;</pre><hr>
+<p>Let's declare an enum:</p>
+<pre><em>ENUM</em>(<em>Channel</em>, <em>char</em>, <em>Red</em> = <em>1</em>, <em>Green</em>, <em>Blue</em>)</pre><p>N4428 proposes three <code>constexpr</code> traits, of which we have two implemented
+exactly &mdash; that is, as <code>constexpr</code>:</p>
+<pre><em>constexpr std::size_t   size</em> =
+    <em>std</em>::<em>enum_traits</em>&lt;<em>Channel</em>&gt;::<em>enumerators</em>::<em>size</em>;
+
+<em>constexpr Channel       value_0</em> =
+    <em>std</em>::<em>enum_traits</em>&lt;<em>Channel</em>&gt;::<em>enumerators</em>::<em>get</em>&lt;<em>0</em>&gt;::<em>value</em>;
+<em>constexpr Channel       value_1</em> =
+    <em>std</em>::<em>enum_traits</em>&lt;<em>Channel</em>&gt;::<em>enumerators</em>::<em>get</em>&lt;<em>1</em>&gt;::<em>value</em>;</pre><p>Let's check the results:</p>
+<pre>static_assert(<em>size</em> == <em>3</em>, "");
+
+static_assert(<em>value_0</em> == +<em>Channel::Red</em>, "");
+static_assert(<em>value_1</em> == +<em>Channel::Green</em>, "");</pre><p>Finally, we can try using <code>identifier</code>:</p>
+<pre>int main()
+{
+    std::cout
+        &lt;&lt; <em>std</em>::<em>enum_traits</em>&lt;<em>Channel</em>&gt;::<em>enumerators</em>::<em>get</em>&lt;<em>2</em>&gt;::<em>identifier</em>()
+        &lt;&lt; std::endl;
+
+    return 0;
+}</pre><p>That prints <code>Blue</code>, as you would expect.</p>
+
+
+<section class="tutorial-footer">
+  <p class="up">
+    Return to the <a href="../index.html#CompileTimeDemos">demo index</a>.
+  </p>
+</section>
+
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015 Anton Bachin. Released under the BSD 2-clause license.
+    See
+    <a href="https://github.com/aantron/better-enums/blob/master/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.10.1.
+  </div>
+</footer>
+
+</body>
+</html>
+

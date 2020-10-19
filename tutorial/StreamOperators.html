@@ -1,0 +1,131 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Stream operators - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/tutorial/StreamOperators.html" />
+<meta name="description" content="Using Better Enums with stream input and output operators." />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="../better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="../index.html">Home</a>
+    <a href="../tutorial/HelloWorld.html">Tutorial</a>
+    <a href="../ApiReference.html">Reference</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="../index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.11.3</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+<div class="main">
+  <div class="container">
+
+
+<p>
+  Welcome to the Better Enums tutorials! The code in this tutorial forms a
+  valid program, which you can <a href="https://github.com/aantron/better-enums/blob/0.11.3/example/6-iostreams.cc">download</a> and play with. The
+  program runs as part of the automated test suite.
+</p>
+
+<h2>Stream operators</h2>
+<p>These work <em>almost</em> as you'd expect. First, make sure you include <code>iostream</code>
+before <code>enum.h</code> in any translation unit in which you intend to use the
+operators:</p>
+<pre>#include &lt;iostream&gt;
+#include &lt;enum.h&gt;
+
+<em>BETTER_ENUM(Channel, int, Red, Green, Blue)</em>
+
+int main()
+{
+    std::cout &lt;&lt; <em>+Channel::Red</em> &lt;&lt; std::endl;
+    return 0;
+}</pre><p>The thing to watch for is the <code>+</code>: without it, <code>Channel::Red</code> is a value of type
+<code>Channel::_enumerated</code>, a <span class="cpp">C++</span><span class="eleven">98</span> enum type, so writing that to <code>cout</code> will
+output an integer. <code>+Channel::Red</code>, however, is a value of type <code>Channel</code>, and
+writing <em>that</em> instead will output the string <code>"Red"</code>.</p>
+<p>Input is also supported:</p>
+<pre class="comment">Channel     channel = Channel::Blue;
+std::cin &gt;&gt; channel;    // Expects input such as "Green".</pre><hr>
+<p>Only <code>char</code> streams are supported for the time being.</p>
+
+
+<section class="tutorial-footer">
+  <p class="next">
+    Continue to the next tutorial: <a href="../tutorial/ScopeAndSafety.html">Scope and safety</a>
+  </p>
+
+  <p class="up">
+    Or, return to the
+    <a href="../index.html#Tutorial">tutorial index</a>.
+  </p>
+</section>
+
+
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015-2019 Anton Bachin. Released under the BSD 2-clause
+    license. See
+    <a href="https://github.com/aantron/better-enums/blob/0.11.3/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.11.3.
+  </div>
+</footer>
+
+</body>
+</html>
+

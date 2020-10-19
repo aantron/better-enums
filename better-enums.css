@@ -1,0 +1,595 @@
+body {
+    margin: 0;
+    color: #333;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 18px;
+    font-weight: 300;
+}
+
+pre, code, samp, h4, .contents ul {
+    font-family:
+        Consolas, "Liberation Mono", Menlo, "Courier New", Courier, monospace;
+}
+
+h1, .splash-text .self, nav .self {
+    font-family: Georgia, Times, "Times New Roman", serif;
+}
+
+pre {
+    background-color: #477093;
+    padding: 1.5em 20px;
+    border-radius: 5px;
+    overflow: auto;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 78%;
+    max-width: 84ex;
+    margin-left: 1em;
+}
+
+pre em {
+    font-style: normal;
+    text-shadow: 0 -1px grey;
+    color: white;
+}
+
+pre.comment {
+    background-color: #EEF4F9;
+    color: #888;
+    border: 1px dashed #477093;
+}
+
+pre.comment em {
+    color: #333;
+    text-shadow: none;
+}
+
+code, samp {
+    background-color: #EEF4F9;
+    padding: 1px 3px;
+    border-radius: 3px;
+    font-size: 78%;
+}
+
+.container {
+    margin-left: 150px;
+    margin-right: 150px;
+}
+
+.main .container > * {
+    max-width: 41em;
+}
+
+.index .main .container > * {
+    max-width: none;
+}
+
+.main .container > .contents {
+    max-width: none;
+}
+
+@media (max-width: 1400px) {
+    .container {
+        margin-left: auto;
+        margin-right: auto;
+        width: 1100px;
+    }
+}
+
+@media (max-width: 1120px) {
+    .container {
+        margin-left: 10px;
+        margin-right: 10px;
+        width: auto;
+    }
+}
+
+nav {
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+
+    border-bottom: 1px solid #68a;
+    color: white;
+    opacity: 0.95;
+}
+
+nav, .spacer {
+    padding: 0.75em 0;
+    font-size: 14px;
+    background-color: #222;
+}
+
+nav > * > span {
+    float: right;
+    opacity: 0.9;
+    margin-right: 1em;
+}
+
+nav .self {
+    font-size: 16px;
+    padding-right: 0.5em;
+}
+
+nav a {
+    margin-right: 2em;
+}
+
+nav a.first {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+@media (max-width: 560px) {
+    nav {
+        position: initial;
+    }
+
+    .spacer {
+        display: none;
+    }
+}
+
+header {
+    background-color: #4C6F8C;
+    background: linear-gradient(#395E7E, #4A79A0);
+    color: white;
+    padding: 50px 0;
+}
+
+h1 {
+    margin: 0;
+    font-size: 60px;
+    font-weight: normal;
+    text-shadow: -2px 2px rgba(0, 0, 0, 0.3);
+}
+
+header section {
+    float: left;
+}
+
+header section.buttons, header section.notes {
+    float: right;
+    margin-top: 1.75em;
+    margin-left: 20px;
+}
+
+header section.notes {
+    max-width: 20em;
+    font-size: 75%;
+    margin-right: 10px;
+    opacity: 0.7;
+}
+
+header section.notes p {
+    margin: 0.35em 0.35em;
+}
+
+header section.notes code {
+    background-color: transparent;
+}
+
+header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 100;
+    position: relative;
+    left: 3px;
+}
+
+header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 300;
+    position: relative;
+    left: 4px;
+    opacity: 0.5;
+}
+
+.buttons a {
+    display: block;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    width: 10em;
+    text-align: center;
+    margin-bottom: 0.5em;
+    padding: 0.25em 0;
+    border-radius: 4px;
+}
+
+.buttons a:hover {
+    background-color: white !important;
+    color: #395E7E;
+}
+
+@media (max-width: 1000px) {
+    header .notes {
+        display: none;
+    }
+
+    header .buttons {
+        margin-right: 2em;
+    }
+}
+
+@media (max-width: 660px) {
+    header .buttons {
+        display: none;
+    }
+}
+
+h2 {
+    margin-top: 2em;
+    font-size: 36px;
+    font-weight: 300;
+}
+
+hr {
+    border: none;
+    height: 40px;
+}
+
+footer {
+    font-size: 14px;
+    margin-top: 100px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    /*background-color: red;*/
+}
+
+a[href=""] {
+    color: white !important;
+    /*background-color: red !important;*/
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+header a:hover {
+    text-decoration: none;
+}
+
+.main {
+    margin-top: 50px;
+}
+
+.main a[href], footer a[href] {
+    background-color: #edd;
+    color: #844;
+    letter-spacing: -0.5px;
+    padding: 0 2px;
+    border-radius: 3px;
+}
+
+header a[href], nav a[href] {
+    color: inherit;
+    background-color: transparent;
+    letter-spacing: inherit;
+}
+
+a[href] code {
+    background-color: transparent;
+}
+
+span.cpp, span.cc {
+    font-size: 90%;
+}
+
+span.eleven {
+    font-size: 85%;
+}
+
+span#note:target {
+    background-color: yellow;
+}
+
+.pane {
+    float: left;
+    width: 49%;
+}
+
+.hack {
+    clear: both;
+}
+
+.pane.left > * {
+    margin-right: 10px;
+}
+
+.pane.right > * {
+    margin-left: 10px;
+}
+
+.main h3 {
+    font-size: 30px;
+    margin-top: 2em;
+    color: black;
+}
+
+h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+    font-weight: inherit;
+}
+
+h3.contents {
+    font-size: 22px;
+}
+
+.pane pre {
+    font-size: 14px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    line-height: 1.15;
+}
+
+header {
+    overflow: hidden;
+}
+
+header .container {
+    position: relative;
+}
+
+div.back {
+    position: absolute;
+    bottom: -0.35em;
+    left: -40px;
+    font-size: 288px;
+    font-weight: bold;
+    letter-spacing: 20px;
+    opacity: 0.1;
+    text-shadow: -20px 20px #444;
+    white-space: nowrap;
+}
+
+.panes {
+    clear: both;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    overflow: auto;
+}
+
+.tutorial-footer {
+    margin-top: 4em;
+}
+
+.tutorial-footer .next {
+    font-weight: 100;
+    font-size: 24px;
+}
+
+.tutorial-footer .next a[href] {
+    font-weight: 300;
+}
+
+li {
+    margin-top: 5px;
+}
+
+.blurbs {
+    padding-left: 0;
+    list-style-type: none;
+    margin-top: 30px;
+}
+
+.blurbs > li {
+    float: left;
+    min-height: 5em;
+}
+
+@media (min-width: 1076px) {
+    .blurbs > li {
+        width: 28%;
+        margin-right: 4%;
+    }
+
+    .blurbs > li.zero-mod-three {
+        clear: both;
+        margin-left: 2%;
+    }
+}
+
+@media (max-width: 1075px) {
+    .blurbs > li {
+        width: 45%;
+        margin-right: 4%;
+    }
+
+    .blurbs > li.zero-mod-two {
+        clear: both;
+        margin-left: 2%;
+    }
+}
+
+@media (max-width: 620px) {
+    .blurbs > li {
+        float: none;
+        width: 100%;
+        min-height: 3em;
+    }
+
+    .blurbs > li.zero-mod-two {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+.blurbs strong {
+    font-weight: inherit;
+    font-size: 110%;
+}
+
+.blurbs em {
+    display: block;
+    margin-bottom: 1em;
+    font-size: 80%;
+    font-style: normal;
+}
+
+.act strong {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.act strong code {
+    font-size: 110%;
+}
+
+.resources > li {
+    margin-bottom: 3.5em;
+}
+
+.resources li ul, .resources li ol {
+    margin-top: 1.5em;
+    padding-left: 25px;
+}
+
+.splash-text {
+    padding-top: 1em;
+    font-size: 150%;
+    font-weight: normal;
+    color: #555;
+}
+
+.splash-text em {
+    border-bottom: 1px solid #888;
+}
+
+.splash-text .self {
+    color: #777;
+    letter-spacing: 0;
+}
+
+.splash {
+    float: right;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.splash pre {
+    display: inline-block;
+}
+
+.splash pre.left {
+    text-align: right;
+    color: black;
+    font-weight: bold;
+    background-color: transparent;
+    padding-right: 0;
+}
+
+.splash pre.right {
+    text-align: left;
+    background-color: black;
+}
+
+@media (max-width: 1000px) {
+    .splash {
+        float: none;
+        margin-left: -10%;
+    }
+}
+
+@media (max-width: 700px) {
+    .splash {
+        margin-left: 0;
+    }
+
+    .splash pre.left {
+        display: none;
+    }
+}
+
+a[id] {
+    display: block;
+    position: relative;
+    top: -25px;
+}
+
+h4 {
+    font-weight: normal;
+    margin-top: 3em;
+    letter-spacing: -1px;
+    color: #888;
+    padding-top: 1em;
+    white-space: nowrap;
+    font-size: 125%;
+}
+
+h4 em {
+    color: #555;
+    font-style: normal;
+    font-weight: bold;
+}
+
+.api ul.contents {
+    -webkit-columns: 300px 3;
+    -moz-columns: 300px 3;
+    columns: 300px 3;
+}
+
+.api ul.contents > li {
+    -webkit-column-break-inside: avoid;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.main h3 {
+    margin-top: 4em;
+    clear: both;
+}
+
+h3.contents {
+    margin-top: 2em;
+}
+
+.index .main h3 {
+    margin-top: 2em;
+}
+
+.api .contents ul {
+    font-size: 75%;
+}
+
+.api .contents > li {
+    margin-top: 0;
+    padding-bottom: 1em;
+}
+
+.buttons-bar {
+    background-color: #f4f4f4;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    height: 20px;
+}
+
+.buttons-bar a img {
+    margin-right: 25px;
+}
+
+.buttons-bar iframe.gh-button {
+    width: 95px;
+}
+
+.buttons-bar .tweet-share,
+.buttons-bar .gh-button {
+    display: none;
+}
+
+.index .buttons-bar .tweet-share,
+.index .buttons-bar .gh-button {
+    display: initial;
+}
+
+.buttons-bar iframe.gh-watch {
+    width: 103px;
+}
+
+.external {
+    font-size: 75%;
+}

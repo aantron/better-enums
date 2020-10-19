@@ -1,0 +1,168 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Representation - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/tutorial/Representation.html" />
+<meta name="description" content="The underlying memory representation of a Better Enum,
+including size and alignment." />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="../better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="../index.html">Home</a>
+    <a href="../tutorial/HelloWorld.html">Tutorial</a>
+    <a href="../ApiReference.html">Reference</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="../index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.11.3</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+<div class="main">
+  <div class="container">
+
+
+<p>
+  Welcome to the Better Enums tutorials! The code in this tutorial forms a
+  valid program, which you can <a href="https://github.com/aantron/better-enums/blob/0.11.3/example/8-representation.cc">download</a> and play with. The
+  program runs as part of the automated test suite.
+</p>
+
+<h2>Representation</h2>
+<p>Let's go over some of the low-level properties of a Better Enum. This time, we
+will declare a more unusual enum than the ones we have seen.</p>
+<pre>#include &lt;cassert&gt;
+#include &lt;iostream&gt;
+<em>#include &lt;enum.h&gt;</em>
+
+<em>BETTER_ENUM</em>(<em>ContentType</em>, <em>short</em>,
+     <em>CompressedVideo</em> = <em>5</em>, <em>PCM</em> = <em>8</em>, <em>Subtitles</em> = <em>17</em>, <em>Comment</em> = <em>44</em>)</pre><p>This is for a hypothetical multimedia container file format. Perhaps the files
+have sections, and each one has a header:</p>
+<pre><em>struct Header</em> {
+    <em>ContentType     type</em>;
+    short           flags;
+    int             offset;
+};</pre><hr>
+<p>Here is what we have.</p>
+<pre>int main()
+{
+    assert(<em>sizeof(ContentType)</em> == <em>2</em>);</pre><p><code>ContentType</code> behaves just like a <code>short</code><sup class="footnote-ref" id="fnref-*"><a href="#fn-*" rel="footnote">1</a></sup>, in fact it simply wraps one. This
+makes it possible to lay out structures in a predictable fashion:</p>
+<pre>    Header      <em>header</em> = {ContentType::PCM, 0, 0};
+
+    assert(<em>sizeof(header)</em> == <em>8</em>);
+    assert((size_t)&amp;<em>header.flags -</em> (size_t)&amp;<em>header.type</em> == <em>2</em>);</pre><hr>
+<p><code>uint16_t</code> is called <code>ContentType</code>'s <em>underlying</em> or <em>representation</em> type. If
+you want to know the representation type of any enum you have declared, it is
+available as the member type <code>::_integral</code>:</p>
+<pre>    <em>ContentType::_integral</em>  untrusted_value = 44;</pre><p>Use this if you want a sized field to receive untrusted data, but aren't willing
+to call it <code>ContentType</code> yet because you have not validated it. Your validator
+will likely call <code>::_from_integral_nothrow</code>, perform any other validation your
+application requires, and then return <code>ContentType</code>.</p>
+<pre>    ContentType             type =
+        ContentType::_from_integral(untrusted_value);
+    std::cout &lt;&lt; type._to_string() &lt;&lt; std::endl;</pre><hr>
+<p>You have probably noticed the initializers on each of the constants in
+<code>ContentType</code>. This allows you to declare sparse enums for compatibility with
+external protocols or previous versions of your software. The initializers don't
+need to be literal integers &mdash; they can be anything that the compiler would
+accept in a normal <code>enum</code> declaration. If there was a macro called
+<code>BIG_FAT_MACRO</code> declared above, we could have written
+<code>Subtitles = BIG_FAT_MACRO</code>. We could also have written
+<code>Subtitles = CompressedVideo</code>.</p>
+<hr>
+<p>The in-memory representation of an enum value is simply the number it has been
+assigned by the compiler. You should be safe passing enums to functions like
+<code>fread</code> and <code>fwrite</code>, and casting memory blocks known to be safe to <code>struct</code>
+types containg enums. The enums will behave as expected.</p>
+<hr>
+<pre>    return 0;
+}</pre><div class="footnotes">
+<hr>
+<ol><li id="fn-*"><p>It should properly be a <code>uint16_t</code>, and the rest of the header fields
+should also be explicitly sized. However, this code is trying to be
+compatible with <span class="cpp">C++</span><span class="eleven">98</span>, where those names aren't available in a portable
+manner.<a href="#fnref-*" rev="footnote">&#8617;</a></p></li>
+</ol>
+</div>
+
+
+<section class="tutorial-footer">
+  <p class="next">
+    Continue to the next tutorial: <a href="../tutorial/CompileTimeUsage.html">Compile-time usage</a>
+  </p>
+
+  <p class="up">
+    Or, return to the
+    <a href="../index.html#Tutorial">tutorial index</a>.
+  </p>
+</section>
+
+
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015-2019 Anton Bachin. Released under the BSD 2-clause
+    license. See
+    <a href="https://github.com/aantron/better-enums/blob/0.11.3/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.11.3.
+  </div>
+</footer>
+
+</body>
+</html>
+

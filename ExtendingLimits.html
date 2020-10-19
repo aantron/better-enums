@@ -1,0 +1,148 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Extending limits - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/ExtendingLimits.html" />
+<meta name="description" content="How to extend limits imposed by internal macros in Better Enums." />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="index.html">Home</a>
+    <a href="tutorial/HelloWorld.html">Tutorial</a>
+    <a href="ApiReference.html">Reference</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.11.3</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+<div class="main">
+  <div class="container">
+
+
+<h2>Extending limits</h2>
+<p>The <code>BETTER_ENUM</code> macro makes heavy use of the preprocessor, and some of the
+internal macros have size limits. There are two: on the number of constants you
+can declare, and on the maximum length of a constant name under very specific
+conditions. If you run into either one, you can extend the limit by following
+the instructions on this page.</p>
+<p>The second limit, on the maximum length of a constant name, applies only when
+you are compiling an enum in
+<a href="OptInFeatures.html#CompileTimeNameTrimming">"full" <code>constexpr</code></a> mode
+<em>and</em> the constant has an initializer. Otherwise, your constants can have names
+of arbitrary length.</p>
+<p>The default limits are 64 constants in an enum and 23 characters for initialized
+constants of full-<code>constexpr</code> enums. To extend:</p>
+<ol>
+<li>Pick your desired limits. I will use 512 constants and 63 characters as an
+example. Add 1 to the number of characters to account for the null
+terminator &mdash; our numbers are now 512 and 64.</li>
+<li>Get <code>make_macros.py</code> from your copy of the full Better Enums distribution
+or from <a href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/script/make_macros.py" download>GitHub</a>.</li>
+<li>You will run this script to generate a header file containing some
+replacement macros for <code>enum.h</code> to use. Pick a name for this file and a
+location somewhere in your include path. I will assume that this file is
+<code>common/enum_macros.h</code> in your project.</li>
+<li>Run <code>python make_macros.py 512 64 &gt; common/enum_macros.h</code>.</li>
+<li><p>Define <code>BETTER_ENUMS_MACRO_FILE &lt;common/enum_macros.h&gt;</code> before including
+<code>enum.h</code>. This is typically done by supplying extra flags to the compiler
+on the command line:</p>
+<ul>
+<li>For g++ and clang++, <code>-DBETTER_ENUMS_MACRO_FILE='&lt;common/enum_macros.h&gt;'</code></li>
+<li>For VC++, <code>\DBETTER_ENUMS_MACRO_FILE='&lt;common/enum_macros.h&gt;'</code></li>
+<li>With CMake, you may need something like
+<code>add_definitions(-DBETTER_ENUMS_MACRO_FILE="${CMAKE_SOURCE_DIR}/src/enum-macros.h")</code></li>
+</ul>
+<p>You can also create a new header file that defines this macro, and then
+includes <code>enum.h</code>. Then, include your new file everywhere where you would
+otherwise include <code>enum.h</code>:</p>
+<pre class="comment"><em>#pragma once
+
+#define BETTER_ENUMS_MACRO_FILE &lt;common/enum_macros.h&gt;
+#include &lt;enum.h&gt;</em></pre></li>
+<li><p>Enjoy the looser limits. Just watch out &mdash; increasing the second
+number can really slow down compilation of full-<code>constexpr</code> enums.</p>
+</li>
+<li>You don't need <code>make_macros.py</code> anymore. It's not part of your build
+process and you can delete it.</li>
+</ol>
+<hr>
+<p>I am paying attention to feedback, so if more than a few users say that the
+default limit of 64 constants is too low, I will increase it to simplify
+everyone's command line. The current choice of 64 is basically an arbitrary
+guess, loosely informed by the following two facts about macro parameter limits:</p>
+<ul>
+<li>The default limit in Boost.Preprocessor is 64. Though Better Enums does not
+use Boost, I took this number as a guideline.</li>
+<li>The next power of two, 128, is more than <a href="https://msdn.microsoft.com/en-us/library/ft39hh4x.aspx">the number Visual C++ supports</a>
+(127).</li>
+</ul>
+
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015-2019 Anton Bachin. Released under the BSD 2-clause
+    license. See
+    <a href="https://github.com/aantron/better-enums/blob/0.11.3/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.11.3.
+  </div>
+</footer>
+
+</body>
+</html>
+

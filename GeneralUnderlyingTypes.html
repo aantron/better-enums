@@ -1,0 +1,183 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>General underlying types - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/GeneralUnderlyingTypes.html" />
+<meta name="description" content=""Using Better Enums with non-integral underlying types."" />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/master/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="index.html">Home</a>
+    <a href="tutorial/HelloWorld.html">Tutorial</a>
+    <a href="ApiReference.html">Reference</a>
+    <a href="Contact.html">Contact</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.10.1</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/master/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+
+
+<div class="main">
+  <div class="container">
+
+
+<h2>General underlying types</h2>
+<p>The underlying type of a Better Enum doesn't have to be an integral type. It can
+be any literal type <code>T</code>, as long as you provide a <code>constexpr</code> two-way mapping
+between <code>T</code> and an integral type of your choosing. It also works in <span class="cpp">C++</span><span class="eleven">98</span>,
+though, of course, <code>T</code> doesn't have to be literal and the mapping doesn't have
+to be <code>constexpr</code> &mdash; everything will be done by Better Enums at run time.</p>
+<p>Doing this enables the following usage:</p>
+<pre>// The type. A color triplet.
+<em>struct html_color {
+    uint8_t     r, g, b;
+
+    constexpr html_color(uint8_t _r, uint8_t g, uint8_t b) :
+        r(_r), g(_g), b(_b) { }
+};</em>
+
+
+
+// The enum.
+<em>ENUM(Color, html_color,
+     darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954)</em>
+
+
+
+// The usage.
+<em>Color   c = Color::darksalmon;
+
+std::cout &lt;&lt; "Red component: " &lt;&lt; c-&gt;r &lt;&lt; std::endl;
+
+switch (c) {
+    case Color::darksalmon:   // ...
+    case Color::purplemimosa: // ...
+    case Color::slimegreen:   // ...
+}</em></pre><p>As you can see, you can have an enumerated set of any literal type, and safely
+use the values in <code>switch</code>, with the compiler checking exhaustiveness. You can
+also access the type's members using the <code>enum-&gt;underlying_member</code> syntax.</p>
+<p>You do have to supply the mapping to an integral type, however. One option is:</p>
+<pre>// The mapping. It just stuffs bits.
+<em>template &lt;&gt;
+struct ::better_enums::underlying_traits&lt;html_color&gt; {
+    using integral_representation = unsigned int;
+
+    constexpr static html_color from_integral(unsigned int i)
+        { return html_color(i &gt;&gt; 16 &amp; 0xff, i &gt;&gt; 8 &amp; 0xff, i &amp; 0xff); }
+
+    constexpr static unsigned int to_integral(html_color c)
+        { return (unsigned int)c.r &lt;&lt; 16 | (unsigned int)c.g &lt;&lt; 8 | c.b; }
+};</em></pre><a id="UsingConstructorsInInitializers"></a><h3>Using constructors in initializers</h3>
+<p>The declaration above used only numeric initializers. It is possible to use the
+type's own constructors, provided the type has a <code>constexpr</code> conversion to your
+chosen integral type:</p>
+<pre>// The type.
+<em>struct html_color {
+    uint8_t     r, g, b;
+
+    constexpr html_color(uint8_t _r, uint8_t g, uint8_t b) :
+        r(_r), g(_g), b(_b) { }
+
+    </em>// This is new:<em>
+    constexpr operator unsigned int() const
+        { return (unsigned int)r &lt;&lt; 16 | (unsigned int)g &lt;&lt; 8 | b; }
+};</em>
+
+// The enum.
+<em>ENUM(Color, html_color,
+     darksalmon = 0xc47451, purplemimosa = 0x9e7bff, slimegreen = 0xbce954,
+     celeste = html_color(0x50, 0xeb, 0xec))</em></pre><p>This is not possible at all in <span class="cpp">C++</span><span class="eleven">98</span>, however.</p>
+<a id="LettingTheCompilerEnumerateYourLiteralType"></a><h3>Letting the compiler enumerate your literal type</h3>
+<p>You don't have to use initializers. For example, as long as your example type
+<code>file_descriptor</code> knows how to deal with the values, you can have the compiler
+generate them in sequence:</p>
+<pre><em>ENUM(FD, file_descriptor, STDIN, STDOUT, STDERR, SomePipeYourDaemonHas, ...)</em></pre><p>SAMPLE</p>
+<p>You can see the code "in action" in the <a href="https://github.com/aantron/better-enums/blob/master/test/cxxtest/underlying.h">test case</a>. Be aware that it's
+not very "nice," because it uses conditional compilation to run under multiple
+compilers. I haven't written a clean sample or documentation yet simply because
+this feature is in a very early stage of development.</p>
+<a id="Discussion"></a><h3>Discussion</h3>
+<p>This feature is still semi-experimental, though I expect it to remain stable,
+except perhaps that I will make it possible to infer the type
+<code>integral_representation</code>.</p>
+<p>Any opinions are welcome.</p>
+<ul>
+<li>The main reason Better Enums needs you to supply and explicit mapping is
+because it can't just get the "bits" of objects of underlying type in
+<code>constexpr</code> code. Both <code>reinterpret_cast</code> and union abuse seem to be forbidden
+in <code>constexpr</code> functions.</li>
+<li>There is currently no way to have two different integral representaitons for
+the same underlying type in different enums. I don't think that's a major use
+case at this point, however.</li>
+</ul>
+
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015 Anton Bachin. Released under the BSD 2-clause license.
+    See
+    <a href="https://github.com/aantron/better-enums/blob/master/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.10.1.
+  </div>
+</footer>
+
+</body>
+</html>
+

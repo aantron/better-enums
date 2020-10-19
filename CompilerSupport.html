@@ -1,0 +1,205 @@
+<!-- Generated automatically - edit the templates! -->
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+<title>Compiler support - Better Enums</title>
+
+<link rel="canonical" href="http://aantron.github.io/better-enums/CompilerSupport.html" />
+<meta name="description" content="Better Enums compiler support, compatibility, feature detection, and automated
+testing." />
+<meta name="author" content="Anton Bachin" />
+
+<meta name="viewport" content="width=device-width" />
+
+<link rel="stylesheet" href="better-enums.css" />
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-62962513-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+<body class="">
+
+<nav>
+  <div class="container">
+    <a class="first" href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download</a>
+    <a href="https://github.com/aantron/better-enums">GitHub</a>
+    <a href="index.html">Home</a>
+    <a href="tutorial/HelloWorld.html">Tutorial</a>
+    <a href="ApiReference.html">Reference</a>
+  </div>
+</nav>
+
+<div class="spacer">&nbsp;</div>
+
+<header>
+  <div class="container">
+    <section>
+      <h1><a href="index.html">Better Enums</a></h1>
+      <h2>Reflective compile-time enums for <span class="cpp">C++</span></h2>
+      <h3>Open-source under the BSD license</h3>
+    </section>
+
+    <section class="notes">
+      <p>Version 0.11.3</p>
+      <p>To install, just add <code>enum.h</code> to your project.</p>
+      <p>
+        Visit the GitHub repo for issues, feedback, and the latest development.
+      </p>
+    </section>
+
+    <section class="buttons">
+      <a href="https://raw.githubusercontent.com/aantron/better-enums/0.11.3/enum.h"
+download>Download <code>enum.h</code></a>
+      <a href="https://github.com/aantron/better-enums">GitHub</a>
+    </section>
+  </div>
+</header>
+
+<div class="main">
+  <div class="container">
+
+
+<h2>Compiler support</h2>
+<p>Better Enums aims to support all major compilers. It is known to work on:</p>
+<ul>
+<li>clang 3.3 to 3.9</li>
+<li>gcc 4.3 to 5.3</li>
+<li>Visual C++ 2008 to 2015.</li>
+</ul>
+<p>The library can be used with any compiler that supports either <span class="cpp">C++</span><span class="eleven">11</span>, or <span class="cpp">C++</span><span class="eleven">98</span>
+with the <code>__VA_ARGS__</code> extension. This includes every version of gcc and clang I
+have ever heard of, and Visual C++ down to 2005.</p>
+<p>To ensure that nothing is broken, every release of Better Enums is
+<a href="https://github.com/aantron/better-enums/tree/master/test">tested</a> in multiple configuratins on the compilers
+listed above. Testing includes the code in the tutorials, the unit tests, and a
+multiple translation unit linking test. The full list of tested compilers and
+configurations is given at <a href="#TestedConfigurations">the end of this page</a>.</p>
+<a id="CompileTimeReflectionConfigurations"></a><h3>Compile-time reflection configurations</h3>
+<p>Read this section if:</p>
+<ul>
+<li>you want to use Better Enums reflection at compile time, and need to know
+exactly what features are supported on your compiler, or</li>
+<li>Better Enums is choosing the wrong configuration automatically and you need
+to force a different choice.</li>
+</ul>
+<p>All features of Better Enums are always available for run-time use. However, for
+compile-time use, Better Enums has two main configurations: <span class="cpp">C++</span><span class="eleven">98</span> mode and
+<code>constexpr</code> mode. Better Enums tries to detect which compiler is compiling it
+and select the appropriate mode.</p>
+<p>For performance reasons, <code>constexpr</code> mode is subdivided into a "fast"
+<code>constexpr</code> mode and an
+<a href="OptInFeatures.html#CompileTimeNameTrimming">opt-in</a> "full" (slow)
+<code>constexpr</code> mode. The three modes can be ranked, with each next mode including
+all the features of the preceding ones:</p>
+<ul>
+<li><span class="cpp">C++</span><span class="eleven">98</span></li>
+<li>fast <code>constexpr</code></li>
+<li>full <code>constexpr</code></li>
+</ul>
+<p>Only <code>_size</code> is supported at compile time in <span class="cpp">C++</span><span class="eleven">98</span> mode. Fast <code>constexpr</code> mode
+adds all other members besides <code>_to_string</code> and <code>_names</code>. Full <code>constexpr</code> mode
+supports those at compile time as well.</p>
+<hr>
+<p>The mode selection code works as follows:</p>
+<ul>
+<li>First, as of the time of this writing, only clang and gcc support
+<code>constexpr</code>. So, if you are using any other compiler, Better Enums is in
+<span class="cpp">C++</span><span class="eleven">98</span> mode.</li>
+<li>If you are using gcc 4.7 or higher or clang, Better Enums uses those
+compilers' predefined macros to detect whether <code>constexpr</code> support is
+enabled with compiler flags. If so, it is in one of the <code>constexpr</code> mode.
+Otherwise, it falls back to <span class="cpp">C++</span><span class="eleven">98</span> mode.</li>
+<li>The default <code>constexpr</code> mode is fast <code>constexpr</code>. If you want to enable
+full <code>constexpr</code> mode for some or all of your enums, follow
+<a href="OptInFeatures.html#CompileTimeNameTrimming">these</a> instructions.</li>
+</ul>
+<p>If Better Enums picks the wrong mode, you can force <code>constexpr</code> mode by defining
+<code>BETTER_ENUMS_CONSTEXPR</code> before including <code>enum.h</code>, typically by passing an
+option to your compiler, or you can force <span class="cpp">C++</span><span class="eleven">98</span> mode by defining
+<code>BETTER_ENUMS_NO_CONSTEXPR</code>.</p>
+<p>If you are using a compiler for which Better Enums makes the wrong choice,
+please <a href="Contact.html">let me know</a>. I will fix it and you won't have to
+define these macros anymore.</p>
+<a id="TestedConfigurations"></a><h3>Tested configurations</h3>
+<pre class="comment">vc2015 /EHsc
+vc2015 /EHsc /DBETTER_ENUMS_STRICT_CONVERSION
+vc2013 /EHsc
+vc2013 /EHsc /DBETTER_ENUMS_STRICT_CONVERSION
+vc2012 /EHsc
+vc2010 /EHsc
+vc2008 /EHsc
+clang++39 -std=c++11
+clang++39 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++39 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++39 -std=c++98
+clang++38 -std=c++11
+clang++38 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++38 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++38 -std=c++98
+clang++37 -std=c++11
+clang++37 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++37 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++37 -std=c++98
+clang++36 -std=c++11
+clang++36 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++36 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++36 -std=c++98
+clang++35 -std=c++11
+clang++35 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++35 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++35 -std=c++98
+clang++34 -std=c++11
+clang++34 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+clang++34 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+clang++34 -std=c++98
+clang++33 -std=c++98
+g++53 -std=c++11
+g++53 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+g++53 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+g++53 -std=c++98
+g++49 -std=c++11
+g++49 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+g++49 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+g++49 -std=c++98
+g++48 -std=c++11
+g++48 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+g++48 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+g++48 -std=c++98
+g++47 -std=c++11
+g++47 -std=c++11 -DBETTER_ENUMS_STRICT_CONVERSION
+g++47 -std=c++11 -DBETTER_ENUMS_CONSTEXPR_TO_STRING
+g++47 -std=c++98
+g++46 -std=c++98
+g++45 -std=c++98
+g++44 -std=c++98
+g++43 -std=c++98</pre>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    Copyright &copy; 2015-2019 Anton Bachin. Released under the BSD 2-clause
+    license. See
+    <a href="https://github.com/aantron/better-enums/blob/0.11.3/doc/LICENSE">
+    LICENSE</a>.
+    <br />
+    This page is part of the documentation for Better Enums 0.11.3.
+  </div>
+</footer>
+
+</body>
+</html>
+
