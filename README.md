@@ -98,20 +98,6 @@ a comparison:
 
 <br/>
 
-## Contact and development
-
-Don't hesitate to contact me about features or bugs:
-[antonbachin@yahoo.com][email], or open an issue on GitHub.
-
-If you'd like to help develop Better Enums, see [`CONTRIBUTING`][contributing].
-One area that could use fresh ideas is finding a compile-time data structure
-that both compiles quickly and allows lookup in sub-linear time.
-
-[email]:        mailto:antonbachin@yahoo.com
-[contributing]: https://github.com/aantron/better-enums/blob/master/doc/CONTRIBUTING.md
-
-<br/>
-
 ## History
 
 The original version of the library was developed by the author in the winter of
