@@ -88,3 +88,15 @@ Here they are:
 
 %% description = Optional Better Enums features, disabled by default for
 performance or compatibility reasons.
+
+### Injecting tokens
+
+You can define `BETTER_ENUMS_CLASS_ATTRIBUTE` before declaring a Better Enum, to
+inject tokens into the class declaration. For example, in
+
+    #define <em>BETTER_ENUMS_CLASS_ATTRIBUTE</em> <em>__attribute__(foo)</em>
+    <em>BETTER_ENUM</em>(<em>Channel</em>, int, Red, Green, Blue)
+
+The resulting enum declaration will begin with
+
+    class <em>__attribute__(foo)</em> <em>Channel</em> {
