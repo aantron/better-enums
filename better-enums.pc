@@ -1,0 +1,9 @@
+prefix=/usr
+libdir=${prefix}/lib
+includedir=${prefix}/include/better-enums
+
+Name: better_enums
+Description: Reflective compile-time enum library with clean syntax, in a single header file, and without dependencies.
+Requires:
+Libs:
+Cflags: -I${includedir}

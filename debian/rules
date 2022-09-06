@@ -1,0 +1,9 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE=1
+
+VERSION := $(shell dpkg-parsechangelog | grep '^Version: ' | awk '{print $$2}')
+
+%:
+	dh $@
+

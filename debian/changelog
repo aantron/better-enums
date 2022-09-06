@@ -1,0 +1,5 @@
+better-enums (0.11.3) stable; urgency=low
+
+  * Initial Debian package release
+
+ -- Daikin ADC Controls Dev <Controls.Dev@daikinapplied.com>  Tue, 06 Sep 2022 09:06:05 -0500
