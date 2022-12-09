@@ -934,6 +934,22 @@ inline bool operator ==(const Enum &a, const Enum &b)                          \
     { return a._to_integral() == b._to_integral(); }                           \
                                                                                \
 BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator ==(const Enum &a, Enum::_enumerated b)                    \
+    { return a._to_integral() == b; }                                          \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator ==(Enum::_enumerated a, const Enum &b)                    \
+    { return a == b._to_integral(); }                                          \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator =!(const Enum &a, Enum::_enumerated b)                    \
+    { return a._to_integral() =! b; }                                          \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
+inline bool operator =!(Enum::_enumerated a, const Enum &b)                    \
+    { return a =! b._to_integral(); }                                          \
+                                                                               \
+BETTER_ENUMS_UNUSED BETTER_ENUMS_CONSTEXPR_                                    \
 inline bool operator !=(const Enum &a, const Enum &b)                          \
     { return a._to_integral() != b._to_integral(); }                           \
                                                                                \
