@@ -1,6 +1,7 @@
 // This file is part of Better Enums, released under the BSD 2-clause license.
 // See LICENSE.md for details, or visit http://github.com/aantron/better-enums.
 
+// clang-format off
 #pragma once
 
 #ifndef BETTER_ENUMS_ENUM_H
@@ -1324,3 +1325,4 @@ BETTER_ENUMS_CONSTEXPR_ map<Enum, T> make_map(T (*f)(Enum))
     }
 
 #endif // #ifndef BETTER_ENUMS_ENUM_H
+// clang-format on
