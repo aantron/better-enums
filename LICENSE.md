@@ -1,4 +1,4 @@
-Copyright (c) 2012-2021, Anton Bachin
+Copyright (c) 2012-2024, Anton Bachin
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
