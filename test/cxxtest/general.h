@@ -412,7 +412,6 @@ class EnumTests : public CxxTest::TestSuite {
 
 	void test_from_index_unchecked()
 	{
-
         TS_ASSERT_EQUALS((+Channel::Red), Channel::_from_index_unchecked(0));
         TS_ASSERT_EQUALS((+Channel::Green), Channel::_from_index_unchecked(1));
         TS_ASSERT_EQUALS((+Channel::Blue), Channel::_from_index_unchecked(2));
@@ -424,6 +423,33 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS((+Compression::Huffman), Compression::_from_index_unchecked(1));
         TS_ASSERT_EQUALS((+Compression::Default), Compression::_from_index_unchecked(2));
 	}
+
+    void test_equality_operators() {
+        Channel red = Channel::Red, green = Channel::Green, blue = Channel::Blue;
+
+        TS_ASSERT_EQUALS(red, Channel::Red);
+        TS_ASSERT_EQUALS(blue, Channel::Blue);
+        TS_ASSERT_EQUALS(green, Channel::Green);
+
+        TS_ASSERT_EQUALS(Channel::Red, red);
+        TS_ASSERT_EQUALS(Channel::Blue, blue);
+        TS_ASSERT_EQUALS(Channel::Green, green);
+
+        TS_ASSERT_DIFFERS(red, Channel::Green);
+        TS_ASSERT_DIFFERS(red, Channel::Blue);
+        TS_ASSERT_DIFFERS(Channel::Green, red);
+        TS_ASSERT_DIFFERS(Channel::Blue, red);
+
+        TS_ASSERT_DIFFERS(green, Channel::Red);
+        TS_ASSERT_DIFFERS(green, Channel::Blue);
+        TS_ASSERT_DIFFERS(Channel::Red, green);
+        TS_ASSERT_DIFFERS(Channel::Blue, green);
+
+        TS_ASSERT_DIFFERS(blue, Channel::Red);
+        TS_ASSERT_DIFFERS(blue, Channel::Green);
+        TS_ASSERT_DIFFERS(Channel::Red, blue);
+        TS_ASSERT_DIFFERS(Channel::Green, blue);
+    }
 };
 
 
