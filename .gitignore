@@ -1,3 +1,4 @@
+*.swp
 *.pyc
 *.obj
 *.exe
@@ -6,3 +7,8 @@ doc/html/
 doc-publish/
 test/cxxtest/*.cc
 test/build
+debian/.debhelper/
+debian/better-enums0-dev.substvars
+debian/better-enums0-dev/
+debian/debhelper-build-stamp
+debian/files

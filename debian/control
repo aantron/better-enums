@@ -1,0 +1,17 @@
+Source: better-enums
+Section: libdevel
+Priority: optional
+Maintainer: Daikin ADC Controls Dev <Controls.Dev@daikinapplied.com>
+Build-Depends: debhelper (>= 10)
+Standards-Version: 4.1.2
+
+Package: better-enums0-dev
+Provides: better-enums-dev
+Conflicts: better-enums-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends}
+Description: Files needed to develop against better-enums
+ This package contains include files needed to develop applications
+ with better-enums.
+

@@ -1,0 +1,7 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: better-enums
+
+Files: *
+Copyright: 2012-2021, Anton Bachin
+
+License: BSD 2-Clause "Simplified" License
