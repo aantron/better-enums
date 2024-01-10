@@ -200,7 +200,7 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS(Channel::_from_integral_unchecked(1), +Channel::Green);
         TS_ASSERT_DIFFERS(Channel::_from_integral_unchecked(1), +Channel::Blue);
 
-        TS_ASSERT_THROWS(Channel::_from_integral(3), std::runtime_error);
+        TS_ASSERT_THROWS(Channel::_from_integral(3), std::runtime_error const&);
         TS_ASSERT_THROWS_NOTHING(Channel::_from_integral_unchecked(3));
 
         better_enums::optional<Channel> maybe_channel =
@@ -225,7 +225,7 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_DIFFERS(Channel::_from_string("Green"), +Channel::Blue);
         TS_ASSERT_EQUALS(Channel::_from_string("Blue"), +Channel::Blue);
         TS_ASSERT_DIFFERS(Channel::_from_string("Blue"), +Channel::Green);
-        TS_ASSERT_THROWS(Channel::_from_string("green"), std::runtime_error);
+        TS_ASSERT_THROWS(Channel::_from_string("green"), std::runtime_error const&);
 
         better_enums::optional<Channel> maybe_channel =
             Channel::_from_string_nothrow("Green");
@@ -241,7 +241,7 @@ class EnumTests : public CxxTest::TestSuite {
                          +Channel::Blue);
         TS_ASSERT_DIFFERS(Channel::_from_string_nocase("blue"),
                           +Channel::Green);
-        TS_ASSERT_THROWS(Channel::_from_string_nocase("a"), std::runtime_error);
+        TS_ASSERT_THROWS(Channel::_from_string_nocase("a"), std::runtime_error const&);
 
         maybe_channel = Channel::_from_string_nocase_nothrow("green");
         TS_ASSERT(maybe_channel);
@@ -354,16 +354,16 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS((+Channel::Red), Channel::_from_index(0));
         TS_ASSERT_EQUALS((+Channel::Green), Channel::_from_index(1));
         TS_ASSERT_EQUALS((+Channel::Blue), Channel::_from_index(2));
-        TS_ASSERT_THROWS(Channel::_from_index(42), std::runtime_error);
+        TS_ASSERT_THROWS(Channel::_from_index(42), std::runtime_error const&);
 
         TS_ASSERT_EQUALS((+Depth::HighColor), Depth::_from_index(0));
         TS_ASSERT_EQUALS((+Depth::TrueColor), Depth::_from_index(1));
-        TS_ASSERT_THROWS(Depth::_from_index(42), std::runtime_error);
+        TS_ASSERT_THROWS(Depth::_from_index(42), std::runtime_error const&);
 
         TS_ASSERT_EQUALS((+Compression::None), Compression::_from_index(0));
         TS_ASSERT_EQUALS((+Compression::Huffman), Compression::_from_index(1));
         TS_ASSERT_EQUALS((+Compression::Default), Compression::_from_index(2));
-        TS_ASSERT_THROWS(Compression::_from_index(42), std::runtime_error);
+        TS_ASSERT_THROWS(Compression::_from_index(42), std::runtime_error const&);
 	}
 
     void test_from_index_nothrow()
@@ -412,7 +412,6 @@ class EnumTests : public CxxTest::TestSuite {
 
 	void test_from_index_unchecked()
 	{
-
         TS_ASSERT_EQUALS((+Channel::Red), Channel::_from_index_unchecked(0));
         TS_ASSERT_EQUALS((+Channel::Green), Channel::_from_index_unchecked(1));
         TS_ASSERT_EQUALS((+Channel::Blue), Channel::_from_index_unchecked(2));
@@ -424,6 +423,39 @@ class EnumTests : public CxxTest::TestSuite {
         TS_ASSERT_EQUALS((+Compression::Huffman), Compression::_from_index_unchecked(1));
         TS_ASSERT_EQUALS((+Compression::Default), Compression::_from_index_unchecked(2));
 	}
+
+    void test_comparator_operators()
+    {
+        Channel red = Channel::Red, blue = Channel::Blue;
+
+        TS_ASSERT_LESS_THAN(red, Channel::Green);
+        TS_ASSERT_LESS_THAN(Channel::Green, blue);
+        TS_ASSERT(!(red < Channel::Red));
+        TS_ASSERT(!(Channel::Blue < blue));
+        TS_ASSERT(!(blue < Channel::Green));
+        TS_ASSERT(!(Channel::Green < red));
+
+        TS_ASSERT_LESS_THAN_EQUALS(red, Channel::Green);
+        TS_ASSERT_LESS_THAN_EQUALS(Channel::Green, blue);
+        TS_ASSERT_LESS_THAN_EQUALS(red, Channel::Red);
+        TS_ASSERT_LESS_THAN_EQUALS(Channel::Blue, blue);
+        TS_ASSERT(!(blue <= Channel::Green));
+        TS_ASSERT(!(Channel::Green <= red));
+
+        TS_ASSERT(!(red > Channel::Green));
+        TS_ASSERT(!(Channel::Green > blue));
+        TS_ASSERT(!(red > Channel::Red));
+        TS_ASSERT(!(Channel::Blue > blue));
+        TS_ASSERT(blue > Channel::Green);
+        TS_ASSERT(Channel::Green > red);
+
+        TS_ASSERT(!(red >= Channel::Green));
+        TS_ASSERT(!(Channel::Green >= blue));
+        TS_ASSERT(red >= Channel::Red);
+        TS_ASSERT(Channel::Blue >= blue);
+        TS_ASSERT(blue >= Channel::Green);
+        TS_ASSERT(Channel::Green >= red);
+    }
 };
 
 
