@@ -14,6 +14,10 @@
 #include <iosfwd>
 #include <stdexcept>
 
+#if __cplusplus >= 201703L
+#include <optional>
+#endif
+
 
 // in-line, non-#pragma warning handling
 // not supported in very old compilers (namely gcc 4.4 or less)
@@ -343,6 +347,13 @@ struct optional {
     BETTER_ENUMS_CONSTEXPR_ operator bool() const { return _valid; }
 
     BETTER_ENUMS_CONSTEXPR_ const T& value() const { return _value; }
+
+    #if defined(__cpp_lib_optional) && (__cpp_lib_optional >= 201606L)
+    BETTER_ENUMS_CONSTEXPR_ operator std::optional<T>() const {
+        if(has_value()) {return {_value};}
+        return std::nullopt;
+    }
+    #endif
 
   private:
     bool    _valid;
